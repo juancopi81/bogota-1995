@@ -3,7 +3,7 @@
 
 import MusicWorker from './music.worker.ts?worker&inline';
 import type { MusicJob } from './music.worker';
-import { songShape, type Style } from './music';
+import { songShape, renderSong, renderJingle, renderBed, renderTeletype, type Style } from './music';
 import { SONGS, song } from '../content/songs';
 import { idb } from '../world/store';
 import { bus } from '../world/bus';
@@ -71,13 +71,14 @@ class Library {
         const job: MusicJob = { id, kind, style, seed };
         if (this.worker) this.worker.postMessage(job);
         else
-          void import('./music').then((m) => {
-            const r = kind === 'song' ? m.renderSong(style, seed) : kind === 'jingle' ? m.renderJingle(style, seed) : kind === 'bed' ? m.renderBed(style, seed) : m.renderTeletype(seed);
+          // no workers: render on the main thread, a moment later
+          setTimeout(() => {
+            const r = kind === 'song' ? renderSong(style, seed) : kind === 'jingle' ? renderJingle(style, seed) : kind === 'bed' ? renderBed(style, seed) : renderTeletype(seed);
             const buffer = this.ctx.createBuffer(2, r.left.length, r.sampleRate);
             buffer.copyToChannel(r.left as Float32Array<ArrayBuffer>, 0);
             buffer.copyToChannel(r.right as Float32Array<ArrayBuffer>, 1);
             this.jobs.get(id)?.(buffer);
-          });
+          }, 0);
       });
       this.pending.set(key, promise);
     }

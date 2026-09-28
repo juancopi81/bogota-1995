@@ -5,6 +5,7 @@
 import { Timeline } from '../broadcast/timeline';
 import type { Cue, Scheduled } from '../broadcast/types';
 import { CHANNELS, type ChannelDef, type TvSegment } from '../content/tv';
+import type { Clip } from '../content/clips';
 import { dynamicLine } from '../content/lines';
 import { tvSvg, SCREEN, CHANNEL_KNOB, VOLUME_KNOB, ANTENNA, channelAngle } from '../art/tv';
 import { drawScene, drawAnthem, TV_W, TV_H } from './tvscenes';
@@ -137,6 +138,38 @@ class Channel {
   }
 }
 
+/** Real clips play in an embedded YouTube player behind the tube's effects. */
+class ClipScreen {
+  private frame: HTMLIFrameElement | null = null;
+  private current = '';
+
+  constructor(
+    private readonly parent: HTMLElement,
+    private readonly before: HTMLElement,
+  ) {}
+
+  show(clip: Clip, offset: number): void {
+    const key = `${clip.id}@${clip.start}`;
+    if (this.frame && this.current === key) return;
+    this.hide();
+    const f = document.createElement('iframe');
+    const start = Math.floor(clip.start + Math.max(0, offset));
+    f.src = `https://www.youtube-nocookie.com/embed/${clip.id}?start=${start}&autoplay=1&controls=0&rel=0&playsinline=1&iv_load_policy=3&disablekb=1`;
+    f.allow = 'autoplay; encrypted-media';
+    f.className = 'tv-clip';
+    Object.assign(f.style, { left: `${SCREEN.x}px`, top: `${SCREEN.y}px`, width: `${SCREEN.w}px`, height: `${SCREEN.h}px` });
+    this.parent.insertBefore(f, this.before);
+    this.frame = f;
+    this.current = key;
+  }
+
+  hide(): void {
+    this.frame?.remove();
+    this.frame = null;
+    this.current = '';
+  }
+}
+
 export class Tv {
   readonly el: HTMLElement;
   private readonly svg: SVGSVGElement;
@@ -167,6 +200,7 @@ export class Tv {
   private frame = 0;
   private volumeHighSince: number | null = null;
   private nagged = false;
+  private clips!: ClipScreen;
 
   constructor(private readonly engine: AudioEngine) {
     const ctx = engine.ctx;
@@ -222,6 +256,7 @@ export class Tv {
     this.screen.height = TV_H * 2;
     Object.assign(this.screen.style, { left: `${SCREEN.x}px`, top: `${SCREEN.y}px`, width: `${SCREEN.w}px`, height: `${SCREEN.h}px` });
     this.el.appendChild(this.screen);
+    this.clips = new ClipScreen(this.el, this.screen);
     const glass = document.createElement('div');
     glass.className = 'tv-glass';
     Object.assign(glass.style, { left: `${SCREEN.x}px`, top: `${SCREEN.y}px`, width: `${SCREEN.w}px`, height: `${SCREEN.h}px` });
@@ -468,6 +503,7 @@ export class Tv {
 
     g.setTransform(1, 0, 0, 1, 0, 0);
     if (!this.power && this.offAnim >= 1) {
+      this.clips.hide();
       g.clearRect(0, 0, W, H);
       this.mirror(false);
       light.crt = 0;
@@ -490,9 +526,15 @@ export class Tv {
       }
     }
 
-    g.fillStyle = '#050606';
-    g.fillRect(0, 0, W, H);
-    if (hasChannel && item) {
+    const clip = this.power && this.warm > 0.3 && hasChannel && item?.seg.kind === 'clip' ? item.seg.clip : null;
+    if (clip && item) this.clips.show(clip, t - item.start);
+    else this.clips.hide();
+    if (clip) g.clearRect(0, 0, W, H);
+    else {
+      g.fillStyle = '#050606';
+      g.fillRect(0, 0, W, H);
+    }
+    if (hasChannel && item && !clip) {
       g.imageSmoothingEnabled = true;
       const y = this.roll * 2;
       g.globalAlpha = 1;

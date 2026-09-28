@@ -651,3 +651,11 @@ body {
     transform: skewX(1.2deg);
   }
 }
+
+.tv-clip {
+  position: absolute;
+  border: 0;
+  border-radius: 36px;
+  pointer-events: none;
+  filter: saturate(0.85) contrast(1.1) blur(0.4px);
+}

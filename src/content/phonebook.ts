@@ -372,9 +372,10 @@ function cabina(world: PhoneWorld): CallScript {
     ]);
     await call.say(R.barrio);
     await call.choose([{ text: 'Desde Chapinero.', value: 1 }]);
-    await call.say(R.listo);
+    // it's on the list now, even if you hang up before they finish talking
     flags.request = { songId, dedication, at: call.now() };
     world.request(songId, dedication);
+    await call.say(R.listo);
     await call.hangUp();
   };
 }
