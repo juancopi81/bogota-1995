@@ -17,7 +17,7 @@ interface Closeup {
 
 class Closeups {
   private registry = new Map<CloseupId, Closeup>();
-  private current: CloseupId | null = null;
+  private currentId: CloseupId | null = null;
   private back!: HTMLButtonElement;
   private engine!: AudioEngine;
 
@@ -39,20 +39,21 @@ class Closeups {
     room().onHot(id, () => this.open(id));
   }
 
-  get open_(): CloseupId | null {
-    return this.current;
+  /** The close-up that's open, or null when you're looking at the room. */
+  get current(): CloseupId | null {
+    return this.currentId;
   }
 
   isOpen(id: CloseupId): boolean {
-    return this.current === id;
+    return this.currentId === id;
   }
 
   open(id: CloseupId): void {
-    if (this.current === id) return;
-    if (this.current) this.close();
+    if (this.currentId === id) return;
+    if (this.currentId) this.close();
     const c = this.registry.get(id);
     if (!c) return;
-    this.current = id;
+    this.currentId = id;
     room().zoomTo(c.rect);
     c.el.classList.add('open');
     this.back.classList.add('show');
@@ -62,10 +63,10 @@ class Closeups {
   }
 
   close(): void {
-    const id = this.current;
+    const id = this.currentId;
     if (!id) return;
     const c = this.registry.get(id)!;
-    this.current = null;
+    this.currentId = null;
     c.el.classList.remove('open');
     this.back.classList.remove('show');
     room().zoomOut();

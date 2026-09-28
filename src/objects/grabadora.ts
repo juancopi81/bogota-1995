@@ -10,6 +10,8 @@ import { sfx, play } from '../audio/sfx';
 import { svgPoint } from '../ui/svg';
 import { kv } from '../world/store';
 import { clamp } from '../util/rng';
+import { setAttr, setText, toggleClass } from '../ui/dom';
+import { glide } from '../audio/param';
 
 type Func = 'tape' | 'AM' | 'FM';
 
@@ -32,6 +34,8 @@ export class Grabadora {
   private deskKey = '';
   private roomLed: SVGElement | null = null;
   private roomNeedle: SVGElement | null = null;
+  private readonly cones: HTMLElement[];
+  private lastPump = '';
 
   constructor(private readonly engine: AudioEngine) {
     const ctx = engine.ctx;
@@ -69,6 +73,13 @@ export class Grabadora {
     this.el.id = 'cu-grabadora';
     this.el.innerHTML = grabadoraSvg();
     this.svg = this.el.querySelector('svg')!;
+    this.cones = [385, 1215].map((cx) => {
+      const cone = document.createElement('div');
+      cone.className = 'speaker-cone';
+      Object.assign(cone.style, { left: `${cx - 50}px`, top: `${510 - 50}px` });
+      this.el.appendChild(cone);
+      return cone;
+    });
     this.wire();
   }
 
@@ -219,9 +230,9 @@ export class Grabadora {
     this.deck.tick(dt);
     const tapeOn = this.deck.tapeAudible;
     this.radio.audible = !tapeOn;
-    this.radioGate.gain.setTargetAtTime(tapeOn ? 0 : 1, now, 0.03);
-    this.tapeGate.gain.setTargetAtTime(tapeOn ? 1 : 0, now, 0.03);
-    this.volumeGain.gain.setTargetAtTime(this.radio.volume ** 2 * 1.4, now, 0.03);
+    glide(this.radioGate.gain, tapeOn ? 0 : 1, now, 0.03);
+    glide(this.tapeGate.gain, tapeOn ? 1 : 0, now, 0.03);
+    glide(this.volumeGain.gain, this.radio.volume ** 2 * 1.4, now, 0.03);
     this.radio.tick(t);
     this.draw(dt);
   }
@@ -232,20 +243,20 @@ export class Grabadora {
     const deck = this.deck;
 
     const x = radio.band === 'FM' ? fmX(radio.freq.FM) : amX(radio.freq.AM);
-    svg.querySelector('#g-needle')!.setAttribute('x', (x - 1.5).toFixed(1));
-    svg.querySelector('#g-knob-rot')!.setAttribute('transform', `rotate(${((this.knobAngle * 180) / Math.PI).toFixed(1)})`);
+    setAttr(svg.querySelector('#g-needle'), 'x', (x - 1.5).toFixed(1));
+    setAttr(svg.querySelector('#g-knob-rot'), 'transform', `rotate(${((this.knobAngle * 180) / Math.PI).toFixed(1)})`);
     const fi = ['tape', 'AM', 'FM'].indexOf(this.func);
-    svg.querySelector('#g-func-thumb')!.setAttribute('x', String(FUNC.positions[fi] - 14));
-    svg.querySelector('#g-vol-thumb')!.setAttribute('x', (VOL.x0 + radio.volume * (VOL.x1 - VOL.x0) - 9).toFixed(1));
+    setAttr(svg.querySelector('#g-func-thumb'), 'x', String(FUNC.positions[fi] - 14));
+    setAttr(svg.querySelector('#g-vol-thumb'), 'x', (VOL.x0 + radio.volume * (VOL.x1 - VOL.x0) - 9).toFixed(1));
 
     const dom = radio.power ? radio.dominant() : null;
-    svg.querySelector('#g-led-tune')!.setAttribute('fill', dom ? `rgba(120, 230, 110, ${(0.25 + dom.strength * 0.75).toFixed(2)})` : '#1f2a1c');
+    setAttr(svg.querySelector('#g-led-tune'), 'fill', dom ? `rgba(120, 230, 110, ${(0.25 + dom.strength * 0.75).toFixed(2)})` : '#1f2a1c');
     const rec = deck.isRecording;
-    svg.querySelector('#g-led-rec')!.setAttribute('fill', rec ? '#ff4a36' : '#3a1410');
-    this.roomLed?.setAttribute('fill', rec ? '#ff4a36' : '#5a1a14');
+    setAttr(svg.querySelector('#g-led-rec'), 'fill', rec ? '#ff4a36' : '#3a1410');
+    setAttr(this.roomLed, 'fill', rec ? '#ff4a36' : '#5a1a14');
     if (this.roomNeedle) {
       const roomX = 222 + ((x - 646) / (954 - 646)) * 72;
-      this.roomNeedle.setAttribute('x', roomX.toFixed(1));
+      setAttr(this.roomNeedle, 'x', roomX.toFixed(1));
     }
 
     // keys: which ones are held down
@@ -257,12 +268,12 @@ export class Grabadora {
         (k === 'ff' && deck.transport === 'ff') ||
         (k === 'rew' && deck.transport === 'rew') ||
         (k === 'pause' && deck.paused);
-      key.classList.toggle('down', down);
+      toggleClass(key, 'down', down);
     }
 
     const digits = counterDisplay(deck.counterPos, deck.counterZero);
-    svg.querySelectorAll('.g-digit').forEach((d, i) => (d.textContent = digits[i]));
-    svg.querySelector('#g-door')!.classList.toggle('open', deck.door === 'open');
+    svg.querySelectorAll('.g-digit').forEach((d, i) => setText(d, digits[i]));
+    toggleClass(svg.querySelector('#g-door'), 'open', deck.door === 'open');
 
     // the cassette in the deck, its reels turning
     const c = deck.cassette;
@@ -272,18 +283,18 @@ export class Grabadora {
       this.slotKey = slotKey;
       slot.innerHTML = c ? cassetteSvg(c.data) : '';
     }
-    slot.setAttribute('transform', `translate(${CASSETTE_AT.x} ${CASSETTE_AT.y - (deck.door === 'open' ? 26 : 0)})`);
-    slot.classList.toggle('grab', deck.door === 'open' && !!c);
+    setAttr(slot, 'transform', `translate(${CASSETTE_AT.x} ${CASSETTE_AT.y - (deck.door === 'open' ? 26 : 0)})`);
+    toggleClass(slot, 'grab', deck.door === 'open' && !!c);
     if (c) {
       const rTake = takeUpRadius(c.pos);
       const rSupply = supplyRadius(c.pos, c.length);
       const v = 47.6 * deck.reelSpeed;
       this.reelAngles[0] += ((v / rSupply) * dt * 180) / Math.PI;
       this.reelAngles[1] += ((v / rTake) * dt * 180) / Math.PI;
-      slot.querySelector('.pack-l')?.setAttribute('r', (rSupply * MM).toFixed(1));
-      slot.querySelector('.pack-r')?.setAttribute('r', (rTake * MM).toFixed(1));
-      slot.querySelector('.hub-l')?.setAttribute('transform', `translate(${HUB_L.x} ${HUB_L.y}) rotate(${this.reelAngles[0].toFixed(1)})`);
-      slot.querySelector('.hub-r')?.setAttribute('transform', `translate(${HUB_R.x} ${HUB_R.y}) rotate(${this.reelAngles[1].toFixed(1)})`);
+      setAttr(slot.querySelector('.pack-l'), 'r', (rSupply * MM).toFixed(1));
+      setAttr(slot.querySelector('.pack-r'), 'r', (rTake * MM).toFixed(1));
+      setAttr(slot.querySelector('.hub-l'), 'transform', `translate(${HUB_L.x} ${HUB_L.y}) rotate(${this.reelAngles[0].toFixed(1)})`);
+      setAttr(slot.querySelector('.hub-r'), 'transform', `translate(${HUB_R.x} ${HUB_R.y}) rotate(${this.reelAngles[1].toFixed(1)})`);
     }
 
     // cassettes lying on the desk
@@ -300,7 +311,10 @@ export class Grabadora {
     let sum = 0;
     for (let i = 0; i < this.level.length; i++) sum += this.level[i] * this.level[i];
     const rms = Math.sqrt(sum / this.level.length);
-    const pump = 1 + Math.min(0.06, rms * 0.35);
-    for (const cone of svg.querySelectorAll<SVGCircleElement>('.cone-center')) cone.setAttribute('r', (48 * pump).toFixed(2));
+    const pump = (1 + Math.min(0.08, rms * 0.45)).toFixed(3);
+    if (pump !== this.lastPump) {
+      this.lastPump = pump;
+      for (const cone of this.cones) cone.style.transform = `scale(${pump})`;
+    }
   }
 }

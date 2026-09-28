@@ -102,7 +102,7 @@ all be driven from the console.
 
 - Everything in this repository is original: the art, the synthesized sounds
   and placeholder music, and the writing.
-- The fonts are under the OFL; see [`public/fonts/LICENSES.md`](public/fonts/LICENSES.md).
+- The fonts are under the OFL; see [`src/assets/fonts/LICENSES.md`](src/assets/fonts/LICENSES.md).
 - Real song titles, stations and brands appear by name. That's fine for a
   private prototype, but it needs review before anything public.
 - The real songs and voices you load stay in your browser.

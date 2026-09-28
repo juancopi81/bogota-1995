@@ -11,6 +11,7 @@ import type { AudioEngine } from '../audio/engine';
 import { sfx, play } from '../audio/sfx';
 import { idb, kv } from '../world/store';
 import { bus } from '../world/bus';
+import { glide } from '../audio/param';
 
 export type Transport = 'stop' | 'play' | 'rec' | 'ff' | 'rew';
 export type Key = 'rec' | 'play' | 'rew' | 'ff' | 'stop' | 'pause';
@@ -73,7 +74,7 @@ export class Deck {
 
   private speed = 0;
   private playAnchor: { pos: number; ctx: number } | null = null;
-  private capture: AudioWorkletNode | null = null;
+  private capture: { start: () => void; stop: () => void } | null = null;
   private recording: Recording | null = null;
   private sources = new Map<TapeSegment, AudioBufferSourceNode>();
   private buffers = new Map<string, AudioBuffer>();
@@ -155,20 +156,49 @@ export class Deck {
 
   async init(): Promise<void> {
     const ctx = this.engine.ctx;
+    const onChunk = (data: Float32Array) => {
+      if (this.recording) {
+        this.recording.chunks.push(data);
+        this.recording.frames += data.length;
+      }
+    };
+    // An AudioWorklet where allowed; opened from disk (file://) some browsers
+    // refuse blob: worklets, so try a data: URL, then the old ScriptProcessor.
+    const urls = [
+      () => URL.createObjectURL(new Blob([CAPTURE_WORKLET], { type: 'application/javascript' })),
+      () => `data:application/javascript;base64,${btoa(CAPTURE_WORKLET)}`,
+    ];
+    for (const url of urls) {
+      try {
+        await ctx.audioWorklet.addModule(url());
+        const node = new AudioWorkletNode(ctx, 'tape-capture', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1] });
+        this.source.connect(node);
+        const sink = ctx.createGain();
+        sink.gain.value = 0;
+        node.connect(sink).connect(ctx.destination);
+        node.port.onmessage = (e: MessageEvent<Float32Array>) => onChunk(e.data);
+        this.capture = { start: () => node.port.postMessage(true), stop: () => node.port.postMessage(false) };
+        return;
+      } catch {
+        /* try the next way */
+      }
+    }
     try {
-      const url = URL.createObjectURL(new Blob([CAPTURE_WORKLET], { type: 'application/javascript' }));
-      await ctx.audioWorklet.addModule(url);
-      this.capture = new AudioWorkletNode(ctx, 'tape-capture', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1] });
-      this.source.connect(this.capture);
+      const processor = ctx.createScriptProcessor(4096, 2, 1);
+      let on = false;
+      processor.onaudioprocess = (e) => {
+        if (!on) return;
+        const l = e.inputBuffer.getChannelData(0);
+        const r = e.inputBuffer.numberOfChannels > 1 ? e.inputBuffer.getChannelData(1) : l;
+        const mono = new Float32Array(l.length);
+        for (let i = 0; i < l.length; i++) mono[i] = (l[i] + r[i]) * 0.5;
+        onChunk(mono);
+      };
+      this.source.connect(processor);
       const sink = ctx.createGain();
       sink.gain.value = 0;
-      this.capture.connect(sink).connect(ctx.destination);
-      this.capture.port.onmessage = (e: MessageEvent<Float32Array>) => {
-        if (this.recording) {
-          this.recording.chunks.push(e.data);
-          this.recording.frames += e.data.length;
-        }
-      };
+      processor.connect(sink).connect(ctx.destination);
+      this.capture = { start: () => (on = true), stop: () => (on = false) };
     } catch (error) {
       console.warn('Recording unavailable in this browser', error);
       this.capture = null;
@@ -338,8 +368,8 @@ export class Deck {
     }
     const playing = this.transport === 'play' && !this.paused;
     const turning = (this.transport === 'play' || this.transport === 'rec') && !this.paused;
-    this.hiss.gain.setTargetAtTime(playing ? 0.028 : 0, now, 0.05);
-    this.motor.gain.setTargetAtTime(turning ? 0.05 : 0, now, 0.08);
+    glide(this.hiss.gain, playing ? 0.028 : 0, now, 0.05);
+    glide(this.motor.gain, turning ? 0.05 : 0, now, 0.08);
     bus.emit('tape:recording', { on: this.recording !== null });
     this.save();
   }
@@ -349,14 +379,14 @@ export class Deck {
   private startRecording(): void {
     if (!this.capture || !this.cassette) return;
     this.recording = { start: this.cassette.pos, startCtx: this.engine.ctx.currentTime, chunks: [], frames: 0 };
-    this.capture.port.postMessage(true);
+    this.capture.start();
   }
 
   private finishRecording(): void {
     const rec = this.recording;
     if (!rec || !this.capture) return;
     this.recording = null;
-    this.capture.port.postMessage(false);
+    this.capture.stop();
     const cassette = this.cassette;
     // the worklet flushes its last chunk asynchronously; wait a moment
     setTimeout(() => void this.storeRecording(rec, cassette), 120);
@@ -481,8 +511,8 @@ export class Deck {
     }
 
     const whirring = winding ? Math.abs(this.speed) / WIND_SPEED : 0;
-    this.whirr.frequency.setTargetAtTime(70 + whirring * 150, now, 0.05);
-    this.whirrGain.gain.setTargetAtTime(whirring * 0.035, now, 0.05);
+    glide(this.whirr.frequency, 70 + whirring * 150, now, 0.05);
+    glide(this.whirrGain.gain, whirring * 0.035, now, 0.05);
 
     // the end of the tape: the mechanism clunks and the keys pop up
     if (c && this.transport !== 'stop') {

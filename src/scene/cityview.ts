@@ -6,6 +6,7 @@ import { citySvg } from '../art/city';
 import { daylight } from '../world/clock';
 import { vehiclesAt, vehicleX, type Vehicle } from '../world/street';
 import { mulberry32 } from '../util/rng';
+import { setAttr } from '../ui/dom';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -41,16 +42,24 @@ export class CityView {
   private lastDusk = -1;
   private width: number;
   private height: number;
+  private readonly ownRain: boolean;
 
   constructor(
     id: string,
-    opts: { simple?: boolean; rainResolution?: number } = {},
+    opts: { simple?: boolean; rainResolution?: number; externalRain?: boolean } = {},
   ) {
     this.el = document.createElement('div');
     this.el.className = 'city';
     this.el.innerHTML = citySvg({ id, simple: opts.simple });
     this.svg = this.el.querySelector('svg')!;
-    this.trafficLayer = this.svg.querySelector('.traffic')!;
+    // passing vehicles live in their own layer so they don't repaint the whole city
+    const trafficSvg = document.createElementNS(SVG_NS, 'svg');
+    trafficSvg.setAttribute('viewBox', '0 0 1600 900');
+    trafficSvg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+    trafficSvg.classList.add('city-traffic');
+    this.trafficLayer = document.createElementNS(SVG_NS, 'g');
+    trafficSvg.appendChild(this.trafficLayer);
+    this.el.appendChild(trafficSvg);
     this.night = this.svg.querySelector('.night')!;
     this.monsLights = this.svg.querySelector('.mons-lights')!;
     this.lampGlows = [...this.svg.querySelectorAll<SVGElement>('.lamp-glow')];
@@ -78,12 +87,13 @@ export class CityView {
       this.el.appendChild(el);
     }
 
-    // rain streaks in front of everything
+    // rain streaks in front of everything (unless the owner draws them on its own glass layer)
     this.rain = document.createElement('canvas');
     const res = opts.rainResolution ?? 480;
     this.rain.width = res;
     this.rain.height = Math.round((res * 9) / 16);
-    this.el.appendChild(this.rain);
+    this.ownRain = !opts.externalRain;
+    if (this.ownRain) this.el.appendChild(this.rain);
     const r2 = mulberry32(7);
     for (let i = 0; i < 170; i++) {
       this.drops.push({ x: r2(), y: r2(), len: 0.02 + r2() * 0.03, speed: 0.9 + r2() * 0.6 });
@@ -96,26 +106,47 @@ export class CityView {
     this.updateDusk(t);
     this.updateClouds(t);
     this.updateTraffic(t);
-    this.updateRain(dt);
+    if (this.ownRain) this.updateRain(dt);
+  }
+
+  /** Draw the falling rain onto someone else's canvas (the window's glass layer). */
+  drawRain(ctx: CanvasRenderingContext2D, dt: number, w: number, h: number): void {
+    ctx.strokeStyle = 'rgba(222, 230, 236, 0.3)';
+    ctx.lineWidth = Math.max(1, w / 800);
+    ctx.beginPath();
+    for (const d of this.drops) {
+      d.y += d.speed * dt * 1.2;
+      d.x += d.speed * dt * 0.08;
+      if (d.y > 1.05) {
+        d.y = -0.05;
+        d.x = Math.random();
+      }
+      if (d.x > 1) d.x -= 1;
+      const x = d.x * w;
+      const y = d.y * h;
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + d.len * w * 0.08, y + d.len * h * 1.8);
+    }
+    ctx.stroke();
   }
 
   private updateDusk(t: number): void {
     const dark = 1 - daylight(t);
     if (Math.abs(dark - this.lastDusk) < 0.004) return;
     this.lastDusk = dark;
-    this.night.setAttribute('opacity', (dark * 0.72).toFixed(3));
+    setAttr(this.night, 'opacity', (dark * 0.72).toFixed(3));
     for (const w of this.windows) {
       const lit = dark > w.th;
       if (lit !== w.lit) {
         w.lit = lit;
-        w.el.setAttribute('opacity', lit ? '0.92' : '0');
+        setAttr(w.el, 'opacity', lit ? '0.92' : '0');
       }
     }
     // sodium lamps warm up slowly, pink first
     const lamp = Math.max(0, Math.min(1, (dark - 0.35) / 0.35));
-    for (const g of this.lampGlows) g.setAttribute('opacity', (lamp * 0.9).toFixed(3));
-    for (const g of this.lampPools) g.setAttribute('opacity', (lamp * 0.22).toFixed(3));
-    this.monsLights.setAttribute('opacity', Math.max(0, Math.min(1, (dark - 0.55) / 0.25)).toFixed(3));
+    for (const g of this.lampGlows) setAttr(g, 'opacity', (lamp * 0.9).toFixed(3));
+    for (const g of this.lampPools) setAttr(g, 'opacity', (lamp * 0.22).toFixed(3));
+    setAttr(this.monsLights, 'opacity', Math.max(0, Math.min(1, (dark - 0.55) / 0.25)).toFixed(3));
   }
 
   private updateClouds(t: number): void {
@@ -143,12 +174,12 @@ export class CityView {
     for (const v of now) {
       let g = this.shown.get(v.id);
       if (!g) {
-        g = vehicleGroup(v);
+        g = vehicleGroup(v, 1 - daylight(t));
         this.trafficLayer.appendChild(g);
         this.shown.set(v.id, g);
       }
       const y = v.dir === 1 ? 842 : 796;
-      g.setAttribute('transform', `translate(${vehicleX(v, t).toFixed(1)} ${y})`);
+      setAttr(g, 'transform', `translate(${vehicleX(v, t).toFixed(1)} ${y})`);
     }
   }
 
@@ -182,11 +213,13 @@ export class CityView {
 }
 
 /** A buseta, a yellow taxi or a car, in profile, drawn at the origin. */
-function vehicleGroup(v: Vehicle): SVGGElement {
+function vehicleGroup(v: Vehicle, dark: number): SVGGElement {
   const g = document.createElementNS(SVG_NS, 'g');
+  // at dusk everything outside goes blue-gray, and the headlights come on
+  const night = (hex: string) => mixNight(hex, dark * 0.7);
   const flip = v.dir === -1 ? ' transform="scale(-1 1) translate(-230 0)"' : '';
   if (v.kind === 'buseta') {
-    const [body, stripe, stripe2] = v.colors;
+    const [body, stripe, stripe2] = v.colors.map(night);
     const board = v.route ?? '';
     g.innerHTML = `<g${flip}>
       <rect x="4" y="-78" width="222" height="70" rx="10" fill="${body}"/>
@@ -200,9 +233,10 @@ function vehicleGroup(v: Vehicle): SVGGElement {
       <circle cx="46" cy="-8" r="14" fill="#1d1f21"/><circle cx="46" cy="-8" r="6" fill="#7b7f83"/>
       <circle cx="182" cy="-8" r="14" fill="#1d1f21"/><circle cx="182" cy="-8" r="6" fill="#7b7f83"/>
       <rect x="224" y="-22" width="6" height="6" fill="#ffd27a"/>
+      ${dark > 0.3 ? `<ellipse cx="262" cy="-16" rx="40" ry="9" fill="#ffe2a0" opacity="${(0.25 * dark).toFixed(2)}"/>` : ''}
     </g>`;
   } else {
-    const color = v.colors[0];
+    const color = night(v.colors[0]);
     const w = v.kind === 'taxi' ? 130 : 140;
     g.innerHTML = `<g${flip ? ` transform="scale(-1 1) translate(-${w} 0)"` : ''}>
       <path d="M6 -14 Q4 -34 22 -36 L 40 -54 Q 46 -60 58 -60 H 88 Q 98 -60 104 -52 L 116 -36 Q ${w - 4} -34 ${w - 4} -14Z" fill="${color}"/>
@@ -211,7 +245,17 @@ function vehicleGroup(v: Vehicle): SVGGElement {
       <circle cx="32" cy="-12" r="11" fill="#1d1f21"/><circle cx="32" cy="-12" r="4" fill="#8a8e92"/>
       <circle cx="${w - 30}" cy="-12" r="11" fill="#1d1f21"/><circle cx="${w - 30}" cy="-12" r="4" fill="#8a8e92"/>
       <rect x="${w - 8}" y="-28" width="5" height="5" fill="#ffd27a"/>
+      ${dark > 0.3 ? `<ellipse cx="${w + 30}" cy="-24" rx="34" ry="8" fill="#ffe2a0" opacity="${(0.25 * dark).toFixed(2)}"/>` : ''}
     </g>`;
   }
   return g;
+}
+
+function mixNight(hex: string, k: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  const mix = (c: number, t: number) => Math.round(c + (t - c) * k);
+  const r = mix((n >> 16) & 255, 20);
+  const g = mix((n >> 8) & 255, 28);
+  const b = mix(n & 255, 48);
+  return `rgb(${r},${g},${b})`;
 }

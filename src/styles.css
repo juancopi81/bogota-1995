@@ -1,17 +1,17 @@
 @font-face {
   font-family: 'Caveat';
-  src: url('/fonts/caveat-latin.woff2') format('woff2');
+  src: url('./assets/fonts/caveat-latin.woff2') format('woff2');
   font-weight: 400 700;
   font-display: swap;
 }
 @font-face {
   font-family: 'Special Elite';
-  src: url('/fonts/special-elite-latin.woff2') format('woff2');
+  src: url('./assets/fonts/special-elite-latin.woff2') format('woff2');
   font-display: swap;
 }
 @font-face {
   font-family: 'Anton';
-  src: url('/fonts/anton-latin.woff2') format('woff2');
+  src: url('./assets/fonts/anton-latin.woff2') format('woff2');
   font-display: swap;
 }
 
@@ -111,6 +111,10 @@ body {
   height: 100%;
 }
 
+.city > svg.city-traffic {
+  pointer-events: none;
+}
+
 .city canvas {
   position: absolute;
   inset: 0;
@@ -141,22 +145,24 @@ body {
   pointer-events: none;
 }
 
+/* Plain alpha overlays (blend modes are expensive to composite on every frame). */
 .light.dusk {
-  background: radial-gradient(ellipse 70% 80% at 48% 30%, rgba(38, 48, 78, 0.8), rgba(16, 22, 42, 1) 70%);
-  mix-blend-mode: multiply;
+  background: radial-gradient(ellipse 70% 80% at 48% 30%, rgba(14, 20, 40, 0.72), rgba(8, 11, 24, 0.95) 70%);
   opacity: 0;
 }
 
 .light.bulb {
-  background: radial-gradient(ellipse at 50% 0%, rgba(255, 196, 120, 0.55), rgba(255, 170, 90, 0.18) 60%, rgba(255, 160, 80, 0.08));
-  mix-blend-mode: soft-light;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 190, 110, 0.22), rgba(255, 170, 90, 0.1) 60%, rgba(255, 160, 80, 0.05));
   opacity: 0;
   transition: opacity 0.12s linear;
 }
 
 .light.crt {
-  mix-blend-mode: screen;
   opacity: 0;
+}
+
+.light.crt.room-glow {
+  mix-blend-mode: screen;
 }
 
 .light.vignette {
@@ -167,8 +173,7 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  mix-blend-mode: multiply;
-  opacity: 0.22;
+  opacity: 0.5;
   z-index: 50;
 }
 
@@ -625,7 +630,6 @@ body {
 
 .glass-layer.fog {
   opacity: 0.62;
-  filter: blur(2px);
 }
 
 #cu-window {
@@ -658,4 +662,15 @@ body {
   border-radius: 36px;
   pointer-events: none;
   filter: saturate(0.85) contrast(1.1) blur(0.4px);
+}
+
+.speaker-cone {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 38%, #2c2e32, #151618 70%);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  will-change: transform;
 }

@@ -23,6 +23,14 @@ interface OverlaySet {
   tvAt: { x: number; y: number };
   /** How strongly the TV glow reaches this view. */
   crtReach: number;
+  /** Skipped while hidden; refreshed when shown again. */
+  stale?: boolean;
+}
+
+/** Close-ups are hidden with a class; the room with an inline style. */
+function getComputedVisibility(el: HTMLElement): string {
+  if (el.classList.contains('closeup')) return el.classList.contains('open') ? 'visible' : 'hidden';
+  return el.style.visibility === 'hidden' ? 'hidden' : 'visible';
 }
 
 const sets: OverlaySet[] = [];
@@ -34,9 +42,12 @@ export function addLightOverlays(parent: HTMLElement, tvAt: { x: number; y: numb
     parent.appendChild(el);
     return el;
   };
-  const vignette = make('vignette');
-  vignette.style.zIndex = '1';
-  sets.push({ dusk: make('dusk'), bulb: make('bulb'), crt: make('crt'), tvAt, crtReach });
+  // the room gets a vignette; close-ups are framed enough already
+  if (crtReach >= 1) make('vignette').style.zIndex = '1';
+  const crt = make('crt');
+  // only the room gets a true "light" blend for the TV glow; close-ups get a tint
+  if (crtReach >= 1) crt.classList.add('room-glow');
+  sets.push({ dusk: make('dusk'), bulb: make('bulb'), crt, tvAt, crtReach });
 }
 
 export function setBulb(on: boolean): void {
@@ -46,19 +57,31 @@ export function setBulb(on: boolean): void {
 }
 
 let last = '';
+let frame = 0;
+let flicker = 1;
 onTick((_dt, t) => {
   const dark = 1 - daylight(t);
-  const duskAlpha = light.bulb ? 0.08 + dark * 0.1 : 0.2 + dark * 0.6;
+  const duskAlpha = light.bulb ? 0.06 + dark * 0.1 : 0.14 + dark * 0.62;
   const [r, g, b] = light.crtColor;
-  const flicker = light.crt > 0 ? 0.92 + Math.random() * 0.08 : 0;
-  const crtAlpha = light.crt * (0.1 + dark * 0.55) * flicker;
+  // the tube's light wavers, but a few times a second is enough
+  if (++frame % 5 === 0) flicker = 0.92 + Math.random() * 0.08;
+  const crtAlpha = Math.min(1, light.crt * (0.3 + dark * 1.05) * flicker);
+  const visibleStale = sets.some((s) => s.stale && s.dusk.parentElement && getComputedVisibility(s.dusk.parentElement) === 'visible');
   const key = `${duskAlpha.toFixed(3)}|${light.bulb}|${crtAlpha.toFixed(3)}|${r},${g},${b}`;
-  if (key === last) return;
+  if (key === last && !visibleStale) return;
   last = key;
   for (const set of sets) {
+    if (set.dusk.parentElement && getComputedVisibility(set.dusk.parentElement) === 'hidden') {
+      set.stale = true;
+      continue;
+    }
+    set.stale = false;
     set.dusk.style.opacity = duskAlpha.toFixed(3);
     set.bulb.style.opacity = light.bulb ? '1' : '0';
-    set.crt.style.opacity = (crtAlpha * set.crtReach).toFixed(3);
+    set.bulb.style.display = light.bulb ? '' : 'none';
+    const crtOpacity = crtAlpha * set.crtReach;
+    set.crt.style.opacity = crtOpacity.toFixed(3);
+    set.crt.style.display = crtOpacity > 0.005 ? '' : 'none';
     set.crt.style.background = `radial-gradient(ellipse at ${set.tvAt.x / 16}% ${set.tvAt.y / 9}%, rgba(${r},${g},${b},0.9), rgba(${r},${g},${b},0.35) 30%, rgba(${r},${g},${b},0) 75%)`;
   }
 });

@@ -16,6 +16,7 @@ import { kv } from '../world/store';
 import { bus } from '../world/bus';
 import { clock } from '../world/clock';
 import { clamp } from '../util/rng';
+import { glide } from '../audio/param';
 
 export type Band = 'FM' | 'AM';
 
@@ -157,21 +158,21 @@ export class Radio {
       max = Math.max(max, s);
       player.setActive(s > 0.002);
       player.tick(t);
-      gain.gain.setTargetAtTime(Math.pow(s, 0.6), now, 0.05);
+      glide(gain.gain, Math.pow(s, 0.6), now, 0.05);
       if (this.band === 'AM' && station.def.band === 'AM') nearestAm = Math.min(nearestAm, Math.abs(this.freq.AM - station.def.freq));
     }
 
     const fm = this.band === 'FM';
     const miss = 1 - max;
-    this.staticGain.gain.setTargetAtTime(fm ? 0.018 + 0.2 * Math.pow(miss, 1.3) : 0.006 + 0.05 * miss, now, 0.05);
-    this.staticFilter.frequency.setTargetAtTime(fm ? 7000 : 2600, now, 0.1);
-    this.crackleGain.gain.setTargetAtTime(fm ? 0 : 0.05 + 0.12 * miss, now, 0.1);
-    this.bandFilter.frequency.setTargetAtTime(fm ? 4200 + 10800 * max : 2400 + 2200 * max, now, 0.05);
+    glide(this.staticGain.gain, fm ? 0.018 + 0.2 * Math.pow(miss, 1.3) : 0.006 + 0.05 * miss, now, 0.05);
+    glide(this.staticFilter.frequency, fm ? 7000 : 2600, now, 0.1);
+    glide(this.crackleGain.gain, fm ? 0 : 0.05 + 0.12 * miss, now, 0.1);
+    glide(this.bandFilter.frequency, fm ? 4200 + 10800 * max : 2400 + 2200 * max, now, 0.05);
     // tuning near an AM station you hear the carrier beat: a whistle that drops as you close in
     const whistleOn = !fm && nearestAm < 9 && nearestAm > 0.4;
-    this.whistle.frequency.setTargetAtTime(90 + Math.min(nearestAm, 20) * 190, now, 0.03);
-    this.whistleGain.gain.setTargetAtTime(whistleOn ? 0.035 * Math.sin((nearestAm / 9) * Math.PI) : 0, now, 0.05);
-    this.powerGain.gain.setTargetAtTime(this.power ? 1 : 0, now, 0.02);
+    glide(this.whistle.frequency, 90 + Math.min(nearestAm, 20) * 190, now, 0.03);
+    glide(this.whistleGain.gain, whistleOn ? 0.035 * Math.sin((nearestAm / 9) * Math.PI) : 0, now, 0.05);
+    glide(this.powerGain.gain, this.power ? 1 : 0, now, 0.02);
 
     this.subtitles(t);
 

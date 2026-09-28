@@ -24,6 +24,7 @@ import { flags, setName, SCHEDULE } from '../world/flags';
 import { kv } from '../world/store';
 import { bus } from '../world/bus';
 import { MAMA, mamaSays } from './house';
+import { setAttr, toggleClass } from '../ui/dom';
 
 type LineState = 'idle' | 'dialtone' | 'dialing' | 'waiting' | 'ringback' | 'busy' | 'recording' | 'connected' | 'extension' | 'dead';
 
@@ -64,6 +65,7 @@ export class Phone {
   private fired = { wrong: false, andres: false, onces: false };
   private roomPhone: SVGGElement | null = null;
   private stateSince = 0;
+  private cordFor: 'on' | 'off' | null = null;
 
   constructor(
     private readonly engine: AudioEngine,
@@ -455,16 +457,30 @@ export class Phone {
 
   private draw(t: number): void {
     const svg = this.svg;
-    svg.querySelector('#ph-wheel')!.setAttribute('transform', `rotate(${this.wheel.toFixed(2)} ${DIAL.cx} ${DIAL.cy})`);
+    setAttr(svg.querySelector('#ph-wheel'), 'transform', `rotate(${this.wheel.toFixed(2)} ${DIAL.cx} ${DIAL.cy})`);
     const up = this.hook === 'off';
     const hx = up ? HANDSET.x + 110 : 530;
     const hy = up ? HANDSET.y - 40 : 262;
     const rot = up ? -14 : 0;
     const handset = svg.querySelector('#ph-handset')!;
-    handset.setAttribute('transform', `translate(${hx} ${hy}) rotate(${rot}) scale(${up ? 1.04 : 1})`);
-    for (const p of svg.querySelectorAll('.plunger')) p.setAttribute('y', up ? '262' : '276');
+    setAttr(handset, 'transform', `translate(${hx} ${hy}) rotate(${rot}) scale(${up ? 1.04 : 1})`);
+    for (const p of svg.querySelectorAll('.plunger')) setAttr(p, 'y', up ? '262' : '276');
 
     // the coiled cord from the handset down to the side of the phone
+    if (this.cordFor !== this.hook) {
+      this.cordFor = this.hook;
+      this.drawCord(hx, hy, rot);
+    }
+    toggleClass(this.el, 'choosing', dialogue.open);
+
+    // the little phone in the room
+    if (this.roomPhone) {
+      toggleClass(this.roomPhone, 'ringing', !!this.incoming && !this.incoming.momAnswered && t % RING_PERIOD < 1.1);
+      toggleClass(this.roomPhone, 'off-hook', this.hook === 'off');
+    }
+  }
+
+  private drawCord(hx: number, hy: number, rot: number): void {
     const a = rotateAround(-262, 30, rot, hx, hy);
     const b = { x: 236, y: 690 };
     const loops = 26;
@@ -475,14 +491,7 @@ export class Phone {
       const y = a.y + (b.y - a.y) * u + Math.sin(u * loops * 2 * Math.PI) * 11 + Math.sin(u * Math.PI) * 60;
       d += `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
     }
-    svg.querySelector('#ph-cord')!.setAttribute('d', d);
-    this.el.classList.toggle('choosing', dialogue.open);
-
-    // the little phone in the room
-    if (this.roomPhone) {
-      this.roomPhone.classList.toggle('ringing', !!this.incoming && !this.incoming.momAnswered && t % RING_PERIOD < 1.1);
-      this.roomPhone.classList.toggle('off-hook', this.hook === 'off');
-    }
+    setAttr(this.svg.querySelector('#ph-cord'), 'd', d);
   }
 }
 

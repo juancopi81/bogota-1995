@@ -25,6 +25,7 @@ class RoomScene {
   private target = { x: 0, y: 0 };
   private current = { x: 0, y: 0 };
   private zoomed = false;
+  private hideTimer = 0;
 
   constructor() {
     this.el = document.createElement('div');
@@ -84,6 +85,7 @@ class RoomScene {
     });
 
     onTick((dt, t) => {
+      if (this.zoomed) return;
       const k = 1 - Math.exp(-dt * 3);
       this.current.x += (this.target.x - this.current.x) * k;
       this.current.y += (this.target.y - this.current.y) * k;
@@ -92,7 +94,7 @@ class RoomScene {
         const dy = -this.current.y * 5 * layer.depth;
         layer.el.style.transform = `translate3d(${dx.toFixed(2)}px, ${dy.toFixed(2)}px, 0)`;
       }
-      this.city.update(dt, t);
+      if (!this.zoomed) this.city.update(dt, t);
     });
   }
 
@@ -113,6 +115,9 @@ class RoomScene {
   /** Lean in toward a spot of the room (stage coordinates). */
   zoomTo(rect: { x: number; y: number; w: number; h: number }): void {
     this.zoomed = true;
+    // once the close-up covers the stage, stop drawing the room behind it
+    clearTimeout(this.hideTimer);
+    this.hideTimer = window.setTimeout(() => this.zoomed && (this.el.style.visibility = 'hidden'), 750);
     const scale = Math.min(3.2, Math.min(1600 / rect.w, 900 / rect.h) * 0.8);
     const cx = rect.x + rect.w / 2;
     const cy = rect.y + rect.h / 2;
@@ -124,6 +129,8 @@ class RoomScene {
 
   zoomOut(): void {
     this.zoomed = false;
+    clearTimeout(this.hideTimer);
+    this.el.style.visibility = '';
     this.el.style.transform = '';
     this.el.classList.remove('away');
   }

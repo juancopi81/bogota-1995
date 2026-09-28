@@ -9,6 +9,7 @@ import { stage } from '../scene/stage';
 import { P } from '../art/palette';
 import { bus } from '../world/bus';
 import { mulberry32 } from '../util/rng';
+import { setAttr, toggleClass } from '../ui/dom';
 
 const OPEN = { x: 140, y: 40, w: 1320, h: 720 };
 const TRANSOM = 214; // height of the fixed top band
@@ -36,6 +37,8 @@ export class WindowView {
   private paneX = 0;
   private roomPane: SVGElement | null = null;
   private roomCurtain: SVGElement | null = null;
+  private readonly sprite: HTMLCanvasElement;
+  private frame = 0;
 
   constructor(private readonly engine: AudioEngine) {
     this.street = new Street(engine);
@@ -44,7 +47,7 @@ export class WindowView {
     this.el.className = 'closeup';
     this.el.id = 'cu-window';
 
-    this.city = new CityView('window', { rainResolution: 640 });
+    this.city = new CityView('window', { externalRain: true });
     Object.assign(this.city.el.style, { left: `${OPEN.x}px`, top: `${OPEN.y}px`, width: `${OPEN.w}px`, height: `${OPEN.h}px` });
     this.el.appendChild(this.city.el);
 
@@ -65,6 +68,7 @@ export class WindowView {
     }
     this.initFog();
     for (let i = 0; i < 140; i++) this.dropList.push(this.newDrop(true));
+    this.sprite = dropSprite();
 
     // the frame, curtains and sill drawn over it; the sliding pane is its own layer
     const frame = document.createElement('div');
@@ -108,16 +112,19 @@ export class WindowView {
       const x = (p.x - OPEN.x) / 2;
       const y = (p.y - OPEN.y) / 2;
       const c = this.fogCtx;
+      const from = last ?? { x, y };
+      const steps = Math.max(1, Math.ceil(Math.hypot(x - from.x, y - from.y) / 6));
       c.save();
       c.globalCompositeOperation = 'destination-out';
-      c.lineCap = 'round';
-      c.lineJoin = 'round';
-      c.strokeStyle = 'rgba(0,0,0,0.85)';
-      c.lineWidth = 34;
-      c.beginPath();
-      c.moveTo(last?.x ?? x, last?.y ?? y);
-      c.lineTo(x, y);
-      c.stroke();
+      for (let i = 1; i <= steps; i++) {
+        const px = from.x + ((x - from.x) * i) / steps;
+        const py = from.y + ((y - from.y) * i) / steps;
+        const g = c.createRadialGradient(px, py, 4, px, py, 22);
+        g.addColorStop(0, 'rgba(0,0,0,0.9)');
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        c.fillStyle = g;
+        c.fillRect(px - 22, py - 22, 44, 44);
+      }
       c.restore();
       last = { x, y };
     };
@@ -147,7 +154,7 @@ export class WindowView {
     this.open = open;
     this.street.setOpen(open);
     play(this.engine.ctx, sfx.knock(this.engine.ctx), this.engine.channel('window').input, { gain: 0.5, rate: 1.4 });
-    this.el.classList.toggle('opened', open);
+    toggleClass(this.el, 'opened', open);
     bus.emit('window:open', { open });
   }
 
@@ -159,10 +166,10 @@ export class WindowView {
     // the pane slides (in the close-up and in the room)
     const target = this.open ? -(OPEN.w / 2 - 20) : 0;
     this.paneX += (target - this.paneX) * Math.min(1, dt * 5);
-    this.pane.setAttribute('transform', `translate(${this.paneX.toFixed(1)} 0)`);
+    setAttr(this.pane, 'transform', `translate(${this.paneX.toFixed(1)} 0)`);
     const roomShift = (this.paneX / (OPEN.w / 2 - 20)) * 210;
-    this.roomPane?.setAttribute('transform', `translate(${roomShift.toFixed(1)} 0)`);
-    this.roomCurtain?.classList.toggle('breeze', this.open);
+    setAttr(this.roomPane, 'transform', `translate(${roomShift.toFixed(1)} 0)`);
+    toggleClass(this.roomCurtain, 'breeze', this.open);
 
     if (!visible) return;
     this.drawGlass(dt);
@@ -175,29 +182,27 @@ export class WindowView {
     const clearX = this.open || this.paneX < -5 ? (openFrom + OPEN.w / 2 - 20) / 2 : w;
 
     // fog creeps back slowly (not where the window is open)
-    const c = this.fogCtx;
-    c.fillStyle = 'rgba(226,231,233,0.005)';
-    c.fillRect(0, 0, Math.min(w, clearX), h);
-    if (clearX < w) c.clearRect(clearX, TRANSOM / 2, w - clearX, h);
+    if (++this.frame % 8 === 0) {
+      const c = this.fogCtx;
+      c.fillStyle = 'rgba(226,231,233,0.04)';
+      c.fillRect(0, 0, Math.min(w, clearX), h);
+      if (clearX < w) c.clearRect(clearX, TRANSOM / 2, w - clearX, h);
+    }
 
-    // drops: most sit still; the big ones slide down and eat the small ones
+    // drops: most sit still; the big ones slide down and leave a trail
     const d = this.dropsCtx;
     d.clearRect(0, 0, w, h);
+    // the rain falling outside, then the drops sitting on the glass
+    this.city.drawRain(d, dt, w, h);
+    d.strokeStyle = 'rgba(200,210,218,0.25)';
     for (let i = 0; i < this.dropList.length; i++) {
       const drop = this.dropList[i];
       if (drop.r > 3.2) drop.vy = Math.min(40, drop.vy + dt * 30);
       drop.y += drop.vy * dt;
       if (drop.y > h + 10 || (drop.x > clearX && drop.y > TRANSOM / 2)) this.dropList[i] = this.newDrop(false);
-      const g = d.createRadialGradient(drop.x - drop.r * 0.3, drop.y - drop.r * 0.4, 0.2, drop.x, drop.y, drop.r);
-      g.addColorStop(0, 'rgba(255,255,255,0.75)');
-      g.addColorStop(0.5, 'rgba(160,175,185,0.35)');
-      g.addColorStop(1, 'rgba(40,50,60,0.45)');
-      d.fillStyle = g;
-      d.beginPath();
-      d.ellipse(drop.x, drop.y, drop.r * 0.85, drop.r, 0, 0, Math.PI * 2);
-      d.fill();
+      const size = drop.r * 2;
+      d.drawImage(this.sprite, drop.x - drop.r * 0.85, drop.y - drop.r, size * 0.85, size);
       if (drop.vy > 0) {
-        d.strokeStyle = 'rgba(200,210,218,0.25)';
         d.lineWidth = drop.r * 0.6;
         d.beginPath();
         d.moveTo(drop.x, drop.y - drop.r);
@@ -208,6 +213,24 @@ export class WindowView {
     if (this.rng() < dt * 2) this.dropList.push(this.newDrop(false));
     if (this.dropList.length > 180) this.dropList.shift();
   }
+}
+
+/** One raindrop, drawn once and stamped everywhere. */
+function dropSprite(): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = 32;
+  c.height = 32;
+  const g = c.getContext('2d')!;
+  const grad = g.createRadialGradient(12, 11, 0.5, 16, 16, 16);
+  grad.addColorStop(0, 'rgba(255,255,255,0.8)');
+  grad.addColorStop(0.5, 'rgba(160,175,185,0.35)');
+  grad.addColorStop(0.95, 'rgba(40,50,60,0.45)');
+  grad.addColorStop(1, 'rgba(40,50,60,0)');
+  g.fillStyle = grad;
+  g.beginPath();
+  g.arc(16, 16, 16, 0, Math.PI * 2);
+  g.fill();
+  return c;
 }
 
 function curtain(x: number, w: number): string {

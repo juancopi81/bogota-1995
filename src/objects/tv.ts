@@ -22,8 +22,28 @@ import { kv } from '../world/store';
 import { bus } from '../world/bus';
 import { clamp, mulberry32 } from '../util/rng';
 import { MAMA, mamaSays } from './house';
+import { setAttr } from '../ui/dom';
+import { glide } from '../audio/param';
 
 const ANTHEM_AT = at(18, 0);
+
+/** The light each kind of picture throws into the room: r, g, b, brightness. */
+const GLOW: Record<string, [number, number, number, number]> = {
+  snow: [175, 182, 200, 0.75],
+  novela: [150, 105, 75, 0.35],
+  'novela-close': [175, 130, 105, 0.45],
+  presenta: [60, 70, 110, 0.2],
+  'bumper-uno': [40, 80, 170, 0.45],
+  'bumper-a': [200, 80, 50, 0.6],
+  'bumper-tres': [215, 215, 200, 0.8],
+  'ad-chocolate': [140, 85, 50, 0.45],
+  'ad-blancor': [70, 120, 210, 0.6],
+  'ad-casablanca': [230, 200, 190, 0.8],
+  paramo: [160, 170, 155, 0.65],
+  musical: [150, 90, 170, 0.5],
+  anthem: [180, 170, 110, 0.65],
+  clip: [160, 160, 170, 0.5],
+};
 
 /** One broadcast channel: its running order, and its sound when it's on. */
 class Channel {
@@ -71,7 +91,7 @@ class Channel {
   private stopAll(): void {
     const now = this.ctx.currentTime;
     for (const p of this.playing.values()) {
-      p.gain.gain.setTargetAtTime(0, now, 0.02);
+      glide(p.gain.gain, 0, now, 0.02);
       for (const s of p.sources) {
         try {
           s.stop(now + 0.1);
@@ -252,8 +272,8 @@ export class Tv {
 
     this.screen = document.createElement('canvas');
     this.screen.className = 'tv-screen';
-    this.screen.width = TV_W * 2;
-    this.screen.height = TV_H * 2;
+    this.screen.width = TV_W;
+    this.screen.height = TV_H;
     Object.assign(this.screen.style, { left: `${SCREEN.x}px`, top: `${SCREEN.y}px`, width: `${SCREEN.w}px`, height: `${SCREEN.h}px` });
     this.el.appendChild(this.screen);
     this.clips = new ClipScreen(this.el, this.screen);
@@ -449,10 +469,10 @@ export class Tv {
     }
     const hasChannel = this.channels.has(this.channel);
     const audible = this.power ? this.warm : 0;
-    this.chanGain.gain.setTargetAtTime(hasChannel ? Math.pow(q, 0.8) * audible : 0, now, 0.04);
-    this.staticGain.gain.setTargetAtTime((hasChannel ? Math.pow(1 - q, 1.6) * 0.3 : 0.32) * audible, now, 0.04);
-    this.volumeGain.gain.setTargetAtTime(this.volume ** 2 * 1.5, now, 0.04);
-    this.whine.gain.setTargetAtTime(this.power ? 0.0025 : 0, now, 0.1);
+    glide(this.chanGain.gain, hasChannel ? Math.pow(q, 0.8) * audible : 0, now, 0.04);
+    glide(this.staticGain.gain, (hasChannel ? Math.pow(1 - q, 1.6) * 0.3 : 0.32) * audible, now, 0.04);
+    glide(this.volumeGain.gain, this.volume ** 2 * 1.5, now, 0.04);
+    glide(this.whine.gain, this.power ? 0.0025 : 0, now, 0.1);
 
     this.draw(t, current, q);
     this.subtitle(t, current, q);
@@ -493,13 +513,17 @@ export class Tv {
     this.frame++;
 
     // knobs and ears
-    this.svg.querySelector('#tv-channel-rot')!.setAttribute('transform', `rotate(${channelAngle(this.channel) + 90} ${CHANNEL_KNOB.cx} ${CHANNEL_KNOB.cy})`);
-    this.svg.querySelector('#tv-volume-rot')!.setAttribute('transform', `rotate(${-135 + this.volume * 270} ${VOLUME_KNOB.cx} ${VOLUME_KNOB.cy})`);
-    this.svg.querySelector('#tv-ear-l')!.setAttribute('transform', `translate(${ANTENNA.cx - 8} ${ANTENNA.cy}) rotate(${this.ears[0]})`);
-    this.svg.querySelector('#tv-ear-r')!.setAttribute('transform', `translate(${ANTENNA.cx + 8} ${ANTENNA.cy}) rotate(${this.ears[1]})`);
-    this.svg.querySelector('#tv-led')!.setAttribute('fill', this.power ? '#ff4a36' : '#3a1410');
-    this.roomLed?.setAttribute('fill', this.power ? '#ff4a36' : '#3a1410');
-    this.roomKnob?.setAttribute('transform', `rotate(${channelAngle(this.channel) + 90} 1293 346)`);
+    setAttr(this.svg.querySelector('#tv-channel-rot'), 'transform', `rotate(${channelAngle(this.channel) + 90} ${CHANNEL_KNOB.cx} ${CHANNEL_KNOB.cy})`);
+    setAttr(this.svg.querySelector('#tv-volume-rot'), 'transform', `rotate(${-135 + this.volume * 270} ${VOLUME_KNOB.cx} ${VOLUME_KNOB.cy})`);
+    setAttr(this.svg.querySelector('#tv-ear-l'), 'transform', `translate(${ANTENNA.cx - 8} ${ANTENNA.cy}) rotate(${this.ears[0]})`);
+    setAttr(this.svg.querySelector('#tv-ear-r'), 'transform', `translate(${ANTENNA.cx + 8} ${ANTENNA.cy}) rotate(${this.ears[1]})`);
+    setAttr(this.svg.querySelector('#tv-led'), 'fill', this.power ? '#ff4a36' : '#3a1410');
+    setAttr(this.roomLed, 'fill', this.power ? '#ff4a36' : '#3a1410');
+    setAttr(this.roomKnob, 'transform', `rotate(${channelAngle(this.channel) + 90} 1293 346)`);
+
+    // only draw the picture when someone can see it (the room, or the TV up close), at ~30 fps
+    const visible = closeups.current === null || closeups.isOpen('tv');
+    if (!visible || this.frame % 2 === 1) return;
 
     g.setTransform(1, 0, 0, 1, 0, 0);
     if (!this.power && this.offAnim >= 1) {
@@ -509,6 +533,7 @@ export class Tv {
       light.crt = 0;
       return;
     }
+    if (!this.power) light.crt = 0;
 
     // the picture
     const sg = this.sg;
@@ -536,19 +561,19 @@ export class Tv {
     }
     if (hasChannel && item && !clip) {
       g.imageSmoothingEnabled = true;
-      const y = this.roll * 2;
+      const y = this.roll;
       g.globalAlpha = 1;
       g.drawImage(this.scene, 0, y, W, H);
       if (y > 0) {
-        g.drawImage(this.scene, 0, y - H - 24, W, H);
+        g.drawImage(this.scene, 0, y - H - 12, W, H);
         g.fillStyle = '#000';
-        g.fillRect(0, y - 24, W, 24);
+        g.fillRect(0, y - 12, W, 12);
       }
       // ghosting and color loss when the signal is weak
       const weak = 1 - q;
       if (weak > 0.2) {
         g.globalAlpha = weak * 0.3;
-        g.drawImage(this.scene, 12, y, W, H);
+        g.drawImage(this.scene, 6, y, W, H);
         g.globalAlpha = 1;
         g.globalCompositeOperation = 'saturation';
         g.fillStyle = `rgba(128,128,128,${Math.min(1, weak * 1.2).toFixed(2)})`;
@@ -591,7 +616,7 @@ export class Tv {
     }
 
     this.mirror(true);
-    this.glow();
+    this.glow(item, q);
   }
 
   /** The little screen in the room shows the same picture. */
@@ -603,33 +628,20 @@ export class Tv {
       c.clearRect(0, 0, rc.width, rc.height);
       return;
     }
-    if (this.frame % 2 === 0) c.drawImage(this.screen, 0, 0, rc.width, rc.height);
+    c.drawImage(this.screen, 0, 0, rc.width, rc.height);
   }
 
-  /** The screen's light on the walls: brightness and color, sampled coarsely. */
-  private glow(): void {
-    if (this.frame % 6 !== 0) return;
-    const probe = document.createElement('canvas');
-    probe.width = 4;
-    probe.height = 3;
-    const pc = probe.getContext('2d')!;
-    pc.drawImage(this.screen, 0, 0, 4, 3);
-    const d = pc.getImageData(0, 0, 4, 3).data;
-    let r = 0;
-    let g = 0;
-    let b = 0;
-    for (let i = 0; i < d.length; i += 4) {
-      r += d[i];
-      g += d[i + 1];
-      b += d[i + 2];
+  /** The screen's light on the walls: each picture has its own color and brightness. */
+  private glow(item: Scheduled<TvSegment> | undefined, q: number): void {
+    if (!this.power) {
+      light.crt = 0;
+      return;
     }
-    const n = d.length / 4;
-    r /= n;
-    g /= n;
-    b /= n;
-    const brightness = (r + g + b) / (3 * 255);
-    light.crt = this.power ? clamp(brightness * 1.6, 0, 1) * this.warm : 0;
-    // a CRT's light is always a little blue
-    light.crtColor = [Math.round(r * 0.8 + 30), Math.round(g * 0.85 + 40), Math.round(b + 60)];
+    const hasChannel = this.channels.has(this.channel);
+    const scene = !hasChannel || !item ? 'snow' : item.seg.kind === 'scene' ? item.seg.scene : item.seg.kind;
+    const [r, g, b, level] = GLOW[scene] ?? GLOW.snow;
+    const snow = hasChannel ? 1 - q : 1;
+    light.crt = clamp(level * (1 - snow) + GLOW.snow[3] * snow, 0, 1) * this.warm * (0.9 + Math.random() * 0.1);
+    light.crtColor = [Math.round(r * (1 - snow) + 170 * snow), Math.round(g * (1 - snow) + 180 * snow), Math.round(b * (1 - snow) + 205 * snow)];
   }
 }
