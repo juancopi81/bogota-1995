@@ -16,7 +16,7 @@ export type Speaker =
   | 'tia'
   | 'hora117'
   | 'equivocado'
-  | 'drogueria'
+  | 'negocio'
   | 'locutorRadioactiva'
   | 'cabinaRadioactiva'
   | 'locutorSuper'
@@ -38,7 +38,7 @@ export const SPEAKERS: Record<Speaker, { name: string; direction: string }> = {
   tia: { name: 'Tía Gloria', direction: 'Your aunt, on the phone with your mother.' },
   hora117: { name: '117 · Hora exacta', direction: 'A mature, serious recorded woman\'s voice.' },
   equivocado: { name: 'Número equivocado', direction: 'Assorted strangers: a señora, a señor.' },
-  drogueria: { name: 'Droguería', direction: 'A pharmacy attendant answering the shop phone.' },
+  negocio: { name: 'Dependiente', direction: 'Whoever answers the phone at a shop: the pharmacy, the pizzería.' },
   locutorRadioactiva: { name: 'Locutor · Radioactiva', direction: 'Young FM rock DJ, energetic, talks over the intros.' },
   cabinaRadioactiva: { name: 'Cabina · Radioactiva', direction: 'Takes song requests on the phone, quick and busy.' },
   locutorSuper: { name: 'Locutor · Súper Estación', direction: 'Smooth pop FM voice.' },

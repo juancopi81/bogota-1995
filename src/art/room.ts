@@ -373,6 +373,9 @@ export function phoneSvg(): string {
       return `<circle cx="${1351 + Math.cos(a) * 12}" cy="${806 + Math.sin(a) * 12}" r="3" fill="#8f8266"/>`;
     }).join('')}
     <circle cx="1351" cy="806" r="6" fill="#efe8d6"/>
+    <g class="handset-off">
+      <path d="M1206 858 Q 1200 842 1216 838 H 1300 Q 1316 840 1312 856 L 1302 862 Q 1298 852 1288 852 H 1226 Q 1216 852 1212 862 Z" fill="#ebe1c8" transform="rotate(-8 1260 850)"/>
+    </g>
     <g class="handset-on-cradle">
       <path d="M1294 768 Q 1290 752 1306 750 H 1396 Q 1412 752 1408 768 L 1398 772 Q 1394 764 1384 764 H 1318 Q 1308 764 1304 772 Z" fill="#ebe1c8"/>
       <ellipse cx="1302" cy="764" rx="16" ry="9" fill="#e6dbc0"/>

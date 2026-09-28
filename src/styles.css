@@ -509,3 +509,69 @@ body {
 #g-slot {
   transition: transform 0.2s ease;
 }
+
+/* ---------- phone ---------- */
+
+.room-svg .handset-off {
+  display: none;
+}
+
+.room-svg .off-hook .handset-off {
+  display: inline;
+}
+
+.room-svg .off-hook .handset-on-cradle {
+  display: none;
+}
+
+.room-svg .ringing {
+  animation: ring 0.09s linear infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 80%;
+}
+
+@keyframes ring {
+  0% {
+    transform: rotate(-1.2deg);
+  }
+  50% {
+    transform: rotate(1.2deg);
+  }
+  100% {
+    transform: rotate(-1.2deg);
+  }
+}
+
+.libreta-input {
+  position: absolute;
+  z-index: 12;
+  font-family: 'Caveat', cursive;
+  font-size: 32px;
+  line-height: 37px;
+  color: #1d3f8f;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 0 4px;
+  user-select: text;
+  -webkit-user-select: text;
+  transition: opacity 0.3s;
+}
+
+.libreta-input:focus {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+#ph-libreta {
+  transition: opacity 0.3s;
+}
+
+.closeup.choosing #ph-libreta,
+.closeup.choosing .libreta-input {
+  opacity: 0.25;
+}
+
+.libreta-input::placeholder {
+  color: rgba(29, 63, 143, 0.28);
+}
