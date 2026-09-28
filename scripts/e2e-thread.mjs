@@ -83,6 +83,7 @@ await page.mouse.click(641 + 2 * 54 + 24, 669); // REW
 await page.waitForTimeout(3000);
 await page.mouse.click(641 + 54 + 24, 669); // PLAY
 await page.waitForTimeout(1500);
+console.log('tape subtitles:', JSON.stringify(await page.evaluate(() => [...document.querySelectorAll('.sub-tape')].map((e) => e.textContent))));
 console.log('playback:', JSON.stringify(await page.evaluate(() => { const d = window.room1995.grabadora.deck; return { transport: d.transport, tapeAudible: d.tapeAudible, pos: d.cassette.pos.toFixed(1) }; })));
 if (errors.length) console.log('ERRORS:\n' + [...new Set(errors)].join('\n'));
 await browser.close();

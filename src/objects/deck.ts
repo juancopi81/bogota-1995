@@ -6,10 +6,12 @@
 // hiss, a little wow and flutter, less treble. Rewinding takes (scaled) real
 // time. Recordings persist in this browser.
 
-import { Cassette, blankCassette, counterAt, type CassetteData, type TapeSegment } from './tape';
+import { Cassette, blankCassette, counterAt, type Caption, type CassetteData, type TapeSegment } from './tape';
 import type { AudioEngine } from '../audio/engine';
 import { sfx, play } from '../audio/sfx';
 import { idb, kv } from '../world/store';
+import { subtitles } from '../ui/subtitles';
+import { dynamicLine } from '../content/lines';
 import { bus } from '../world/bus';
 import { glide } from '../audio/param';
 
@@ -57,6 +59,7 @@ interface Recording {
   startCtx: number;
   chunks: Float32Array[];
   frames: number;
+  captions: Caption[];
 }
 
 export class Deck {
@@ -78,6 +81,9 @@ export class Deck {
   private recording: Recording | null = null;
   private sources = new Map<TapeSegment, AudioBufferSourceNode>();
   private buffers = new Map<string, AudioBuffer>();
+  private captions = new Map<string, Caption[]>();
+  /** What the radio is saying right now (set by the grabadora). */
+  captionSource: () => { label: string; text: string } | null = () => null;
   private loading = new Set<string>();
   private readonly tapeIn: GainNode;
   private readonly hiss: GainNode;
@@ -378,7 +384,7 @@ export class Deck {
 
   private startRecording(): void {
     if (!this.capture || !this.cassette) return;
-    this.recording = { start: this.cassette.pos, startCtx: this.engine.ctx.currentTime, chunks: [], frames: 0 };
+    this.recording = { start: this.cassette.pos, startCtx: this.engine.ctx.currentTime, chunks: [], frames: 0, captions: [] };
     this.capture.start();
   }
 
@@ -386,6 +392,8 @@ export class Deck {
     const rec = this.recording;
     if (!rec || !this.capture) return;
     this.recording = null;
+    const last = rec.captions[rec.captions.length - 1];
+    if (last && last.dur < 0 && this.cassette) last.dur = Math.max(0.5, this.cassette.pos - rec.start - last.at);
     this.capture.stop();
     const cassette = this.cassette;
     // the worklet flushes its last chunk asynchronously; wait a moment
@@ -414,8 +422,10 @@ export class Deck {
     }
     const dur = o / rate;
     const key = `rec-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e6).toString(36)}`;
-    await idb.put('tape', key, { rate, pcm });
+    const captions = rec.captions.filter((c) => c.at < dur).map((c) => ({ ...c, dur: Math.min(c.dur, dur - c.at) }));
+    await idb.put('tape', key, { rate, pcm, captions });
     this.buffers.set(key, toBuffer(ctx, pcm, rate));
+    this.captions.set(key, captions);
     cassette.write(rec.start, dur, key);
     this.save();
     await this.collectGarbage();
@@ -451,9 +461,11 @@ export class Deck {
     if (b) return b;
     if (!this.loading.has(key)) {
       this.loading.add(key);
-      void idb.get<{ rate: number; pcm: Int16Array }>('tape', key).then((data) => {
+      void idb.get<{ rate: number; pcm: Int16Array; captions?: Caption[] }>('tape', key).then((data) => {
         this.loading.delete(key);
-        if (data) this.buffers.set(key, toBuffer(this.engine.ctx, data.pcm, data.rate));
+        if (!data) return;
+        this.buffers.set(key, toBuffer(this.engine.ctx, data.pcm, data.rate));
+        this.captions.set(key, data.captions ?? []);
       });
     }
     return undefined;
@@ -525,6 +537,31 @@ export class Deck {
     }
 
     if (++this.saveTimer % 120 === 0 && this.moving) this.save();
+    this.tickCaptions();
+  }
+
+  /** Remember what was said while recording; show it again when playing the tape back. */
+  private tickCaptions(): void {
+    const rec = this.recording;
+    const c = this.cassette;
+    if (rec && c) {
+      const at = c.pos - rec.start;
+      const now = this.captionSource();
+      const open = rec.captions[rec.captions.length - 1];
+      const openText = open && open.dur < 0 ? open.text : null;
+      if (now?.text !== openText) {
+        if (open && open.dur < 0) open.dur = at - open.at;
+        if (now) rec.captions.push({ at, dur: -1, label: now.label, text: now.text });
+      }
+    }
+    if (!(this.transport === 'play' && !this.paused) || !c) {
+      subtitles.set('tape', null);
+      return;
+    }
+    const seg = c.segments().find((s) => c.pos >= s.start && c.pos < s.start + s.dur);
+    const t = seg ? c.pos - seg.start + seg.offset : 0;
+    const caption = seg ? this.captions.get(seg.key)?.find((k) => t >= k.at && t < k.at + (k.dur < 0 ? Infinity : k.dur)) : undefined;
+    subtitles.set('tape', caption ? { label: `Casete · lado ${c.side} · ${caption.label.replace('Radio · ', '')}`, line: dynamicLine('jugador', caption.text) } : null);
   }
 
   /** How fast the reels are turning (for drawing), in tape-seconds per second. */

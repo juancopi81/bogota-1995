@@ -6,6 +6,14 @@
 
 export type Side = 'A' | 'B';
 
+/** What was being said while recording, relative to the start of the recording. */
+export interface Caption {
+  at: number;
+  dur: number;
+  label: string;
+  text: string;
+}
+
 export interface TapeSegment {
   /** Where on the side it starts (seconds of tape). */
   start: number;

@@ -29,6 +29,7 @@ export class Grabadora {
   private readonly level = new Float32Array(256);
   private func: Func;
   private knobAngle = 0;
+  private lastT = 0;
   private reelAngles = [0, 0];
   private slotKey = '';
   private deskKey = '';
@@ -61,6 +62,10 @@ export class Grabadora {
     box.connect(this.analyser);
 
     this.deck = new Deck(engine, this.radio.out);
+    this.deck.captionSource = () => {
+      const c = this.radio.caption(this.lastT);
+      return c ? { label: c.label, text: c.line.text } : null;
+    };
     this.deck.out.connect(this.tapeGate).connect(this.volumeGain);
     this.deck.mech.connect(engine.channel('radio').input);
 
@@ -225,6 +230,7 @@ export class Grabadora {
   // ---------- every frame ----------
 
   tick(dt: number, t: number): void {
+    this.lastT = t;
     const ctx = this.engine.ctx;
     const now = ctx.currentTime;
     this.deck.tick(dt);

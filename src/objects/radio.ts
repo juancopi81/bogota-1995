@@ -8,7 +8,7 @@ import { Station } from '../broadcast/station';
 import { StationPlayer } from '../broadcast/player';
 import { STATIONS } from '../content/stations';
 import { song } from '../content/songs';
-import { dynamicLine } from '../content/lines';
+import { dynamicLine, type Line } from '../content/lines';
 import { library } from '../audio/library';
 import type { AudioEngine } from '../audio/engine';
 import { subtitles } from '../ui/subtitles';
@@ -182,26 +182,26 @@ export class Radio {
     }
   }
 
-  private subtitles(t: number): void {
+  /** What can be made out on the air right now (for subtitles, and for the tape). */
+  caption(t: number): { label: string; line: Line; clarity: number } | null {
     const dom = this.dominant();
-    if (!this.power || !this.audible || this.volume < 0.04 || !dom || dom.strength < 0.3) {
-      subtitles.set('radio', null);
-      return;
-    }
+    if (!this.power || !dom || dom.strength < 0.3) return null;
     const player = this.tuned.find((x) => x.station === dom.station)!.player;
     const now = player.cueAt(t);
     const label = `Radio · ${dom.station.def.label}`;
     const clarity = clamp((dom.strength - 0.3) / 0.6, 0, 1);
-    if (now?.cue) {
-      subtitles.set('radio', { label, line: now.cue.line, clarity });
-    } else if (now && now.item.seg.kind === 'song' && t - now.item.start < 9 && !library.isUploaded(now.item.seg.songId)) {
+    if (now?.cue) return { label, line: now.cue.line, clarity };
+    if (now && now.item.seg.kind === 'song' && t - now.item.start < 9 && !library.isUploaded(now.item.seg.songId)) {
       const s = song(now.item.seg.songId);
-      subtitles.set('radio', { label, line: dynamicLine('jugador', `♪ ${s.artist} — «${s.title}»`), clarity });
-    } else if (now && now.item.seg.kind === 'anthem') {
-      subtitles.set('radio', { label, line: dynamicLine('jugador', '♪ Himno Nacional de la República de Colombia'), clarity });
-    } else {
-      subtitles.set('radio', null);
+      return { label, line: dynamicLine('jugador', `♪ ${s.artist} — «${s.title}»`), clarity };
     }
+    if (now && now.item.seg.kind === 'anthem') return { label, line: dynamicLine('jugador', '♪ Himno Nacional de la República de Colombia'), clarity };
+    return null;
+  }
+
+  private subtitles(t: number): void {
+    const caption = this.audible && this.volume >= 0.04 ? this.caption(t) : null;
+    subtitles.set('radio', caption);
   }
 }
 
