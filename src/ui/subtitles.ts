@@ -12,6 +12,8 @@ export interface SubContent {
   line: Line;
   /** 0–1: how clearly it can be heard (faint radio, bad reception). */
   clarity?: number;
+  /** Name the speaker (phone, house) or just the source (radio, TV). */
+  showWho?: boolean;
 }
 
 class Subtitles {
@@ -47,7 +49,8 @@ class Subtitles {
     const el = document.createElement('div');
     el.className = `sub sub-${source}`;
     el.style.opacity = String(0.35 + 0.65 * clarity);
-    const who = content.line.who === 'jugador' ? '' : SPEAKERS[content.line.who]?.name ?? '';
+    const showWho = content.showWho ?? (source === 'phone' || source === 'house');
+    const who = !showWho || content.line.who === 'jugador' ? '' : SPEAKERS[content.line.who]?.name ?? '';
     const meta = [content.label, who].filter(Boolean).join(' · ');
     el.innerHTML = `${meta ? `<span class="sub-meta"></span>` : ''}<span class="sub-text"></span>`;
     if (meta) el.querySelector('.sub-meta')!.textContent = meta;

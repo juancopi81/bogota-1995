@@ -35,10 +35,10 @@ export interface Cue {
   dur: number;
 }
 
-export interface Scheduled {
+export interface Scheduled<S = Segment> {
   start: number;
   end: number;
-  seg: Segment;
+  seg: S;
   cues: Cue[];
   /** True when the segment was cut short (by the 6 p.m. anthem). */
   cut?: boolean;

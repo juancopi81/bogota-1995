@@ -60,8 +60,8 @@ export class Grabadora {
     this.deck.out.connect(this.tapeGate).connect(this.volumeGain);
     this.deck.mech.connect(engine.channel('radio').input);
 
-    this.func = kv.get<Func>('grabadora.func', 'tape');
-    this.radio.volume = kv.get('grabadora.volume', 0.6);
+    this.func = kv.get<Func>('grabadora.func', 'FM');
+    this.radio.volume = kv.get('grabadora.volume', 0.42);
     this.applyFunc(false);
 
     this.el = document.createElement('div');

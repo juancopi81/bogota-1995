@@ -13,36 +13,36 @@ export interface Measured {
   cues: Cue[];
 }
 
-export interface TimelineOptions {
+export interface TimelineOptions<S> {
   /** Produce the next segment to air, given the time it will start. */
-  next: (start: number) => Segment;
+  next: (start: number) => S;
   /** How long a segment lasts and where its lines fall. */
-  measure: (seg: Segment, start: number) => Measured;
+  measure: (seg: S, start: number) => Measured;
   /** When the log begins (before the room opens, so t = 0 lands mid-segment). */
   from: number;
   /** A time at which whatever is on air is cut for a special segment (or null to skip it). */
-  hardBreak?: { at: number; seg: () => Segment | null };
+  hardBreak?: { at: number; seg: () => S | null };
 }
 
-export class Timeline {
-  readonly items: Scheduled[] = [];
+export class Timeline<S = Segment> {
+  readonly items: Scheduled<S>[] = [];
   private breakDone = false;
 
-  constructor(private readonly opts: TimelineOptions) {}
+  constructor(private readonly opts: TimelineOptions<S>) {}
 
   private lastEnd(): number {
     return this.items.length ? this.items[this.items.length - 1].end : this.opts.from;
   }
 
-  private place(seg: Segment, start: number): Scheduled {
+  private place(seg: S, start: number): Scheduled<S> {
     const { dur, cues } = this.opts.measure(seg, start);
-    const item: Scheduled = { start, end: start + dur, seg, cues };
+    const item: Scheduled<S> = { start, end: start + dur, seg, cues };
     this.items.push(item);
     return item;
   }
 
   /** Append a segment, honoring the hard break. */
-  private push(seg: Segment): Scheduled {
+  private push(seg: S): Scheduled<S> {
     const hb = this.opts.hardBreak;
     if (hb && !this.breakDone && this.lastEnd() >= hb.at) {
       // the previous segment ended exactly at (or, oddly, after) the break
@@ -71,7 +71,7 @@ export class Timeline {
   }
 
   /** The segment on air at time t. */
-  at(t: number): Scheduled | undefined {
+  at(t: number): Scheduled<S> | undefined {
     this.ensure(t + 1);
     // search from the end: callers almost always ask about "now"
     for (let i = this.items.length - 1; i >= 0; i--) {
@@ -83,7 +83,7 @@ export class Timeline {
   }
 
   /** The segment that follows `item`. */
-  after(item: Scheduled): Scheduled | undefined {
+  after(item: Scheduled<S>): Scheduled<S> | undefined {
     this.ensure(item.end + 1);
     const i = this.items.indexOf(item);
     return i >= 0 ? this.items[i + 1] : undefined;
@@ -94,7 +94,7 @@ export class Timeline {
    * (plus the next `keep` segments), then air `segs`, then carry on as usual.
    * Returns the placed segments.
    */
-  rewrite(t: number, segs: Segment[], keep = 0): Scheduled[] {
+  rewrite(t: number, segs: S[], keep = 0): Scheduled<S>[] {
     const current = this.at(t);
     this.ensure((current?.end ?? t) + 900);
     const base = current ? this.items.indexOf(current) : this.items.length - 1;

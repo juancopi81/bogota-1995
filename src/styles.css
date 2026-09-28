@@ -575,3 +575,79 @@ body {
 .libreta-input::placeholder {
   color: rgba(29, 63, 143, 0.28);
 }
+
+/* ---------- tv ---------- */
+
+.tv-screen,
+.tv-glass {
+  position: absolute;
+  border-radius: 36px;
+  pointer-events: none;
+}
+
+.tv-glass {
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+    radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.55) 100%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 30%);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+#cu-tv.shake .art,
+#cu-tv.shake .tv-screen,
+#cu-tv.shake .tv-glass {
+  animation: whack 0.35s ease-out;
+}
+
+@keyframes whack {
+  15% {
+    transform: translate(-6px, 2px);
+  }
+  35% {
+    transform: translate(4px, -1px);
+  }
+  60% {
+    transform: translate(-2px, 0);
+  }
+}
+
+/* ---------- window ---------- */
+
+.closeup > .fill {
+  position: absolute;
+  inset: 0;
+}
+
+.glass-layer {
+  position: absolute;
+  pointer-events: none;
+}
+
+.glass-layer.fog {
+  opacity: 0.62;
+  filter: blur(2px);
+}
+
+#cu-window {
+  cursor: grab;
+}
+
+.room-svg .curtain-right.breeze,
+#cu-window.opened .w-curtain-r {
+  animation: breeze 3.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+}
+
+@keyframes breeze {
+  0%,
+  100% {
+    transform: skewX(0deg);
+  }
+  40% {
+    transform: skewX(-2.5deg) scaleX(0.97);
+  }
+  70% {
+    transform: skewX(1.2deg);
+  }
+}

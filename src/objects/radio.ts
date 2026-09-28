@@ -14,6 +14,7 @@ import type { AudioEngine } from '../audio/engine';
 import { subtitles } from '../ui/subtitles';
 import { kv } from '../world/store';
 import { bus } from '../world/bus';
+import { clock } from '../world/clock';
 import { clamp } from '../util/rng';
 
 export type Band = 'FM' | 'AM';
@@ -90,6 +91,11 @@ export class Radio {
     this.whistleGain.gain.value = 0;
     this.whistle.connect(this.whistleGain).connect(this.powerGain);
     this.whistle.start();
+
+    // a song or the anthem was loaded: re-plan what hasn't aired yet
+    bus.on('media:loaded', () => {
+      for (const { station } of this.tuned) station.timeline.regenerateAfter(clock.now());
+    });
 
     this.tuned = STATIONS.map((def) => {
       const station = new Station(def);

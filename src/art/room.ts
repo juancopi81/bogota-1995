@@ -122,6 +122,8 @@ export function wallSvg(): string {
     <rect x="${win.x - 20}" y="${win.y + win.h + 20}" width="${win.w + 40}" height="5" fill="#b9b1a1"/>
   </g>
 
+  <g class="hot" data-hot="window"><rect x="${win.x}" y="${win.y}" width="${win.w}" height="${win.h}" fill="transparent"/></g>
+
   <!-- a sábila (aloe) in a clay pot on the sill -->
   <g transform="translate(${win.x + 20} ${win.y + win.h - 34})">
     <path d="M6 40 L10 24 H38 L42 40Z" fill="#a6553a"/>
