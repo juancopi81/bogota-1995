@@ -21,6 +21,19 @@ export interface Clip {
   note: string;
 }
 
+/**
+ * Cadena Uno's own ad breaks: the same 1995 tape, a stretch at a time, in
+ * place of the invented ads between the scenes of the telenovela on channel 7.
+ */
+export const AD_BREAKS: Clip[] = [0, 75, 150, 225].map((start) => ({
+  id: 'J47UMyICIJU',
+  start,
+  dur: 75,
+  source: 'fan upload',
+  note: `«1995 Comerciales. Cadena UNO. Colombia», from ${start} s`,
+}));
+
+/** Canal A (channel 9): real 1995 television, one clip after another. */
 export const CLIPS: Clip[] = [
   {
     id: 'J47UMyICIJU',

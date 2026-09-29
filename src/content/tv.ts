@@ -28,6 +28,10 @@ export interface ChannelDef {
   program: TvSegment[];
   /** Airs the approved real clips instead, when they can play. */
   realClips?: boolean;
+  /** Its running order with real ad breaks instead of the invented ads, when they can play. */
+  realAds?: (ads: Clip[]) => TvSegment[];
+  /** The channel's card: what's on screen while a real clip loads or after it ends. */
+  card: SceneId;
 }
 
 /** Canal A with real clips: its card between each one. */
@@ -70,28 +74,38 @@ const CANAL_A = lines('tv.canala', {
   cierre: ['tvPresentador', 'Ya volvemos, después de comerciales. ¡No se vayan!'],
 });
 
+// Cadena Uno: «Corazón de lluvia», then the ads, then the channel's card
+const UNO_NOVELA: TvSegment[] = [
+  { kind: 'scene', scene: 'presenta', lines: [NOVELA.presenta], bed: 'balada', min: 6 },
+  { kind: 'scene', scene: 'novela', lines: [NOVELA.n1, NOVELA.n2, NOVELA.n3], bed: 'balada' },
+  { kind: 'scene', scene: 'novela-close', lines: [NOVELA.n4, NOVELA.n5], bed: 'balada' },
+  { kind: 'scene', scene: 'novela', lines: [NOVELA.n6, NOVELA.n7, NOVELA.sigue], bed: 'balada' },
+];
+const UNO_CARD: TvSegment = { kind: 'scene', scene: 'bumper-uno', lines: [], min: 5 };
+
 export const CHANNELS: ChannelDef[] = [
   {
     number: 7,
     name: 'Cadena Uno',
     ideal: [-34, 38],
     strength: 0.95,
+    card: 'bumper-uno',
     program: [
-      { kind: 'scene', scene: 'presenta', lines: [NOVELA.presenta], bed: 'balada', min: 6 },
-      { kind: 'scene', scene: 'novela', lines: [NOVELA.n1, NOVELA.n2, NOVELA.n3], bed: 'balada' },
-      { kind: 'scene', scene: 'novela-close', lines: [NOVELA.n4, NOVELA.n5], bed: 'balada' },
-      { kind: 'scene', scene: 'novela', lines: [NOVELA.n6, NOVELA.n7, NOVELA.sigue], bed: 'balada' },
+      ...UNO_NOVELA,
       { kind: 'scene', scene: 'ad-chocolate', lines: [ADS.chocolate], bed: 'pop', min: 12 },
       { kind: 'scene', scene: 'ad-blancor', lines: [ADS.blancor], bed: 'pop', min: 12 },
       { kind: 'scene', scene: 'ad-casablanca', lines: [ADS.casablanca], bed: 'pop', min: 10 },
-      { kind: 'scene', scene: 'bumper-uno', lines: [], min: 5 },
+      UNO_CARD,
     ],
+    // each round of the telenovela gets a different stretch of the real 1995 ads
+    realAds: (ads) => ads.flatMap((clip): TvSegment[] => [...UNO_NOVELA, { kind: 'clip', clip }, UNO_CARD]),
   },
   {
     number: 9,
     name: 'Canal A',
     ideal: [-18, 58],
     strength: 0.8,
+    card: 'bumper-a',
     realClips: true,
     program: [
       { kind: 'scene', scene: 'bumper-a', lines: [], min: 5 },
@@ -107,6 +121,7 @@ export const CHANNELS: ChannelDef[] = [
     name: 'Canal 3',
     ideal: [-62, 14],
     strength: 0.55,
+    card: 'bumper-tres',
     program: [
       { kind: 'scene', scene: 'bumper-tres', lines: [TRES.id], min: 6 },
       { kind: 'scene', scene: 'paramo', lines: [TRES.p1, TRES.p2], bed: 'balada', min: 30 },

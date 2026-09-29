@@ -6,6 +6,7 @@ import { Timeline } from '../broadcast/timeline';
 import type { Cue, Scheduled } from '../broadcast/types';
 import { CHANNELS, clipProgram, type ChannelDef, type TvSegment } from '../content/tv';
 import { ClipScreen, clipsPlayable, workingClips } from './clipscreen';
+import { AD_BREAKS } from '../content/clips';
 import { dynamicLine } from '../content/lines';
 import { tvSvg, SCREEN, CHANNEL_KNOB, VOLUME_KNOB, ANTENNA, channelAngle } from '../art/tv';
 import { drawScene, drawAnthem, TV_W, TV_H } from './tvscenes';
@@ -71,18 +72,24 @@ class Channel {
     bus.on('clock:skip', () => this.stopAll());
     bus.on('media:loaded', ({ kind }) => kind === 'anthem' && this.timeline.regenerateAfter(clock.now()));
     // a clip was refused, or none can play here: re-plan what hasn't aired yet
-    if (def.realClips)
-      bus.on('tv:clips', () => {
-        const now = clock.now();
-        if (this.timeline.at(now)?.seg.kind === 'clip') this.timeline.cutAt(now);
-        else this.timeline.regenerateAfter(now);
-      });
+    if (def.realClips || def.realAds) bus.on('tv:clips', () => this.cutClip());
   }
 
-  /** Real clips when they can play here, the invented programs otherwise. */
+  /** Real clips (or real ads) when they can play here, the invented programs otherwise. */
   private program(): TvSegment[] {
-    const clips = this.def.realClips && clipsPlayable() ? workingClips() : [];
-    return clips.length ? clipProgram(clips) : this.def.program;
+    if (!clipsPlayable()) return this.def.program;
+    const clips = this.def.realClips ? workingClips() : [];
+    if (clips.length) return clipProgram(clips);
+    const ads = this.def.realAds ? workingClips(AD_BREAKS) : [];
+    if (ads.length) return this.def.realAds!(ads);
+    return this.def.program;
+  }
+
+  /** A real clip on air gives way now (it ended, or was refused): the card, then what's next. */
+  cutClip(): void {
+    const now = clock.now();
+    if (this.timeline.at(now)?.seg.kind === 'clip') this.timeline.cutAt(now, [{ kind: 'scene', scene: this.def.card, lines: [], min: 4 }]);
+    else this.timeline.regenerateAfter(now);
   }
 
   private measure(seg: TvSegment): { dur: number; cues: Cue[] } {
@@ -263,6 +270,8 @@ export class Tv {
     Object.assign(this.screen.style, { left: `${SCREEN.x}px`, top: `${SCREEN.y}px`, width: `${SCREEN.w}px`, height: `${SCREEN.h}px` });
     this.el.appendChild(this.screen);
     this.clips = new ClipScreen(this.el, this.screen);
+    // a clip that runs out early: the channel moves on to what's next
+    this.clips.onEnded = () => this.channels.get(this.channel)?.cutClip();
     const glass = document.createElement('div');
     glass.className = 'tv-glass';
     Object.assign(glass.style, { left: `${SCREEN.x}px`, top: `${SCREEN.y}px`, width: `${SCREEN.w}px`, height: `${SCREEN.h}px` });
@@ -411,7 +420,13 @@ export class Tv {
   }
 
   private step(dir: number): void {
-    this.channel = ((this.channel - 2 + dir + 12) % 12) + 2;
+    const next = this.channel + dir;
+    // the knob stops at 2 and at 13: past them it just thunks
+    if (next < 2 || next > 13) {
+      play(this.engine.ctx, sfx.detent(this.engine.ctx), this.engine.channel('tv').input, { gain: 0.9, rate: 0.55 });
+      return;
+    }
+    this.channel = next;
     kv.set('tv.channel', this.channel);
     play(this.engine.ctx, sfx.detent(this.engine.ctx), this.engine.channel('tv').input, { gain: 0.7 });
     this.rolling = Math.max(this.rolling, 0.4);
@@ -540,7 +555,7 @@ export class Tv {
         drawAnthem(sg, t - item.start);
       } else {
         // a real clip that isn't playing (yet, or anymore): the channel's card
-        drawScene(sg, 'bumper-a', t - item.start, 0);
+        drawScene(sg, this.channels.get(this.channel)!.def.card, t - item.start, 0);
       }
     }
 
@@ -655,7 +670,8 @@ export class Tv {
       return;
     }
     const hasChannel = this.channels.has(this.channel);
-    const scene = !hasChannel || !item ? 'snow' : item.seg.kind === 'scene' ? item.seg.scene : item.seg.kind === 'clip' && !this.showingVideo ? 'bumper-a' : item.seg.kind;
+    const card = this.channels.get(this.channel)?.def.card ?? 'snow';
+    const scene = !hasChannel || !item ? 'snow' : item.seg.kind === 'scene' ? item.seg.scene : item.seg.kind === 'clip' && !this.showingVideo ? card : item.seg.kind;
     const [r, g, b, level] = scene === 'clip' ? this.clipTint : (GLOW[scene] ?? GLOW.snow);
     const snow = hasChannel ? 1 - q : 1;
     light.crt = clamp(level * (1 - snow) + GLOW.snow[3] * snow, 0, 1) * this.warm * (0.9 + Math.random() * 0.1);

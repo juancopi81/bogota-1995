@@ -110,15 +110,16 @@ export class Timeline<S = Segment> {
     this.rewrite(t, []);
   }
 
-  /** Cut whatever is on air at time t short, and carry on from there. */
-  cutAt(t: number): void {
+  /** Cut whatever is on air at time t short, air `then` (if anything), and carry on from there. */
+  cutAt(t: number, then: S[] = []): void {
     const current = this.at(t);
-    if (!current) return this.regenerateAfter(t);
+    if (!current) return void this.rewrite(t, then);
     this.items.splice(this.items.indexOf(current) + 1);
     current.end = Math.max(current.start, t);
     current.cut = true;
     current.cues = current.cues.filter((c) => c.at < t - current.start);
     const hb = this.opts.hardBreak;
     this.breakDone = !hb || this.lastEnd() > hb.at;
+    for (const seg of then) this.push(seg);
   }
 }

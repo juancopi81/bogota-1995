@@ -67,4 +67,12 @@ describe('Timeline', () => {
     tl.ensure(600);
     for (let i = 1; i < tl.items.length; i++) expect(tl.items[i].start).toBeCloseTo(tl.items[i - 1].end);
   });
+
+  it('can put something in right after the cut', () => {
+    const tl = makeTimeline(false, 100);
+    tl.cutAt(30, [{ kind: 'anthem' }]);
+    const next = tl.at(30.5)!;
+    expect(next.seg.kind).toBe('anthem');
+    expect([next.start, next.end]).toEqual([30, 120]);
+  });
 });

@@ -81,16 +81,26 @@ async function run(label, modeFor) {
 
 // 1. everything plays
 {
-  const { page, ev, frameState, errors } = await run('the player plays', () => 'play');
+  const { page, ev, onAir, frameState, errors } = await run('the player plays', () => 'play');
   const player = page.frames().find((f) => f.url().includes('youtube-nocookie'));
   console.log('commands so far:', JSON.stringify(await player.evaluate(() => window.commands)));
   await ev(() => (window.room1995.tv.volume = 0.2));
   await page.waitForTimeout(400);
   console.log('after turning it down:', JSON.stringify(await player.evaluate(() => window.commands.slice(-2))));
-  // the tape runs out before the slot does: the card comes back
+  // the tape runs out before the slot does: the channel moves on
+  const before = await onAir();
   await player.evaluate(() => parent.postMessage(JSON.stringify({ event: 'onStateChange', info: 0, id: 1, channel: 'widget' }), '*'));
   await page.waitForTimeout(300);
-  console.log('after it ended:', JSON.stringify(await frameState()));
+  const after = await onAir();
+  console.log('after it ended:', JSON.stringify(await frameState()), '→ on air:', after.kind, after.scene ?? after.clip, `(clip cut after ${(after.start - before.start).toFixed(1)} s)`);
+  // Cadena Uno airs the real 1995 ads between the scenes of its telenovela
+  const uno = await ev(() => {
+    const c = window.room1995.clock;
+    const tl = window.room1995.tv.channels.get(7).timeline;
+    tl.ensure(c.now() + 1200);
+    return tl.items.filter((x) => x.start > c.now()).slice(0, 12).map((x) => (x.seg.kind === 'clip' ? `ADS@${x.seg.clip.start}` : x.seg.scene ?? x.seg.kind));
+  });
+  console.log('channel 7 coming up:', uno.join(', '));
   if (errors.length) console.log('ERRORS', errors);
   await page.close();
 }

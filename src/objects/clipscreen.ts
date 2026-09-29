@@ -33,9 +33,9 @@ export function clipsPlayable(): boolean {
   return typeof navigator === 'undefined' || navigator.onLine !== false;
 }
 
-/** The approved clips that still work. */
-export function workingClips(): Clip[] {
-  return CLIPS.filter((c) => !refused.has(c.id));
+/** The approved clips (Canal A's, or the ad breaks) that still work. */
+export function workingClips(list: Clip[] = CLIPS): Clip[] {
+  return list.filter((c) => !refused.has(c.id));
 }
 
 type State = 'loading' | 'playing' | 'stopped' | 'failed';
@@ -57,6 +57,8 @@ export class ClipScreen {
   private sentVolume = -1;
   private nudged = false;
   private counted = false;
+  /** Called when a clip runs out before its slot does, so the channel can move on. */
+  onEnded: (() => void) | null = null;
 
   constructor(
     private readonly parent: HTMLElement,
@@ -201,10 +203,12 @@ export class ClipScreen {
     else if (playerState === 0) this.stop();
   }
 
-  /** The clip ran out before its slot did: the channel's card fills the rest. */
+  /** The clip ran out before its slot did: the channel moves on (its card covers the gap). */
   private stop(): void {
+    if (this.state === 'stopped') return;
     this.state = 'stopped';
     if (this.frame) this.frame.style.visibility = 'hidden';
+    this.onEnded?.();
   }
 
   private fail(): void {

@@ -16,6 +16,9 @@ between (about 12 minutes):
 | Ad break | The same tape, from 2½ to 5 min | Fan upload |
 | News | [«Guerra de Bosnia en la TV colombiana (1995)»](https://www.youtube.com/watch?v=c991HevT0RE), first 2½ min | *Noticiero de las 7*, from Señal Memoria's archive |
 
+**Cadena Uno (channel 7)** also airs that 1995 ad tape, 75 seconds at a time,
+between the scenes of its (invented) telenovela, where the invented ads were.
+
 I still couldn't watch them (YouTube is blocked from the build environment),
 so **please check three things the first time you play:** that the uploaders
 are who we think, that each slot starts somewhere sensible, and that nothing
@@ -41,9 +44,10 @@ are one line each in `clips.ts`.
 - **They can't play** from the file opened from disk (YouTube refuses pages
   without an address), or in the claude.ai link (artifacts can't frame other
   sites). There, Canal A keeps its invented programs.
-- If a clip is refused (removed, private, embedding disabled), Canal A cuts to
-  the next one and skips it from then on. If YouTube can't be reached at all,
-  the channel goes back to its invented programs within a few seconds.
+- If a clip ends before its slot, the channel shows its card and moves on. If
+  a clip is refused (removed, private, embedding disabled), the channel cuts
+  to the next one and skips it from then on. If YouTube can't be reached at
+  all, the channels go back to their invented programs within a few seconds.
 - The clip's sound comes from YouTube, not through the TV's speaker. It
   follows the volume knob and the reception, but it isn't boxy like the rest
   of the TV, and it can't be taped.
