@@ -117,7 +117,7 @@ async function enter(): Promise<void> {
 }
 
 // for poking at the room from the browser console while developing
-if (import.meta.env.DEV) Object.assign(window, { room1995: { grabadora, phone, tv, windowView, clock, engine, closeups, library, flags } });
+if (import.meta.env.DEV) Object.assign(window, { room1995: { grabadora, phone, tv, windowView, clock, engine, closeups, library, voices, flags } });
 
 startLoop();
 if (params.has('skip')) {

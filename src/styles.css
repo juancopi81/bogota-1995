@@ -483,6 +483,107 @@ body {
   font-size: 22px;
 }
 
+#backstage h4 {
+  font-size: 12px;
+  margin: 14px 0 2px;
+  color: #8a7d64;
+  font-weight: 600;
+}
+
+#backstage .drop {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 14px 0 4px;
+  padding: 14px;
+  border: 2px dashed #c9bfa8;
+  border-radius: 8px;
+  background: #fbf9f4;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+#backstage.dropping .drop {
+  border-color: #b8532f;
+  background: #f8e9dc;
+}
+
+#backstage .drop span {
+  color: #555;
+  line-height: 1.4;
+}
+
+#backstage .drop .pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+#backstage .load-report {
+  color: #2f5f3a;
+  min-height: 1em;
+  line-height: 1.4;
+}
+
+#backstage .muted {
+  color: #9a917f;
+  font-size: 12px;
+}
+
+#backstage .tag {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: #efe3c7;
+  color: #7a5a1c;
+  font-size: 11px;
+  vertical-align: 1px;
+}
+
+#backstage .path {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+
+#backstage select {
+  font: inherit;
+  font-size: 12px;
+  max-width: 180px;
+  padding: 3px;
+}
+
+#backstage .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+#backstage .chip {
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: #ebe5d8;
+  color: #6b6252;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+#backstage .chip.some {
+  background: #f1e2bd;
+  color: #6d5214;
+}
+
+#backstage .chip.full {
+  background: #d8ead6;
+  color: #2f6a38;
+}
+
+#backstage button.danger {
+  border-color: #b8532f;
+  color: #b8532f;
+}
+
 /* ---------- grabadora ---------- */
 
 .closeup .grab {
