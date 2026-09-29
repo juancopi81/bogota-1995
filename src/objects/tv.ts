@@ -4,8 +4,8 @@
 
 import { Timeline } from '../broadcast/timeline';
 import type { Cue, Scheduled } from '../broadcast/types';
-import { CHANNELS, type ChannelDef, type TvSegment } from '../content/tv';
-import type { Clip } from '../content/clips';
+import { CHANNELS, clipProgram, type ChannelDef, type TvSegment } from '../content/tv';
+import { ClipScreen, clipsPlayable, workingClips } from './clipscreen';
 import { dynamicLine } from '../content/lines';
 import { tvSvg, SCREEN, CHANNEL_KNOB, VOLUME_KNOB, ANTENNA, channelAngle } from '../art/tv';
 import { drawScene, drawAnthem, TV_W, TV_H } from './tvscenes';
@@ -61,12 +61,28 @@ class Channel {
     let i = Math.floor(rng() * def.program.length);
     this.timeline = new Timeline<TvSegment>({
       from: -60 - rng() * 120,
-      next: () => def.program[i++ % def.program.length],
+      next: () => {
+        const program = this.program();
+        return program[i++ % program.length];
+      },
       measure: (seg) => this.measure(seg),
       hardBreak: { at: ANTHEM_AT, seg: () => (library.anthem() ? { kind: 'anthem' } : null) },
     });
     bus.on('clock:skip', () => this.stopAll());
     bus.on('media:loaded', ({ kind }) => kind === 'anthem' && this.timeline.regenerateAfter(clock.now()));
+    // a clip was refused, or none can play here: re-plan what hasn't aired yet
+    if (def.realClips)
+      bus.on('tv:clips', () => {
+        const now = clock.now();
+        if (this.timeline.at(now)?.seg.kind === 'clip') this.timeline.cutAt(now);
+        else this.timeline.regenerateAfter(now);
+      });
+  }
+
+  /** Real clips when they can play here, the invented programs otherwise. */
+  private program(): TvSegment[] {
+    const clips = this.def.realClips && clipsPlayable() ? workingClips() : [];
+    return clips.length ? clipProgram(clips) : this.def.program;
   }
 
   private measure(seg: TvSegment): { dur: number; cues: Cue[] } {
@@ -158,38 +174,6 @@ class Channel {
   }
 }
 
-/** Real clips play in an embedded YouTube player behind the tube's effects. */
-class ClipScreen {
-  private frame: HTMLIFrameElement | null = null;
-  private current = '';
-
-  constructor(
-    private readonly parent: HTMLElement,
-    private readonly before: HTMLElement,
-  ) {}
-
-  show(clip: Clip, offset: number): void {
-    const key = `${clip.id}@${clip.start}`;
-    if (this.frame && this.current === key) return;
-    this.hide();
-    const f = document.createElement('iframe');
-    const start = Math.floor(clip.start + Math.max(0, offset));
-    f.src = `https://www.youtube-nocookie.com/embed/${clip.id}?start=${start}&autoplay=1&controls=0&rel=0&playsinline=1&iv_load_policy=3&disablekb=1`;
-    f.allow = 'autoplay; encrypted-media';
-    f.className = 'tv-clip';
-    Object.assign(f.style, { left: `${SCREEN.x}px`, top: `${SCREEN.y}px`, width: `${SCREEN.w}px`, height: `${SCREEN.h}px` });
-    this.parent.insertBefore(f, this.before);
-    this.frame = f;
-    this.current = key;
-  }
-
-  hide(): void {
-    this.frame?.remove();
-    this.frame = null;
-    this.current = '';
-  }
-}
-
 export class Tv {
   readonly el: HTMLElement;
   private readonly svg: SVGSVGElement;
@@ -221,6 +205,8 @@ export class Tv {
   private volumeHighSince: number | null = null;
   private nagged = false;
   private clips!: ClipScreen;
+  private showingVideo = false;
+  private clipTint: [number, number, number, number] = [160, 160, 170, 0.5];
 
   constructor(private readonly engine: AudioEngine) {
     const ctx = engine.ctx;
@@ -474,6 +460,14 @@ export class Tv {
     glide(this.volumeGain.gain, this.volume ** 2 * 1.5, now, 0.04);
     glide(this.whine.gain, this.power ? 0.0025 : 0, now, 0.1);
 
+    // a real clip plays in its own player, even when you're looking at something else
+    const clip = this.power && this.warm > 0.3 && hasChannel && current?.seg.kind === 'clip' ? current.seg.clip : null;
+    if (clip && current) this.clips.show(clip, t - current.start);
+    else this.clips.hide();
+    this.showingVideo = clip !== null && this.clips.showing;
+    if (this.showingVideo) this.clipTint = this.tintAt(t);
+    this.clips.setVolume(this.volume ** 2 * 1.5 * Math.pow(q, 0.8) * audible * this.engine.focusLevel('tv') * 0.6);
+
     this.draw(t, current, q);
     this.subtitle(t, current, q);
     this.nag(t);
@@ -527,7 +521,6 @@ export class Tv {
 
     g.setTransform(1, 0, 0, 1, 0, 0);
     if (!this.power && this.offAnim >= 1) {
-      this.clips.hide();
       g.clearRect(0, 0, W, H);
       this.mirror(false);
       light.crt = 0;
@@ -546,20 +539,18 @@ export class Tv {
       } else if (item.seg.kind === 'anthem') {
         drawAnthem(sg, t - item.start);
       } else {
-        sg.fillStyle = '#000';
-        sg.fillRect(0, 0, TV_W, TV_H);
+        // a real clip that isn't playing (yet, or anymore): the channel's card
+        drawScene(sg, 'bumper-a', t - item.start, 0);
       }
     }
 
-    const clip = this.power && this.warm > 0.3 && hasChannel && item?.seg.kind === 'clip' ? item.seg.clip : null;
-    if (clip && item) this.clips.show(clip, t - item.start);
-    else this.clips.hide();
-    if (clip) g.clearRect(0, 0, W, H);
+    const video = this.showingVideo;
+    if (video) g.clearRect(0, 0, W, H);
     else {
       g.fillStyle = '#050606';
       g.fillRect(0, 0, W, H);
     }
-    if (hasChannel && item && !clip) {
+    if (hasChannel && item && !video) {
       g.imageSmoothingEnabled = true;
       const y = this.roll;
       g.globalAlpha = 1;
@@ -628,7 +619,33 @@ export class Tv {
       c.clearRect(0, 0, rc.width, rc.height);
       return;
     }
+    if (this.showingVideo) {
+      // a real clip can't be copied off its player; from across the room it's light that cuts and flickers
+      const [r, g, b] = this.clipTint;
+      const grad = c.createLinearGradient(0, 0, 0, rc.height);
+      grad.addColorStop(0, `rgb(${r + 30},${g + 30},${b + 30})`);
+      grad.addColorStop(1, `rgb(${r >> 1},${g >> 1},${b >> 1})`);
+      c.fillStyle = grad;
+      c.fillRect(0, 0, rc.width, rc.height);
+    }
     c.drawImage(this.screen, 0, 0, rc.width, rc.height);
+  }
+
+  /** Stand-in colors for a real clip, changing at every "cut" (a few seconds apart). */
+  private tintAt(t: number): [number, number, number, number] {
+    const cut = Math.floor(t / 2.9 + Math.sin(t * 0.37) * 0.8);
+    const rnd = mulberry32(cut * 7919 + 17);
+    const palette: [number, number, number][] = [
+      [120, 100, 90],
+      [70, 90, 140],
+      [150, 120, 80],
+      [90, 110, 90],
+      [170, 160, 150],
+      [110, 70, 80],
+    ];
+    const [r, g, b] = palette[Math.floor(rnd() * palette.length)];
+    const flicker = 0.9 + Math.sin(t * 13.1) * 0.04 + Math.random() * 0.06;
+    return [Math.round(r * flicker), Math.round(g * flicker), Math.round(b * flicker), 0.35 + rnd() * 0.3];
   }
 
   /** The screen's light on the walls: each picture has its own color and brightness. */
@@ -638,8 +655,8 @@ export class Tv {
       return;
     }
     const hasChannel = this.channels.has(this.channel);
-    const scene = !hasChannel || !item ? 'snow' : item.seg.kind === 'scene' ? item.seg.scene : item.seg.kind;
-    const [r, g, b, level] = GLOW[scene] ?? GLOW.snow;
+    const scene = !hasChannel || !item ? 'snow' : item.seg.kind === 'scene' ? item.seg.scene : item.seg.kind === 'clip' && !this.showingVideo ? 'bumper-a' : item.seg.kind;
+    const [r, g, b, level] = scene === 'clip' ? this.clipTint : (GLOW[scene] ?? GLOW.snow);
     const snow = hasChannel ? 1 - q : 1;
     light.crt = clamp(level * (1 - snow) + GLOW.snow[3] * snow, 0, 1) * this.warm * (0.9 + Math.random() * 0.1);
     light.crtColor = [Math.round(r * (1 - snow) + 170 * snow), Math.round(g * (1 - snow) + 180 * snow), Math.round(b * (1 - snow) + 205 * snow)];

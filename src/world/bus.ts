@@ -44,6 +44,8 @@ export type WorldEvents = {
   'light:bulb': { on: boolean };
   /** The TV was switched on or off. */
   'tv:power': { on: boolean };
+  /** Real clips turned out not to play here (or one of them was refused). */
+  'tv:clips': { playable: boolean };
   /** The window was opened or closed. */
   'window:open': { open: boolean };
 };

@@ -2,11 +2,12 @@
 // Bogotá on VHF: Cadena Uno (7), Canal A (9) and Canal 3 (11), which becomes
 // Señal Colombia in December. Everything else on the knob is snow.
 //
-// The programs and ads here are invented placeholders; real clips come in
-// through content/clips.ts once approved.
+// The programs and ads here are invented placeholders. Canal A airs the
+// approved real clips (content/clips.ts) whenever this copy of the room can
+// play them, and falls back to its invented programs when it can't.
 
 import { lines, type Line } from './lines';
-import { CLIPS, type Clip } from './clips';
+import type { Clip } from './clips';
 import type { Style } from '../audio/music';
 
 export type SceneId = 'novela' | 'novela-close' | 'bumper-uno' | 'presenta' | 'ad-chocolate' | 'ad-blancor' | 'ad-casablanca' | 'paramo' | 'bumper-tres' | 'musical' | 'bumper-a';
@@ -23,7 +24,18 @@ export interface ChannelDef {
   ideal: [number, number];
   /** How strong the signal is in Chapinero to begin with (0–1). */
   strength: number;
+  /** The invented running order. */
   program: TvSegment[];
+  /** Airs the approved real clips instead, when they can play. */
+  realClips?: boolean;
+}
+
+/** Canal A with real clips: its card between each one. */
+export function clipProgram(clips: Clip[]): TvSegment[] {
+  return clips.flatMap((clip): TvSegment[] => [
+    { kind: 'scene', scene: 'bumper-a', lines: [], min: 4 },
+    { kind: 'clip', clip },
+  ]);
 }
 
 const NOVELA = lines('tv.novela', {
@@ -80,16 +92,15 @@ export const CHANNELS: ChannelDef[] = [
     name: 'Canal A',
     ideal: [-18, 58],
     strength: 0.8,
-    program: CLIPS.length
-      ? CLIPS.map((clip) => ({ kind: 'clip', clip }) as TvSegment)
-      : [
-          { kind: 'scene', scene: 'bumper-a', lines: [], min: 5 },
-          { kind: 'scene', scene: 'musical', lines: [CANAL_A.hola], bed: 'rock', min: 60 },
-          { kind: 'scene', scene: 'musical', lines: [CANAL_A.sigue], bed: 'pop', min: 60 },
-          { kind: 'scene', scene: 'musical', lines: [CANAL_A.cierre], bed: 'rock', min: 12 },
-          { kind: 'scene', scene: 'ad-casablanca', lines: [ADS.casablanca], bed: 'pop', min: 10 },
-          { kind: 'scene', scene: 'ad-chocolate', lines: [ADS.chocolate], bed: 'pop', min: 12 },
-        ],
+    realClips: true,
+    program: [
+      { kind: 'scene', scene: 'bumper-a', lines: [], min: 5 },
+      { kind: 'scene', scene: 'musical', lines: [CANAL_A.hola], bed: 'rock', min: 60 },
+      { kind: 'scene', scene: 'musical', lines: [CANAL_A.sigue], bed: 'pop', min: 60 },
+      { kind: 'scene', scene: 'musical', lines: [CANAL_A.cierre], bed: 'rock', min: 12 },
+      { kind: 'scene', scene: 'ad-casablanca', lines: [ADS.casablanca], bed: 'pop', min: 10 },
+      { kind: 'scene', scene: 'ad-chocolate', lines: [ADS.chocolate], bed: 'pop', min: 12 },
+    ],
   },
   {
     number: 11,

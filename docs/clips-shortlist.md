@@ -1,27 +1,59 @@
-# TV clips shortlist (for your approval)
+# TV clips
 
-Candidates for the TV's real-1995 channel. **Nothing goes in without your OK.**
-Until then Canal A shows placeholder programming.
+Canal A (channel 9) airs real 1995 television through YouTube embeds.
+**Nothing goes in without your OK.**
 
-I couldn't open YouTube or the archive from the build environment, so I
-haven't watched any of these. Titles and descriptions come from search
-results. For each one, please check that it plays, that it's what it says,
-and who uploaded it.
+## On air (approved in the second interview)
 
-## How a clip gets on air
+You approved Señal Memoria's own uploads and the 1995 Cadena Uno ad breaks.
+These are in `src/content/clips.ts`, and Canal A loops them with its card in
+between (about 12 minutes):
 
-Send me the YouTube links you approve, each with a start time and how long
-to air it. They go into `src/content/clips.ts`, and Canal A (channel 9) then
-airs them in a loop on the world clock, like a real broadcast. Tune in late
-and you land mid-clip.
+| Slot | Clip | Source |
+|---|---|---|
+| Ad break | [«1995 Comerciales. Cadena UNO. Colombia»](https://www.youtube.com/watch?v=J47UMyICIJU), first 2½ min | Fan upload (taped off the air) |
+| Music | [«Rock al parque 1995»](https://www.youtube.com/watch?v=84DTd4OBC9Y), first 4 min | Same title as Señal Memoria's piece |
+| Ad break | The same tape, from 2½ to 5 min | Fan upload |
+| News | [«Guerra de Bosnia en la TV colombiana (1995)»](https://www.youtube.com/watch?v=c991HevT0RE), first 2½ min | *Noticiero de las 7*, from Señal Memoria's archive |
 
-Limits of this approach:
+I still couldn't watch them (YouTube is blocked from the build environment),
+so **please check three things the first time you play:** that the uploaders
+are who we think, that each slot starts somewhere sensible, and that nothing
+in them is from after 1995 (a modern logo or title card). Starts and lengths
+are one line each in `clips.ts`.
 
-- It only works online.
-- The TV's picture effects (scanlines, snow from a bad antenna) go on top of
-  the video.
-- The video's sound comes from YouTube, not through the TV's speaker, so it
-  won't sound as boxy as the rest of the room. It also can't be recorded.
+**Not airing, and why:**
+
+- *Freddy Rincón, el adiós a un coloso*: the 1995 *Noticiero de las 7*
+  fragment is inside a 2022 obituary piece. A tribute to his death on a 1995 TV
+  would break the moment.
+- *Inmigrantes*, *Historias de la historia*, Power Rangers: I found no YouTube
+  upload, only Señal Memoria's own site, which can't be embedded here.
+- «18 - Tanda de comerciales colombianos - Cadena Uno» (86R_6WAJHMk): the
+  title doesn't give the year, and the rest of that series is 1991–1994.
+- «Rock al Parque 1995 (el público)» (PFwUJIMUx3o): a fan upload, but not an
+  ad break, so outside what you approved.
+
+## Where clips can play
+
+- **They play** when the room is served over http(s): `npm run dev`,
+  `npm run preview`, or any web server.
+- **They can't play** from the file opened from disk (YouTube refuses pages
+  without an address), or in the claude.ai link (artifacts can't frame other
+  sites). There, Canal A keeps its invented programs.
+- If a clip is refused (removed, private, embedding disabled), Canal A cuts to
+  the next one and skips it from then on. If YouTube can't be reached at all,
+  the channel goes back to its invented programs within a few seconds.
+- The clip's sound comes from YouTube, not through the TV's speaker. It
+  follows the volume knob and the reception, but it isn't boxy like the rest
+  of the TV, and it can't be taped.
+- The small TV in the room can't copy a real clip's picture. From across the
+  room you see its light changing, and you see the clip itself up close.
+
+# Shortlist (for reference)
+
+Candidates proposed before the interview. Titles and descriptions come from
+search results.
 
 ## Official archive (Señal Memoria, RTVC)
 
@@ -49,8 +81,3 @@ Your call.
 | "Tanda de comerciales colombianos – Cadena Uno" (series of Betamax transfers) | [YouTube](https://m.youtube.com/watch?v=86R_6WAJHMk) |
 | Playlist "Comerciales de Colombia 1995" | [YouTube](https://www.youtube.com/playlist?list=PLx5Nnj8oqOFLupp7kFcnAbk_QIL15H8AK) |
 | "Rock al Parque 1995 (el público)" | [YouTube](https://www.youtube.com/watch?v=PFwUJIMUx3o) |
-
-## If you want a whole evening
-
-A good Canal A loop would be about 20 minutes: a commercial break, a
-Rock al Parque clip, another break, a news fragment, then back to the start.

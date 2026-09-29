@@ -63,6 +63,15 @@ export class Channel {
   }
 }
 
+/** Loudness and muffling of a channel, given what you're leaning in to. */
+function shapeFor(id: ChannelId, focus: FocusId): { level: number; cutoff: number; time?: number } {
+  if (id === 'ear') return { level: focus === 'ear' ? 1 : 0, cutoff: 20000 };
+  if (focus === null) return { level: 1, cutoff: 20000 };
+  if (focus === 'ear') return { level: id === 'house' ? 0.5 : 0.32, cutoff: 2600, time: 0.12 };
+  if (id === focus) return { level: 1.3, cutoff: 20000 };
+  return { level: 0.55, cutoff: 4200 };
+}
+
 export class AudioEngine {
   readonly ctx: AudioContext;
   readonly master: GainNode;
@@ -117,21 +126,14 @@ export class AudioEngine {
   setFocus(focus: FocusId): void {
     this.focusId = focus;
     for (const channel of this.channels.values()) {
-      const id = channel.id;
-      if (id === 'ear') {
-        channel.shape(focus === 'ear' ? 1 : 0, 20000);
-        continue;
-      }
-      if (focus === null) {
-        channel.shape(1, 20000);
-      } else if (focus === 'ear') {
-        channel.shape(id === 'house' ? 0.5 : 0.32, 2600, 0.12);
-      } else if (id === focus || (focus === 'phone' && id === 'phone')) {
-        channel.shape(1.3, 20000);
-      } else {
-        channel.shape(0.55, 4200);
-      }
+      const { level, cutoff, time } = shapeFor(channel.id, focus);
+      channel.shape(level, cutoff, time);
     }
+  }
+
+  /** How loud a channel is with the current focus (for sound played outside the graph). */
+  focusLevel(id: ChannelId): number {
+    return shapeFor(id, this.focusId).level;
   }
 
   /** A looping noise source (already started) feeding into `destination`. */

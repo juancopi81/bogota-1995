@@ -54,4 +54,17 @@ describe('Timeline', () => {
     const [placed] = tl.rewrite(300, [song('request')], 1);
     expect(placed.start).toBeCloseTo(current.end + 100);
   });
+
+  it('cuts the segment on air short and carries on from that moment', () => {
+    const tl = makeTimeline(false, 100);
+    const on = tl.at(30)!;
+    tl.cutAt(30);
+    expect(on.end).toBe(30);
+    expect(on.cut).toBe(true);
+    const next = tl.at(30.5)!;
+    expect(next.start).toBe(30);
+    expect(next.seg).not.toBe(on.seg);
+    tl.ensure(600);
+    for (let i = 1; i < tl.items.length; i++) expect(tl.items[i].start).toBeCloseTo(tl.items[i - 1].end);
+  });
 });
