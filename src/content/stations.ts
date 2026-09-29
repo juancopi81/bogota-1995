@@ -72,7 +72,11 @@ const RA = lines('radioactiva', {
   lluvia1: ['locutorRadioactiva', 'Mire cómo está esa lluvia... En Bogotá uno sale con sol y vuelve empapado.'],
   lluvia2: ['locutorRadioactiva', 'Pero para eso está la radio. Aquí seguimos acompañándolo.'],
   linea1: ['locutorRadioactiva', 'La línea de la cabina está abierta: pida su canción y mande su saludo.'],
-  linea2: ['locutorRadioactiva', 'Llámenos al dos, ochenta y cinco, noventa y siete, noventa y siete. Otra vez: dos, ochenta y cinco, noventa y siete, noventa y siete.'],
+  linea2: [
+    'locutorRadioactiva',
+    'Llámenos al dos, ochenta y cinco, noventa y siete, noventa y siete. Otra vez: dos, ochenta y cinco, noventa y siete, noventa y siete.',
+    'Llámenos al 2 85 97 97. Otra vez: 2 85 97 97.',
+  ],
   id1: ['locutorRadioactiva', 'Radioactiva... ¡noventa y siete nueve!'],
   id2: ['locutorRadioactiva', 'Rock y pop. Radioactiva.'],
   introBolero: ['locutorRadioactiva', '¡Uy, esta sí! Aterciopelados, del disco nuevo: «Bolero falaz».'],
@@ -89,7 +93,11 @@ const RA = lines('radioactiva', {
 
 const ADS = lines('cunas', {
   tocadiscos: ['cunas', '¿Ya tiene El Dorado de los Aterciopelados? En Discos El Tocadiscos lo tenemos en casete y en compact disc. Y casetes vírgenes de sesenta minutos, ¡a precio de locura! Discos El Tocadiscos: Carrera Séptima con sesenta.'],
-  pizzeria: ['cunas', '¿Llueve y no quiere salir? Pizzería La Toscana le lleva la pizza calientica hasta la puerta de su casa. Domicilios en Chapinero: dos, cuarenta y ocho, veinte, veinte.'],
+  pizzeria: [
+    'cunas',
+    '¿Llueve y no quiere salir? Pizzería La Toscana le lleva la pizza calientica hasta la puerta de su casa. Domicilios en Chapinero: dos, cuarenta y ocho, veinte, veinte.',
+    '¿Llueve y no quiere salir? Pizzería La Toscana le lleva la pizza calientica hasta la puerta de su casa. Domicilios en Chapinero: 2 48 20 20.',
+  ],
   cebra: ['cunas', 'Bogotanos: el peatón tiene prelación. Respete la cebra. Un mensaje de la Alcaldía Mayor de Santa Fe de Bogotá.'],
   ingles: ['cunas', 'Academia de inglés Say Yes: hable inglés en seis meses, o le devolvemos su plata. Calle cincuenta y tres con Caracas.'],
   sanandresito: ['cunas', 'En el San Andresito de la Treinta y Ocho: grabadoras, walkman, televisores y videojuegos, ¡a los mejores precios de Bogotá!'],

@@ -5,6 +5,7 @@ import { Deck, type Key } from './deck';
 import { takeUpRadius, supplyRadius, counterDisplay } from './tape';
 import { grabadoraSvg, fmX, amX, KNOB, FUNC, VOL, DIAL, CASSETTE_AT } from '../art/grabadora';
 import { cassetteSvg, HUB_L, HUB_R } from '../art/cassette';
+import { shownText } from '../content/lines';
 import type { AudioEngine } from '../audio/engine';
 import { sfx, play } from '../audio/sfx';
 import { svgPoint } from '../ui/svg';
@@ -64,7 +65,7 @@ export class Grabadora {
     this.deck = new Deck(engine, this.radio.out);
     this.deck.captionSource = () => {
       const c = this.radio.caption(this.lastT);
-      return c ? { label: c.label, text: c.line.text } : null;
+      return c ? { label: c.label, text: shownText(c.line) } : null;
     };
     this.deck.out.connect(this.tapeGate).connect(this.volumeGain);
     this.deck.mech.connect(engine.channel('radio').input);

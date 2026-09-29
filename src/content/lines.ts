@@ -55,17 +55,28 @@ export interface Line {
   /** Stable id; a recording named after it replaces the subtitle-only version. */
   id: string;
   who: Speaker;
+  /** What is said (and what the voice script asks to record). */
   text: string;
+  /** How it reads in a subtitle, when that differs: phone numbers in digits. */
+  shown?: string;
+}
+
+/** The words of a line as they appear on screen. */
+export function shownText(line: Line): string {
+  return line.shown ?? line.text;
 }
 
 const registry = new Map<string, Line>();
 
-/** Define a group of lines: `lines('llamada.andres', { hola: ['mamaAndres', '¿Aló?'] })`. */
-export function lines<K extends string>(group: string, defs: Record<K, [Speaker, string]>): Record<K, Line> {
+/**
+ * Define a group of lines: `lines('llamada.andres', { hola: ['mamaAndres', '¿Aló?'] })`.
+ * A third element is how the line reads on screen, when it differs from what's said.
+ */
+export function lines<K extends string>(group: string, defs: Record<K, [Speaker, string] | [Speaker, string, string]>): Record<K, Line> {
   const out = {} as Record<K, Line>;
   for (const key of Object.keys(defs) as K[]) {
-    const [who, text] = defs[key];
-    const line: Line = { id: `${group}.${key}`, who, text };
+    const [who, text, shown] = defs[key];
+    const line: Line = { id: `${group}.${key}`, who, text, ...(shown ? { shown } : {}) };
     registry.set(line.id, line);
     out[key] = line;
   }

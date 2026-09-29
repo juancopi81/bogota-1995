@@ -1,6 +1,6 @@
 // Subtitles: what you can hear being said, one row per source.
 
-import { SPEAKERS, type Line } from '../content/lines';
+import { SPEAKERS, shownText, type Line } from '../content/lines';
 
 export type SubSource = 'phone' | 'radio' | 'tv' | 'tape' | 'house';
 
@@ -38,7 +38,8 @@ class Subtitles {
       }
       return;
     }
-    const key = `${content.label ?? ''}|${content.line.id}|${content.line.text}`;
+    const text = shownText(content.line);
+    const key = `${content.label ?? ''}|${content.line.id}|${text}`;
     const clarity = content.clarity ?? 1;
     if (existing && existing.key === key) {
       existing.el.style.opacity = String(0.35 + 0.65 * clarity);
@@ -54,7 +55,7 @@ class Subtitles {
     const meta = [content.label, who].filter(Boolean).join(' · ');
     el.innerHTML = `${meta ? `<span class="sub-meta"></span>` : ''}<span class="sub-text"></span>`;
     if (meta) el.querySelector('.sub-meta')!.textContent = meta;
-    el.querySelector('.sub-text')!.textContent = content.line.text;
+    el.querySelector('.sub-text')!.textContent = text;
     this.rows.set(source, { el, key });
 
     // keep rows in a stable order
