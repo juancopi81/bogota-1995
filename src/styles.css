@@ -19,6 +19,7 @@
   --ink: #2b2f3a;
   --paper: #e8dfc8;
   --night: #05070b;
+  color-scheme: dark;
 }
 
 * {

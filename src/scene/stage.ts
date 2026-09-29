@@ -3,6 +3,7 @@
 
 export const STAGE_W = 1600;
 export const STAGE_H = 900;
+const GUTTER = 16;
 
 class Stage {
   readonly viewport: HTMLElement;
@@ -22,7 +23,8 @@ class Stage {
     const fit = () => {
       const w = window.innerWidth;
       const h = window.innerHeight;
-      this.scale = Math.min(w / STAGE_W, h / STAGE_H);
+      // keep a little margin at the sides on narrow screens
+      this.scale = Math.min((w - 2 * GUTTER) / STAGE_W, h / STAGE_H);
       const x = (w - STAGE_W * this.scale) / 2;
       const y = (h - STAGE_H * this.scale) / 2;
       this.el.style.transform = `translate(${x}px, ${y}px) scale(${this.scale})`;
