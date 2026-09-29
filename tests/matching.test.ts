@@ -101,7 +101,7 @@ describe('matching', () => {
     expect(what(f('Aterciopelados - Florecita rockera.mp3'))).toBe('song:florecita-rockera');
     expect(what(f('Musica/Soda Stereo/Ella Uso Mi Cabeza Como Un Revolver.mp3'))).toBe('song:ella-uso-mi-cabeza');
     expect(what(f("Coolio - Gangsta's Paradise ft. L.V..mp3"))).toBe('song:gangstas-paradise');
-    expect(what(f('Mana_-_Donde_Jugaran_Los_Ninos.m4a'))).toBe('song:donde-jugaran');
+    expect(what(f('Poligamia_-_Mi_Generacion.m4a'))).toBe('song:mi-generacion');
     expect(what(f('Carlos Vives/Tierra del olvido.mp3'))).toBe('song:tierra-del-olvido');
     expect(what(f('Zombie.mp3'))).toBe('song:zombie');
   });
@@ -128,6 +128,33 @@ describe('matching', () => {
     expect(what(f('Himno de la alegría.mp3'))).toBeNull();
     expect(what(f('voces/llamada.andres.hola.m4a'))).toBe('voice:llamada.andres.hola');
     expect(what(f('radioactiva_saludo1.wav'))).toBe('voice:radioactiva.saludo1');
+  });
+
+  it("recognizes every file in the folder of 30-second previews", () => {
+    const folder: [string, string][] = [
+      ['01-aterciopelados-bolero-falaz.mp3', 'song:bolero-falaz'],
+      ['02-aterciopelados-florecita-rockera.mp3', 'song:florecita-rockera'],
+      ['03-soda-stereo-ella-uso-mi-cabeza-como-un-revolver.mp3', 'song:ella-uso-mi-cabeza'],
+      ['04-los-fabulosos-cadillacs-matador.mp3', 'song:matador'],
+      ['05-enanitos-verdes-lamento-boliviano.mp3', 'song:lamento-boliviano'],
+      ['06-caifanes-afuera.mp3', 'song:afuera'],
+      ['07-the-cranberries-zombie.mp3', 'song:zombie'],
+      ['08-guns-n-roses-you-could-be-mine.mp3', 'song:you-could-be-mine'],
+      ['09-cafe-tacvba-la-ingrata.mp3', 'song:la-ingrata'],
+      ['10-shakira-estoy-aqui.mp3', 'song:estoy-aqui'],
+      ['11-seal-kiss-from-a-rose.mp3', 'song:kiss-from-a-rose'],
+      ['12-coolio-gangstas-paradise.mp3', 'song:gangstas-paradise'],
+      ['13-poligamia-mi-generacion.mp3', 'song:mi-generacion'],
+      ['14-poligamia-desvanecer.mp3', 'song:desvanecer'],
+      ['15-carlos-vives-la-tierra-del-olvido.mp3', 'song:tierra-del-olvido'],
+      ['16-carlos-vives-la-gota-fria.mp3', 'song:gota-fria'],
+      ['17-grupo-niche-cali-pachanguero.mp3', 'song:cali-pachanguero'],
+      ['18-grupo-niche-una-aventura.mp3', 'song:una-aventura'],
+      ['19-joe-arroyo-rebelion.mp3', 'song:rebelion'],
+      ['20-juan-luis-guerra-burbujas-de-amor.mp3', 'song:burbujas-de-amor'],
+      ['21-himno-nacional-de-colombia.mp3', 'anthem'],
+    ];
+    for (const [name, expected] of folder) expect([name, what(f(`musica-1995/${name}`))]).toEqual([name, expected]);
   });
 
   it('keeps the surest file for each song and lists the rest', () => {

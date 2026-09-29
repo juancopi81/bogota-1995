@@ -1,6 +1,6 @@
 # Voice recording script
 
-Every line spoken in the room (181 lines), grouped by voice. v0 shows them as subtitles;
+Every line spoken in the room (183 lines), grouped by voice. v0 shows them as subtitles;
 a recording named after a line's id replaces the subtitle-only version (the
 subtitle stays).
 
@@ -153,9 +153,10 @@ _Young FM rock DJ, energetic, talks over the intros._
 | `radioactiva.introFlorecita` | Seguimos con los Aterciopelados, que están en todas partes: «Florecita rockera». |
 | `radioactiva.introSoda` | Directo desde Buenos Aires, lo nuevo de Soda Stereo: «Ella usó mi cabeza como un revólver». |
 | `radioactiva.introMatador` | ¡Súbale, súbale! Los Fabulosos Cadillacs: «Matador». |
-| `radioactiva.introIngrata` | Desde México, Café Tacvba: «La ingrata». |
 | `radioactiva.introLamento` | Una que todos nos sabemos: Enanitos Verdes, «Lamento boliviano». |
 | `radioactiva.introAfuera` | Caifanes, «Afuera». Para oír con la ventana abierta... bueno, con esta lluvia, mejor cerrada. |
+| `radioactiva.introZombie` | Desde Irlanda, The Cranberries: «Zombie». ¡Súbale el volumen! |
+| `radioactiva.introGuns` | ¡Aquí nadie se queda quieto! Guns N' Roses: «You Could Be Mine». |
 | `radioactiva.generico1` | Radioactiva, noventa y siete nueve. ¡Aquí va otra! |
 | `radioactiva.generico2` | Seguimos con más música, sin tanta habladera. |
 | `radioactiva.pedidos.dedCarolina` | Y esta va para Carolina, de parte de un admirador secreto en Chapinero. ¡Uy, qué romántico! |
@@ -241,8 +242,9 @@ _Smooth pop FM voice._
 | `superestacion.tareas1` | Para los que están haciendo tareas este sábado: descansen un ratico, que el cerebro también necesita música. |
 | `superestacion.id1` | Súper Estación... ochenta y ocho nueve. |
 | `superestacion.introShakira` | Número uno en la Súper Estación: Shakira, «Estoy aquí». |
-| `superestacion.introMana` | Maná, «¿Dónde jugarán los niños?». Qué canción, ¿no? |
-| `superestacion.introZombie` | The Cranberries, «Zombie». |
+| `superestacion.introIngrata` | Desde México, Café Tacvba: «La ingrata». |
+| `superestacion.introMiGeneracion` | Hecha aquí en Bogotá: Poligamia, «Mi generación». |
+| `superestacion.introDesvanecer` | Poligamia, «Desvanecer». Para los que andan con el corazón partío. |
 | `superestacion.introSeal` | Para los enamorados: Seal, «Kiss from a Rose». |
 | `superestacion.introCoolio` | La que todos están pidiendo: Coolio, «Gangsta's Paradise». |
 | `superestacion.generico1` | Seguimos en la Súper Estación. |
@@ -262,7 +264,7 @@ _Loud, happy tropical-radio voice._
 | `tropicana.introCali` | ¡Salsa caleña! Grupo Niche, «Cali pachanguero». |
 | `tropicana.introAventura` | Grupo Niche, «Una aventura». ¡Pa' bailar pegadito! |
 | `tropicana.introRebelion` | ¡El Joe! Joe Arroyo, «Rebelión». |
-| `tropicana.introCafe` | Juan Luis Guerra, «Ojalá que llueva café»... ¡aunque aquí lo que llueve es agua! |
+| `tropicana.introBurbujas` | Juan Luis Guerra y los 4.40: «Burbujas de amor». ¡Pa' la pareja que está bailando en la sala! |
 | `tropicana.generico1` | ¡Sabroso! Seguimos en Tropicana. |
 
 ## Locutor · RCN

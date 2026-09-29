@@ -50,7 +50,8 @@ function djTime(t: number): string {
 }
 
 // ---------------------------------------------------------------------------
-// Radioactiva 97.9 FM — Caracol. Rock and pop (it went all-rock in 1997).
+// Radioactiva 97.9 FM — Caracol. Rock and pop (it went all-rock, and took its
+// "k", in 1997: Radioacktiva, el Planeta Rock).
 // ---------------------------------------------------------------------------
 
 const RA = lines('radioactiva', {
@@ -78,9 +79,10 @@ const RA = lines('radioactiva', {
   introFlorecita: ['locutorRadioactiva', 'Seguimos con los Aterciopelados, que están en todas partes: «Florecita rockera».'],
   introSoda: ['locutorRadioactiva', 'Directo desde Buenos Aires, lo nuevo de Soda Stereo: «Ella usó mi cabeza como un revólver».'],
   introMatador: ['locutorRadioactiva', '¡Súbale, súbale! Los Fabulosos Cadillacs: «Matador».'],
-  introIngrata: ['locutorRadioactiva', 'Desde México, Café Tacvba: «La ingrata».'],
   introLamento: ['locutorRadioactiva', 'Una que todos nos sabemos: Enanitos Verdes, «Lamento boliviano».'],
   introAfuera: ['locutorRadioactiva', 'Caifanes, «Afuera». Para oír con la ventana abierta... bueno, con esta lluvia, mejor cerrada.'],
+  introZombie: ['locutorRadioactiva', 'Desde Irlanda, The Cranberries: «Zombie». ¡Súbale el volumen!'],
+  introGuns: ['locutorRadioactiva', '¡Aquí nadie se queda quieto! Guns N\' Roses: «You Could Be Mine».'],
   generico1: ['locutorRadioactiva', 'Radioactiva, noventa y siete nueve. ¡Aquí va otra!'],
   generico2: ['locutorRadioactiva', 'Seguimos con más música, sin tanta habladera.'],
 });
@@ -105,7 +107,7 @@ export const RADIOACTIVA: StationDef = {
   band: 'FM',
   freq: 97.9,
   label: 'Radioactiva 97.9',
-  catalog: ['bolero-falaz', 'florecita-rockera', 'ella-uso-mi-cabeza', 'matador', 'la-ingrata', 'lamento-boliviano', 'afuera', 'estoy-aqui'],
+  catalog: ['bolero-falaz', 'florecita-rockera', 'ella-uso-mi-cabeza', 'matador', 'lamento-boliviano', 'afuera', 'zombie', 'you-could-be-mine'],
   heavy: ['bolero-falaz', 'florecita-rockera'],
   jingle: 'rock',
   bed: 'rock',
@@ -127,9 +129,10 @@ export const RADIOACTIVA: StationDef = {
     'florecita-rockera': [RA.introFlorecita],
     'ella-uso-mi-cabeza': [RA.introSoda],
     matador: [RA.introMatador],
-    'la-ingrata': [RA.introIngrata],
     'lamento-boliviano': [RA.introLamento],
     afuera: [RA.introAfuera],
+    zombie: [RA.introZombie],
+    'you-could-be-mine': [RA.introGuns],
   },
   genericIntros: [[RA.generico1], [RA.generico2]],
   timeCheck: (t) => [dynamicLine('locutorRadioactiva', `Son ${djTime(t)} en Bogotá, doce grados, y sigue lloviendo.`)],
@@ -176,8 +179,9 @@ const SU = lines('superestacion', {
   tareas1: ['locutorSuper', 'Para los que están haciendo tareas este sábado: descansen un ratico, que el cerebro también necesita música.'],
   id1: ['locutorSuper', 'Súper Estación... ochenta y ocho nueve.'],
   introShakira: ['locutorSuper', 'Número uno en la Súper Estación: Shakira, «Estoy aquí».'],
-  introMana: ['locutorSuper', 'Maná, «¿Dónde jugarán los niños?». Qué canción, ¿no?'],
-  introZombie: ['locutorSuper', 'The Cranberries, «Zombie».'],
+  introIngrata: ['locutorSuper', 'Desde México, Café Tacvba: «La ingrata».'],
+  introMiGeneracion: ['locutorSuper', 'Hecha aquí en Bogotá: Poligamia, «Mi generación».'],
+  introDesvanecer: ['locutorSuper', 'Poligamia, «Desvanecer». Para los que andan con el corazón partío.'],
   introSeal: ['locutorSuper', 'Para los enamorados: Seal, «Kiss from a Rose».'],
   introCoolio: ['locutorSuper', 'La que todos están pidiendo: Coolio, «Gangsta\'s Paradise».'],
   generico1: ['locutorSuper', 'Seguimos en la Súper Estación.'],
@@ -189,7 +193,7 @@ export const SUPERESTACION: StationDef = {
   band: 'FM',
   freq: 88.9,
   label: 'Súper Estación 88.9',
-  catalog: ['estoy-aqui', 'donde-jugaran', 'zombie', 'kiss-from-a-rose', 'gangstas-paradise'],
+  catalog: ['la-ingrata', 'estoy-aqui', 'kiss-from-a-rose', 'gangstas-paradise', 'mi-generacion', 'desvanecer'],
   heavy: ['estoy-aqui'],
   jingle: 'pop',
   bed: 'pop',
@@ -198,9 +202,10 @@ export const SUPERESTACION: StationDef = {
   talks: [[SU.hola1, SU.hola2], [SU.shakira1, SU.shakira2], [SU.tareas1]],
   ads: [[ADS.optica], [ADS.cebra], [ADS.sanandresito], [ADS.ingles]],
   intros: {
+    'la-ingrata': [SU.introIngrata],
     'estoy-aqui': [SU.introShakira],
-    'donde-jugaran': [SU.introMana],
-    zombie: [SU.introZombie],
+    'mi-generacion': [SU.introMiGeneracion],
+    desvanecer: [SU.introDesvanecer],
     'kiss-from-a-rose': [SU.introSeal],
     'gangstas-paradise': [SU.introCoolio],
   },
@@ -224,7 +229,7 @@ const TR = lines('tropicana', {
   introCali: ['locutorTropicana', '¡Salsa caleña! Grupo Niche, «Cali pachanguero».'],
   introAventura: ['locutorTropicana', 'Grupo Niche, «Una aventura». ¡Pa\' bailar pegadito!'],
   introRebelion: ['locutorTropicana', '¡El Joe! Joe Arroyo, «Rebelión».'],
-  introCafe: ['locutorTropicana', 'Juan Luis Guerra, «Ojalá que llueva café»... ¡aunque aquí lo que llueve es agua!'],
+  introBurbujas: ['locutorTropicana', 'Juan Luis Guerra y los 4.40: «Burbujas de amor». ¡Pa\' la pareja que está bailando en la sala!'],
   generico1: ['locutorTropicana', '¡Sabroso! Seguimos en Tropicana.'],
 });
 
@@ -234,7 +239,7 @@ export const TROPICANA: StationDef = {
   band: 'FM',
   freq: 102.9,
   label: 'Tropicana 102.9',
-  catalog: ['tierra-del-olvido', 'gota-fria', 'cali-pachanguero', 'una-aventura', 'rebelion', 'ojala-que-llueva-cafe'],
+  catalog: ['tierra-del-olvido', 'gota-fria', 'cali-pachanguero', 'una-aventura', 'rebelion', 'burbujas-de-amor'],
   heavy: ['tierra-del-olvido'],
   jingle: 'tropical',
   bed: 'tropical',
@@ -248,7 +253,7 @@ export const TROPICANA: StationDef = {
     'cali-pachanguero': [TR.introCali],
     'una-aventura': [TR.introAventura],
     rebelion: [TR.introRebelion],
-    'ojala-que-llueva-cafe': [TR.introCafe],
+    'burbujas-de-amor': [TR.introBurbujas],
   },
   genericIntros: [[TR.generico1]],
   timeCheck: (t) => [dynamicLine('locutorTropicana', `¡Son ${djTime(t)} en Tropicana!`)],
