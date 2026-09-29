@@ -4,12 +4,15 @@
 //
 // Loading is one gesture: drop a folder (or a pile of files) anywhere, or pick
 // one. Each file is recognized by its tags, its name or its folder; whatever
-// can't be placed is listed so you can say what it is.
+// can't be placed is listed so you can say what it is. A song list (a CSV)
+// in the folder says exactly which file is which, and where the room differs
+// from it.
 
 import { library } from '../audio/library';
 import { voices } from '../audio/voices';
 import { tagsOfFile } from '../audio/tags';
 import { isAudioName, plan, type Candidate, type Target } from '../audio/matching';
+import { checkManifest, readManifest, type ManifestCheck } from '../audio/manifest';
 import { SONGS, REQUESTABLE, song } from '../content/songs';
 import { STATIONS } from '../content/stations';
 import { allLines, SPEAKERS, type Speaker } from '../content/lines';
@@ -24,6 +27,13 @@ interface Picked extends Candidate {
 
 const escape = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
+/** A song list exported from a spreadsheet. */
+const isList = (f: File) => /\.(csv|tsv)$/i.test(f.name) || f.type === 'text/csv';
+/** What the backstage takes from a drop: audio, and song lists. */
+const wanted = (f: File) => isAudioName(f.name) || f.type.startsWith('audio/') || isList(f);
+
+const mmss = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.round(seconds % 60)).padStart(2, '0')}`;
+
 /** Every audio file in a drop, folders included (however deep). */
 async function filesFromDrop(items: DataTransferItemList): Promise<Picked[]> {
   const out: Picked[] = [];
@@ -33,7 +43,7 @@ async function filesFromDrop(items: DataTransferItemList): Promise<Picked[]> {
   const walk = async (entry: FileSystemEntry): Promise<void> => {
     if (entry.isFile) {
       const file = await new Promise<File>((resolve, reject) => (entry as FileSystemFileEntry).file(resolve, reject));
-      if (isAudioName(file.name) || file.type.startsWith('audio/')) out.push({ file, path: entry.fullPath.replace(/^\//, ''), tags: {} });
+      if (wanted(file)) out.push({ file, path: entry.fullPath.replace(/^\//, ''), tags: {} });
       return;
     }
     if (!entry.isDirectory) return;
@@ -45,13 +55,13 @@ async function filesFromDrop(items: DataTransferItemList): Promise<Picked[]> {
     }
   };
   for (const e of entries) await walk(e).catch(() => undefined);
-  for (const file of loose) if (isAudioName(file.name) || file.type.startsWith('audio/')) out.push({ file, path: file.name, tags: {} });
+  for (const file of loose) if (wanted(file)) out.push({ file, path: file.name, tags: {} });
   return out;
 }
 
 function filesFromInput(input: HTMLInputElement): Picked[] {
   return [...(input.files ?? [])]
-    .filter((f) => isAudioName(f.name) || f.type.startsWith('audio/'))
+    .filter(wanted)
     .map((file) => ({ file, path: file.webkitRelativePath || file.name, tags: {} }));
 }
 
@@ -64,6 +74,8 @@ export class Backstage {
   private unknown: Picked[] = [];
   private busy = false;
   private eraseArmed = false;
+  /** A quick listen to a loaded file, straight to the speakers (not through the room). */
+  private preview: { id: string; src: AudioBufferSourceNode } | null = null;
 
   constructor(
     private readonly ctx: AudioContext,
@@ -129,9 +141,11 @@ export class Backstage {
   }
 
   /** Recognize a batch of files and load what can be placed. */
-  private async ingest(files: Picked[]): Promise<void> {
+  private async ingest(picked: Picked[]): Promise<void> {
     if (this.busy) return;
-    if (!files.length) {
+    const lists = picked.filter((f) => isList(f.file));
+    const files = picked.filter((f) => !isList(f.file));
+    if (!files.length && !lists.length) {
       this.report = 'No encontré archivos de audio ahí.';
       this.render();
       return;
@@ -139,12 +153,22 @@ export class Backstage {
     this.busy = true;
     this.render();
     try {
+      // a song list in the folder says exactly what each file is
+      let listed: Map<string, Target> | undefined;
+      const listNotes: string[] = [];
+      for (const l of lists) {
+        const rows = readManifest(await l.file.text());
+        if (!rows) continue;
+        const check = checkManifest(rows, SONGS, STATIONS);
+        listed = new Map([...(listed ?? []), ...check.files]);
+        listNotes.push(this.describeList(l.path, rows.length, check));
+      }
       for (let i = 0; i < files.length; i++) {
         if (i % 10 === 0) this.progress(`Revisando ${i + 1} de ${files.length}…`);
         files[i].tags = await tagsOfFile(files[i].file);
       }
       const lineIds = new Set(allLines().map((l) => l.id));
-      const p = plan(files, SONGS, lineIds);
+      const p = plan(files, SONGS, lineIds, listed);
       let songs = 0;
       let lines = 0;
       let anthem = false;
@@ -166,7 +190,8 @@ export class Backstage {
       if (p.duplicates.length) notes.push(`${p.duplicates.length} repetidos (me quedé con el más claro)`);
       if (failed.length) notes.push(`${failed.length} que el navegador no pudo leer: ${failed.map(escape).join(', ')}`);
       this.unknown = [...this.unknown, ...p.unknown];
-      this.report = `${parts.length ? `Listo: ${parts.join(', ')}.` : 'No reconocí nada.'}${notes.length ? ` ${notes.join('. ')}.` : ''}`;
+      const loaded = files.length ? `${parts.length ? `Listo: ${parts.join(', ')}.` : 'No reconocí nada.'}${notes.length ? ` ${notes.join('. ')}.` : ''}` : '';
+      this.report = [loaded, ...listNotes].filter(Boolean).join('<br>');
     } finally {
       this.busy = false;
       this.render();
@@ -177,6 +202,54 @@ export class Backstage {
     const data = await file.arrayBuffer();
     if (target.kind === 'voice') return voices.add(this.ctx, target.id, data);
     return library.upload(target.kind === 'anthem' ? 'anthem' : target.id, data);
+  }
+
+  private previewButton(id: string): string {
+    const on = this.preview?.id === id;
+    return `<button data-preview="${id}" title="${on ? 'Parar' : 'Oír unos segundos'}">${on ? '■' : '▶'}</button>`;
+  }
+
+  private togglePreview(id: string): void {
+    const was = this.preview?.id;
+    this.stopPreview();
+    const buffer = id === 'anthem' ? library.anthem() : library.song(id);
+    if (was !== id && buffer) {
+      const src = this.ctx.createBufferSource();
+      src.buffer = buffer;
+      const gain = this.ctx.createGain();
+      gain.gain.value = 0.8;
+      src.connect(gain).connect(this.ctx.destination);
+      src.start();
+      src.stop(this.ctx.currentTime + 10);
+      src.onended = () => {
+        if (this.preview?.src !== src) return;
+        this.preview = null;
+        this.render();
+      };
+      this.preview = { id, src };
+    }
+    this.render();
+  }
+
+  private stopPreview(): void {
+    const p = this.preview;
+    this.preview = null;
+    try {
+      p?.src.stop();
+    } catch {
+      /* already over */
+    }
+  }
+
+  /** What a song list says, next to what the room has. */
+  private describeList(path: string, rows: number, check: ManifestCheck): string {
+    const name = escape(path.split('/').pop() ?? path);
+    if (!check.missing.length && !check.moved.length) return `Su lista <b>${name}</b> (${rows} filas) coincide con el cuarto.`;
+    const out = [`Su lista <b>${name}</b> no coincide del todo con el cuarto:`];
+    for (const r of check.missing) out.push(`· «${escape(r.title)}» (${escape(r.artist)}) no está en el cuarto.`);
+    for (const m of check.moved) out.push(`· «${escape(m.row.title)}»: en su lista va en ${escape(m.listed)}; en el cuarto suena en ${escape(m.room.join(' y ') || 'ninguna')}.`);
+    out.push('Si quiere el cuarto como su lista, pida el cambio.');
+    return out.join('<br>');
   }
 
   private describe(t: Target): string {
@@ -217,7 +290,7 @@ export class Backstage {
       const s = song(id);
       const requestable = REQUESTABLE.includes(id) ? ' <span class="tag" title="Se puede pedir en la cabina de Radioactiva">se puede pedir</span>' : '';
       const status = library.isUploaded(id)
-        ? `<span class="ok">✓ suya</span> <button data-forget="${id}">Quitar</button>`
+        ? `<span class="ok">✓ suya</span> <small>${mmss(library.song(id)!.duration)}</small> ${this.previewButton(id)} <button data-forget="${id}">Quitar</button>`
         : `<span class="muted">relleno</span> <label class="file">Cargar<input type="file" accept="audio/*" data-song="${id}" hidden></label>`;
       return `<div class="row"><span>${escape(s.title)}${requestable}<br><small>${escape(s.artist)} · ${s.year}</small></span><span>${status}</span></div>`;
     };
@@ -266,7 +339,7 @@ export class Backstage {
       <h3>Himno Nacional</h3>
       <p>A las 6:00 p.m. todas las emisoras y canales pasan el himno. Cargue una grabación para que suene.</p>
       <div class="row"><span>Himno Nacional de la República de Colombia</span>
-        <span>${library.anthem() ? `<span class="ok">✓</span> <button data-forget="anthem">Quitar</button>` : `<label class="file">Cargar<input type="file" accept="audio/*" data-song="anthem" hidden></label>`}</span></div>
+        <span>${library.anthem() ? `<span class="ok">✓</span> <small>${mmss(library.anthem()!.duration)}</small> ${this.previewButton('anthem')} <button data-forget="anthem">Quitar</button>` : `<label class="file">Cargar<input type="file" accept="audio/*" data-song="anthem" hidden></label>`}</span></div>
 
       <h3>Voces · ${recorded} de ${spoken.length} líneas</h3>
       <p>Cada archivo se llama como el código de su línea (ver <code>docs/voice-script.md</code>), por ejemplo <code>llamada.andres.hola.m4a</code>. Arrástrelos arriba con lo demás.</p>
@@ -302,6 +375,9 @@ export class Backstage {
         if (file) await library.upload(input.dataset.song!, await file.arrayBuffer());
         this.render();
       }),
+    );
+    this.el.querySelectorAll<HTMLButtonElement>('button[data-preview]').forEach((b) =>
+      b.addEventListener('click', () => this.togglePreview(b.dataset.preview!)),
     );
     this.el.querySelectorAll<HTMLButtonElement>('button[data-forget]').forEach((b) =>
       b.addEventListener('click', async () => {

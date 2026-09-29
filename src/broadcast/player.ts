@@ -145,6 +145,15 @@ export class StationPlayer {
 
     switch (seg.kind) {
       case 'song': {
+        // a loaded file can start and stop mid-phrase (30-second previews do): soften the edges
+        if (library.isUploaded(seg.songId)) {
+          gain.gain.setValueAtTime(0, startCtx);
+          gain.gain.linearRampToValueAtTime(1, startCtx + 0.4);
+          if (!item.cut) {
+            gain.gain.setValueAtTime(1, Math.max(startCtx + 0.4, endCtx - 1.8));
+            gain.gain.linearRampToValueAtTime(0, endCtx);
+          }
+        }
         withBuffer(library.song(seg.songId), () => library.whenSong(seg.songId), (b) => play(b, startCtx));
         // the DJ ducks the music a little while talking over the intro
         voicesAt(item.cues);

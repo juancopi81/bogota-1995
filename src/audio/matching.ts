@@ -22,8 +22,8 @@ export interface Match {
   target: Target;
   /** 0–100: how sure we are. */
   score: number;
-  /** What gave it away. */
-  by: 'id' | 'tags' | 'name';
+  /** What gave it away: a line id, the tags, the name, or a song list that came with the files. */
+  by: 'id' | 'tags' | 'name' | 'list';
 }
 
 export const AUDIO_EXTENSIONS = ['mp3', 'm4a', 'mp4', 'aac', 'ogg', 'oga', 'opus', 'wav', 'flac', 'webm', 'aif', 'aiff', 'caf'];
@@ -53,7 +53,7 @@ function bareTitle(s: string): string {
     .trim();
 }
 
-function basename(path: string): string {
+export function basename(path: string): string {
   const name = path.split(/[\\/]/).pop() ?? path;
   return name.replace(/\.[a-z0-9]{1,5}$/i, '');
 }
@@ -154,13 +154,17 @@ export interface Plan<F> {
   unknown: F[];
 }
 
-/** Sort a batch of files into what goes where. */
-export function plan<F extends Candidate>(files: F[], songs: SongRef[], lineIds: Set<string>): Plan<F> {
+/**
+ * Sort a batch of files into what goes where. `listed` holds what a song list
+ * that came with the files says each one is (by `fileKey`), and wins.
+ */
+export function plan<F extends Candidate>(files: F[], songs: SongRef[], lineIds: Set<string>, listed?: Map<string, Target>): Plan<F> {
   const best = new Map<string, { file: F; match: Match }>();
   const duplicates: { file: F; match: Match }[] = [];
   const unknown: F[] = [];
   for (const file of files) {
-    const match = classify(file, songs, lineIds);
+    const known = listed?.get(normalize(basename(file.path)));
+    const match = known ? { target: known, score: 100, by: 'list' as const } : classify(file, songs, lineIds);
     if (!match) {
       unknown.push(file);
       continue;

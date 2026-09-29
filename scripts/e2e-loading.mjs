@@ -44,6 +44,10 @@ put('carpeta/Musica/Caifanes/Afuera.mp3', mp3());
 put('carpeta/Musica/Soda Stereo/05.mp3', mp3({ TIT2: 'Ella usó mi cabeza como un revólver', TPE1: 'Soda Stereo' }));
 put('carpeta/voces/llamada.andres.chao.mp3', mp3(null, 1));
 put('carpeta/Musica/notas.txt', 'no es audio');
+put(
+  'carpeta/lista.csv',
+  'titulo,artista_o_grupo,emisora,archivo_mp3_sugerido\nAfuera,Caifanes,Radioacktiva 97.9,Afuera.mp3\n"Ella usó mi cabeza como un revólver",Soda Stereo,Súper Estación 88.9,05.mp3\nEl santo cachón,Los Embajadores Vallenatos,Tropicana 102.9,santo.mp3\n',
+);
 
 // ---------- the run ----------
 
@@ -77,7 +81,8 @@ console.log('assigned:', await report());
 // 3. pick a folder
 await page.setInputFiles('#backstage input[data-folder]', join(dir, 'carpeta'));
 await page.waitForFunction(() => window.room1995.library.isUploaded('afuera'), null, { timeout: 30000 });
-console.log('folder:', await waitDone());
+await waitDone();
+console.log('folder:', (await page.locator('#backstage .load-report').innerText()).replace(/\n/g, ' | '));
 // 4. drop a file on the room
 await page.keyboard.press('`');
 const dropped = [...mp3({ TIT2: 'La gota fría', TPE1: 'Carlos Vives' })];

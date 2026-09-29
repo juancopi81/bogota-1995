@@ -45,6 +45,8 @@ class Library {
     const keys = await idb.keys('songs');
     await Promise.all(
       keys.map(async (id) => {
+        // a song that left the list stays saved, but isn't decoded
+        if (id !== 'anthem' && !SONGS.some((s) => s.id === id)) return;
         const data = await idb.get<ArrayBuffer>('songs', id);
         if (!data) return;
         try {
