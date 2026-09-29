@@ -419,6 +419,8 @@ body {
   display: none;
   user-select: text;
   -webkit-user-select: text;
+  /* the panel is light even though the room is dark: its buttons and fields too */
+  color-scheme: light;
 }
 
 #backstage.open {
@@ -465,8 +467,17 @@ body {
   border-radius: 5px;
   border: 1px solid #c9c0ad;
   background: #fff;
+  color: #1f1f22;
   cursor: pointer;
   white-space: nowrap;
+}
+
+#backstage input,
+#backstage select {
+  background: #fff;
+  color: #1f1f22;
+  border: 1px solid #c9c0ad;
+  border-radius: 4px;
 }
 
 #backstage button:hover,
