@@ -13,7 +13,9 @@ last section).
    hits can play without anyone's permission, and it already works.
 2. **For a public version, the radio needs music we're allowed to stream.**
    None of the shortcuts fit this room: not a streaming license, not Spotify,
-   not YouTube as the radio. The reasons are specific, and listed below.
+   not YouTube as the radio, and not the 30-second previews (Apple's are for
+   promotion only; Deezer's come with conditions that clash with the radio and
+   the tape). The reasons are specific, and listed below.
 3. **The backbone should be original songs "from 1995".** Commission a few
    Bogotá musicians to write and record songs for fictional bands in the
    styles on the dial. Everything keeps working: requests, the DJ over the
@@ -106,6 +108,41 @@ The page plays songs through the visitor's account.
   video of «Florecita rockera» is on YouTube
   ([`_MB30bHR6Cs`](https://www.youtube.com/watch?v=_MB30bHR6Cs)). Not added:
   it needs your OK, like every clip.
+
+### 4b. Streaming the 30-second previews (Deezer, Apple)
+
+Both services give out 30-second previews that play without an account. The
+room could fetch them while it runs, so nobody would upload anything.
+
+- **Apple: no.** Its previews may only promote the store: on a page that
+  promotes that song, next to a badge linking to buy it, credited "provided
+  courtesy of iTunes", streamed without caching, and "not used for independent
+  entertainment value apart from their promotional purpose"
+  ([Apple's Search API terms](https://performance-partners.apple.com/search-api)).
+  A radio room is entertainment.
+- **Deezer: closer, with strings attached.** Deezer's community team says a
+  noncommercial game may use previews if it credits Deezer for the audio
+  ([Deezer community](https://en.deezercommunity.com/deezer-for-creators-55/use-preview-api-for-trivia-music-game-83063)).
+  The developer terms add a visible Deezer logo, no modifying the content, and
+  no associating it with other brands
+  ([terms](https://developers.deezer.com/termsofuse), [developer FAQ](https://support.deezer.com/hc/en-gb/articles/360011538897-Deezer-FAQs-For-Developers)).
+  What that would mean in the room:
+  - **The radio couldn't touch the sound.** Deezer's newer preview links don't
+    let a web page process the audio
+    ([Deezer community](https://en.deezercommunity.com/other-devices-49/api-access-control-allow-origin-80021)).
+    So there would be no fade-in as you tune and no AM filter, only volume.
+    Static and the DJ could still play on top; whether that counts as
+    "modifying" is a question for Deezer.
+  - **The tape couldn't record the song.** It could remember what was on the
+    air and replay the preview from Deezer, but that isn't a copy anymore.
+  - **Only 30 seconds**, usually from the middle of the song rather than the
+    intro the DJ talks over.
+  - **The station names are brands** (Radioactiva, Tropicana…) sitting next to
+    Deezer's content, which their terms don't allow.
+  - **It needs its own website:** the claude.ai link can't reach Deezer.
+- **Verdict:** Apple is out. Deezer is possible as an experiment on a public
+  site, with the Deezer logo and credit and renamed stations, after asking
+  Deezer's developer support. It would sound thinner than your files.
 
 ### 5. Direct permission for the real recordings
 
