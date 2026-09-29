@@ -40,6 +40,7 @@ Other ways to open it:
   the picture is snow, whack the cabinet. Canal A (9) airs real 1995 clips
   when it can (see [`docs/clips-shortlist.md`](docs/clips-shortlist.md)).
 - **The window.** Wipe the fog, open the pane, listen to the street.
+- **The alarm clock** on the dresser keeps the afternoon's time; up close it ticks.
 - **The light switch** by the door, for when it gets dark.
 
 <details>
@@ -73,8 +74,11 @@ From there you can:
   recognized by the title and artist saved in the file, its name or its
   folder; the anthem by its name; voices by their line id (see
   [`docs/voice-script.md`](docs/voice-script.md)). Anything it can't place is
-  listed with a "¿Qué es?" menu. Files stay in this browser; nothing is
-  uploaded. Until you load a song, a placeholder in its style plays.
+  listed with a "¿Qué es?" menu. If the folder has a song list (a CSV with
+  `titulo`, `artista_o_grupo`, `emisora`, `archivo_mp3_sugerido`), it says
+  exactly which file is which, and the backstage lists where the room differs
+  from it. Files stay in this browser; nothing is uploaded. Until you load a
+  song, a placeholder in its style plays. ▶ plays a few seconds of a loaded file.
 - **See what's missing:** songs by station (the ones you can request are
   marked), and voice coverage for each character.
 - **Move the clock forward**, or start the afternoon over.
@@ -96,7 +100,7 @@ Chromium against the dev server: the request-line thread, the callback, the
 TV clips (with a stand-in YouTube player) and loading files.
 
 URL parameters for poking around: `?skip` skips the title card, `?t=900`
-starts 15 minutes in, and `?open=grabadora|phone|tv|window` opens a
+starts 15 minutes in, and `?open=grabadora|phone|tv|window|clock` opens a
 close-up. In dev, `window.room1995` exposes the objects in the console.
 
 ### Where things live
