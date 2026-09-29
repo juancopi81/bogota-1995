@@ -19,6 +19,15 @@ npm run dev
 
 Open http://localhost:5173 with **headphones on**. Laptop first; touch works too.
 
+Other ways to open it:
+
+- **A private claude.ai link**, updated with each iteration. The real TV
+  clips don't play there, because artifacts can't embed other sites.
+- **One file you can double-click:** `npm run build:single` writes
+  `dist-single/index.html`. The TV clips don't play from disk either.
+- **The clips play** wherever the room is served over http(s): `npm run dev`,
+  or `npm run build` and then `npm run preview`.
+
 ## What's in the room
 
 - **The grabadora.** Three FM stations and one AM, live on the world clock:
@@ -28,7 +37,8 @@ Open http://localhost:5173 with **headphones on**. Laptop first; touch works too
 - **The phone.** A rotary dial (drag a finger hole round to the stop, or type
   digits) and the libreta with the numbers you know by heart.
 - **The TV.** Push POWER, turn the channel knob, move the rabbit ears when
-  the picture is snow, whack the cabinet.
+  the picture is snow, whack the cabinet. Canal A (9) airs real 1995 clips
+  when it can (see [`docs/clips-shortlist.md`](docs/clips-shortlist.md)).
 - **The window.** Wipe the fog, open the pane, listen to the street.
 - **The light switch** by the door, for when it gets dark.
 
@@ -58,23 +68,32 @@ Open http://localhost:5173 with **headphones on**. Laptop first; touch works too
 Press <kbd>`</kbd> (or the small ⚙ in the corner). It isn't part of the room.
 From there you can:
 
-- **Load your own songs.** The stations play placeholder music until you
-  load the real file for each title. Files are matched by name and stay in
-  this browser; nothing is uploaded.
-- **Load the national anthem** for 6:00 p.m.
-- **Load recorded voices.** The recording script is in
-  [`docs/voice-script.md`](docs/voice-script.md).
+- **Load your own songs, the anthem and recorded voices, in one go.** Drop a
+  folder (or a pile of files) anywhere on the room, or pick one. Songs are
+  recognized by the title and artist saved in the file, its name or its
+  folder; the anthem by its name; voices by their line id (see
+  [`docs/voice-script.md`](docs/voice-script.md)). Anything it can't place is
+  listed with a "¿Qué es?" menu. Files stay in this browser; nothing is
+  uploaded. Until you load a song, a placeholder in its style plays.
+- **See what's missing:** songs by station (the ones you can request are
+  marked), and voice coverage for each character.
 - **Move the clock forward**, or start the afternoon over.
-- **Erase the tape.**
+- **Erase the tape** (it asks twice).
 
 ## Development
 
 ```sh
-npm test          # unit tests (timeline, tape)
+npm test               # unit tests (timeline, tape, file tags and matching)
 npm run typecheck
-npm run build     # static site in dist/
-npm run voices    # regenerate docs/voice-script.md from the content
+npm run build          # static site in dist/
+npm run build:single   # one self-contained file in dist-single/
+npm run build:artifact # the same, shaped for a claude.ai artifact, in dist-artifact/
+npm run voices         # regenerate docs/voice-script.md from the content
 ```
+
+End-to-end scripts in `scripts/` (`e2e-*.mjs`) drive the room in headless
+Chromium against the dev server: the request-line thread, the callback, the
+TV clips (with a stand-in YouTube player) and loading files.
 
 URL parameters for poking around: `?skip` skips the title card, `?t=900`
 starts 15 minutes in, and `?open=grabadora|phone|tv|window` opens a
@@ -91,7 +110,7 @@ close-up. In dev, `window.room1995` exposes the objects in the console.
 | `src/art/` | The drawings, as SVG built in code. |
 | `src/scene/` | The room, the close-ups, the light, the city view. |
 | `src/world/` | The clock, what happened this afternoon (`flags`), the traffic schedule, storage. |
-| `docs/` | Vision, v0 decisions, voice script, TV clips shortlist. |
+| `docs/` | Vision, v0 decisions, voice script, TV clips, the public-path proposal for music. |
 
 Every object is a small state machine with plain methods (`deck.press('rec')`,
 `phone.lift()`, `tv.setPower(true)`). That's the natural way to build a
@@ -106,3 +125,5 @@ all be driven from the console.
 - Real song titles, stations and brands appear by name. That's fine for a
   private prototype, but it needs review before anything public.
 - The real songs and voices you load stay in your browser.
+- The TV clips are YouTube embeds, played in YouTube's own player.
+- How a public version could have music: [`docs/public-path.md`](docs/public-path.md).
