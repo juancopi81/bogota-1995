@@ -50,6 +50,6 @@ export type WorldEvents = {
   'window:open': { open: boolean };
 };
 
-export type CloseupId = 'grabadora' | 'phone' | 'tv' | 'window';
+export type CloseupId = 'grabadora' | 'phone' | 'tv' | 'window' | 'clock';
 
 export const bus = new Emitter<WorldEvents>();

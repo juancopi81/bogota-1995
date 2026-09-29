@@ -14,6 +14,7 @@ import { Grabadora } from './objects/grabadora';
 import { Phone } from './objects/phone';
 import { Tv } from './objects/tv';
 import { WindowView } from './objects/window';
+import { AlarmClock } from './objects/alarmclock';
 import { light, setBulb } from './scene/light';
 import { kv } from './world/store';
 import { sfx, play } from './audio/sfx';
@@ -62,6 +63,12 @@ windowView.bindRoom(scene.wall);
 closeups.register('window', { el: windowView.el, rect: ROOM.window, focus: 'window' });
 addLightOverlays(windowView.el, { x: 1700, y: 900 }, 0.2);
 
+const alarmClock = new AlarmClock(engine);
+alarmClock.bindRoom(scene.wall);
+const { cx, cy } = ROOM.clock;
+closeups.register('clock', { el: alarmClock.el, rect: { x: cx - 40, y: cy - 30, w: 80, h: 60 }, focus: null });
+addLightOverlays(alarmClock.el, { x: -200, y: 300 }, 0.3);
+
 // the light switch by the door
 const toggle = scene.wall.querySelector<SVGRectElement>('.switch-toggle')!;
 const showSwitch = () => toggle.setAttribute('y', light.bulb ? '366' : '374');
@@ -85,6 +92,7 @@ onTick((dt, t) => {
   phone.tick(dt, t);
   tv.tick(dt, t);
   windowView.tick(dt, t);
+  alarmClock.tick(t);
 });
 
 function titleCard(onEnter: () => void): void {
@@ -113,11 +121,11 @@ async function enter(): Promise<void> {
   const skipTo = Number(params.get('t') ?? 0);
   if (skipTo > 0) clock.skip(skipTo);
   const open = params.get('open');
-  if (open === 'grabadora' || open === 'phone' || open === 'tv' || open === 'window') closeups.open(open);
+  if (open === 'grabadora' || open === 'phone' || open === 'tv' || open === 'window' || open === 'clock') closeups.open(open);
 }
 
 // for poking at the room from the browser console while developing
-if (import.meta.env.DEV) Object.assign(window, { room1995: { grabadora, phone, tv, windowView, clock, engine, closeups, library, voices, flags } });
+if (import.meta.env.DEV) Object.assign(window, { room1995: { grabadora, phone, tv, windowView, alarmClock, clock, engine, closeups, library, voices, flags } });
 
 startLoop();
 if (params.has('skip')) {

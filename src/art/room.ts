@@ -292,7 +292,9 @@ export function wallSvg(): string {
     <text x="1184" y="458" text-anchor="middle" font-family="Anton, sans-serif" font-size="9" fill="#a39c94" letter-spacing="2">COLOR</text>
   </g>
 
-  <!-- alarm clock: two bells and a handle -->
+  <!-- alarm clock: two bells and a handle (its hands keep the afternoon's time) -->
+  <g class="hot" data-hot="clock">
+  <rect x="${ROOM.clock.cx - 24}" y="${ROOM.clock.cy - 26}" width="48" height="54" fill="transparent"/>
   <g class="alarm-clock" transform="translate(${ROOM.clock.cx} ${ROOM.clock.cy})">
     <circle cx="-9" cy="-14" r="6" fill="#b8bcbe"/><circle cx="9" cy="-14" r="6" fill="#b8bcbe"/>
     <path d="M-8 18 l -4 5 M8 18 l 4 5" stroke="#555" stroke-width="3"/>
@@ -301,6 +303,7 @@ export function wallSvg(): string {
     <line class="hand-h" x1="0" y1="0" x2="0" y2="-7" stroke="#222" stroke-width="2" stroke-linecap="round"/>
     <line class="hand-m" x1="0" y1="0" x2="0" y2="-10.5" stroke="#222" stroke-width="1.4" stroke-linecap="round"/>
     <circle r="1.4" fill="#222"/>
+  </g>
   </g>
 
   <!-- the Colombia pennant -->
