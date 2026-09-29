@@ -323,6 +323,30 @@ export class Deck {
     return true;
   }
 
+  /** Eject: the keys pop up if something was running, then the door opens and the cassette rises. */
+  eject(): void {
+    if (this.door === 'open') return;
+    const ctx = this.engine.ctx;
+    if (this.transport !== 'stop') {
+      this.click(sfx.keyUp(ctx), 0.7);
+      this.setTransport('stop');
+    }
+    this.click(sfx.doorOpen(ctx), 0.7);
+    this.door = 'open';
+  }
+
+  /** One move with a cassette from the desk: open the door if needed, drop it in, push the door shut. */
+  load(c: Cassette): boolean {
+    if (this.cassette) return false;
+    if (this.door === 'closed') {
+      this.click(sfx.doorOpen(this.engine.ctx), 0.6);
+      this.door = 'open';
+    }
+    this.insert(c);
+    setTimeout(() => this.closeDoor(), 420);
+    return true;
+  }
+
   flip(c: Cassette): void {
     c.flip();
     this.click(sfx.click(this.engine.ctx), 0.4);

@@ -1,9 +1,9 @@
 // The grabadora: radio + cassette deck in one silver box, and its close-up.
 
-import { Radio } from './radio';
+import { Radio, FM_RANGE, AM_RANGE } from './radio';
 import { Deck, type Key } from './deck';
 import { takeUpRadius, supplyRadius, counterDisplay } from './tape';
-import { grabadoraSvg, fmX, amX, KNOB, FUNC, VOL, CASSETTE_AT } from '../art/grabadora';
+import { grabadoraSvg, fmX, amX, KNOB, FUNC, VOL, DIAL, CASSETTE_AT } from '../art/grabadora';
 import { cassetteSvg, HUB_L, HUB_R } from '../art/cassette';
 import type { AudioEngine } from '../audio/engine';
 import { sfx, play } from '../audio/sfx';
@@ -119,25 +119,32 @@ export class Grabadora {
     const svg = this.svg;
     const $ = <T extends SVGElement = SVGGElement>(sel: string) => svg.querySelector<T>(sel)!;
 
-    // tuning knob: turn it by dragging around it, or with the wheel
+    // tuning knob: drag around its rim to turn it, or drag across it (right or up tunes up)
     const knob = $('#g-knob');
-    let lastAngle: number | null = null;
+    let turning: { mode: 'turn' | 'slide'; angle: number; x: number; y: number } | null = null;
     knob.addEventListener('pointerdown', (e) => {
       knob.setPointerCapture(e.pointerId);
       const p = svgPoint(svg, e.clientX, e.clientY);
-      lastAngle = Math.atan2(p.y - KNOB.cy, p.x - KNOB.cx);
+      const fromRim = Math.hypot(p.x - KNOB.cx, p.y - KNOB.cy) > KNOB.r * 0.55;
+      turning = { mode: fromRim ? 'turn' : 'slide', angle: Math.atan2(p.y - KNOB.cy, p.x - KNOB.cx), x: p.x, y: p.y };
     });
     knob.addEventListener('pointermove', (e) => {
-      if (lastAngle === null) return;
+      if (!turning) return;
       const p = svgPoint(svg, e.clientX, e.clientY);
-      const a = Math.atan2(p.y - KNOB.cy, p.x - KNOB.cx);
-      let d = a - lastAngle;
-      if (d > Math.PI) d -= 2 * Math.PI;
-      if (d < -Math.PI) d += 2 * Math.PI;
-      lastAngle = a;
-      this.turnKnob(d);
+      if (turning.mode === 'turn') {
+        const a = Math.atan2(p.y - KNOB.cy, p.x - KNOB.cx);
+        let d = a - turning.angle;
+        if (d > Math.PI) d -= 2 * Math.PI;
+        if (d < -Math.PI) d += 2 * Math.PI;
+        turning.angle = a;
+        this.turnKnob(d);
+      } else {
+        this.turnKnob((p.x - turning.x - (p.y - turning.y)) / 70);
+        turning.x = p.x;
+        turning.y = p.y;
+      }
     });
-    const endKnob = () => (lastAngle = null);
+    const endKnob = () => (turning = null);
     knob.addEventListener('pointerup', endKnob);
     knob.addEventListener('pointercancel', endKnob);
     const wheel = (e: WheelEvent) => {
@@ -145,7 +152,24 @@ export class Grabadora {
       this.turnKnob(Math.sign(e.deltaY) * -0.12);
     };
     knob.addEventListener('wheel', wheel, { passive: false });
-    svg.querySelector<SVGRectElement>('#g-needle')!.addEventListener('wheel', wheel, { passive: false });
+
+    // the dial window: drag the needle along it (the knob turns with it), or use the wheel
+    const dial = $('#g-dial');
+    let dialX: number | null = null;
+    dial.addEventListener('pointerdown', (e) => {
+      dial.setPointerCapture(e.pointerId);
+      dialX = svgPoint(svg, e.clientX, e.clientY).x;
+    });
+    dial.addEventListener('pointermove', (e) => {
+      if (dialX === null) return;
+      const x = svgPoint(svg, e.clientX, e.clientY).x;
+      this.tuneBy(this.freqAtX(x) - this.freqAtX(dialX));
+      dialX = x;
+    });
+    const endDial = () => (dialX = null);
+    dial.addEventListener('pointerup', endDial);
+    dial.addEventListener('pointercancel', endDial);
+    dial.addEventListener('wheel', wheel, { passive: false });
 
     // function switch: CINTA / AM / FM
     const func = $('#g-func');
@@ -190,23 +214,28 @@ export class Grabadora {
       });
     }
 
-    // the door and the cassette in it
+    // the door ("PUSH ▲ EJECT"): pushing it closed opens it; open, it shuts
     $('#g-door').addEventListener('pointerdown', () => {
       if (this.deck.door === 'open') this.deck.closeDoor();
+      else this.deck.eject();
     });
+    // the cassette sticking out of the open door: take it out
     $('#g-slot').addEventListener('pointerdown', (e) => {
       if (this.deck.door === 'open' && this.deck.cassette) {
         e.stopPropagation();
         this.deck.takeOut();
       }
     });
+    // a cassette on the desk: in it goes (or, with its little arrow, turn it over)
     $('#g-desk').addEventListener('pointerdown', (e) => {
-      const el = (e.target as Element).closest<SVGGElement>('[data-cassette]');
-      if (!el) return;
-      const c = this.deck.desk.find((d) => d.data.id === el.dataset.cassette);
+      const target = e.target as Element;
+      const flip = target.closest<SVGGElement>('[data-flip]');
+      const el = flip ?? target.closest<SVGGElement>('[data-cassette]');
+      const id = flip ? flip.dataset.flip : el?.dataset.cassette;
+      const c = this.deck.desk.find((d) => d.data.id === id);
       if (!c) return;
-      if (this.deck.door === 'open' && !this.deck.cassette) this.deck.insert(c);
-      else this.deck.flip(c);
+      if (flip || this.deck.cassette) this.deck.flip(c);
+      else this.deck.load(c);
     });
     $('#g-reset').addEventListener('pointerdown', () => this.deck.resetCounter());
 
@@ -215,6 +244,19 @@ export class Grabadora {
       if (e.key === 'ArrowLeft') this.turnKnob(-0.08);
       if (e.key === 'ArrowRight') this.turnKnob(0.08);
     });
+  }
+
+  /** The frequency under a point of the dial window, on the band you're on. */
+  private freqAtX(x: number): number {
+    const k = clamp((x - DIAL.x0) / (DIAL.x1 - DIAL.x0), 0, 1);
+    if (this.radio.band === 'FM') return FM_RANGE[0] + k * (FM_RANGE[1] - FM_RANGE[0]);
+    return Math.exp(Math.log(AM_RANGE[0]) + k * (Math.log(AM_RANGE[1]) - Math.log(AM_RANGE[0])));
+  }
+
+  /** Move the needle by some MHz (or kHz), turning the knob with it. */
+  private tuneBy(delta: number): void {
+    const perTurn = this.radio.band === 'FM' ? 2.4 : 150;
+    this.turnKnob((delta / perTurn) * 2 * Math.PI);
   }
 
   private turnKnob(radians: number): void {
@@ -307,8 +349,19 @@ export class Grabadora {
     const deskKey = deck.desk.map((d) => `${d.data.id}:${d.side}:${d.data.label}`).join('|');
     if (deskKey !== this.deskKey) {
       this.deskKey = deskKey;
+      // each one with a little arrow to turn it over
       svg.querySelector('#g-desk')!.innerHTML = deck.desk
-        .map((d, i) => `<g class="grab" transform="translate(${1090 + i * 200} ${792 + (i % 2) * 8}) rotate(${i % 2 ? 4 : -3}) scale(0.62)">${cassetteSvg(d.data)}</g>`)
+        .map((d, i) => {
+          const x = 1090 + i * 220;
+          const y = 792 + (i % 2) * 8;
+          return `<g class="grab" transform="translate(${x} ${y}) rotate(${i % 2 ? 4 : -3}) scale(0.62)">${cassetteSvg(d.data)}</g>
+          <g class="grab" data-flip="${d.data.id}" transform="translate(${x + 176} ${y + 38})">
+            <circle r="17" fill="#f1ece0" stroke="#8b7a5c" stroke-width="1.5"/>
+            <path d="M6.1 -5.1 A8 8 0 1 1 -2.7 -7.5" fill="none" stroke="#3d4044" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M0.1 -8.6 L-1.7 -4.7 L-3.8 -10.3 Z" fill="#3d4044"/>
+            <text y="32" text-anchor="middle" font-family="Anton, sans-serif" font-size="10" fill="#5d4a2e" letter-spacing="0.5">VOLTEAR</text>
+          </g>`;
+        })
         .join('');
     }
 

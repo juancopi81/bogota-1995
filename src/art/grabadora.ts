@@ -72,10 +72,10 @@ export function grabadoraSvg(): string {
     <linearGradient id="g-glass" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#1f262d"/><stop offset="1" stop-color="#11151a"/>
     </linearGradient>
-    <linearGradient id="g-door" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="g-door-grad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#3a3f46" stop-opacity="0.55"/><stop offset="0.5" stop-color="#20242a" stop-opacity="0.35"/><stop offset="1" stop-color="#3a3f46" stop-opacity="0.6"/>
     </linearGradient>
-    <radialGradient id="g-knob" cx="0.35" cy="0.3" r="0.8">
+    <radialGradient id="g-knob-grad" cx="0.35" cy="0.3" r="0.8">
       <stop offset="0" stop-color="#5a5e63"/><stop offset="1" stop-color="#1c1d20"/>
     </radialGradient>
   </defs>
@@ -113,6 +113,8 @@ export function grabadoraSvg(): string {
   <text x="${DIAL.x1 + 10}" y="${DIAL.y + 30}" font-family="Anton, sans-serif" font-size="7" fill="#9a8a5c">MHz</text>
   <rect id="g-needle" x="${fmX(97.9) - 1.5}" y="${DIAL.y + 6}" width="3" height="${DIAL.h - 12}" fill="#e2472f"/>
   <rect x="${DIAL.x0 - 26}" y="${DIAL.y}" width="${DIAL.x1 - DIAL.x0 + 52}" height="30" rx="6" fill="#fff" opacity="0.05"/>
+  <!-- the whole dial window takes a drag or the wheel -->
+  <rect id="g-dial" class="grab" x="${DIAL.x0 - 26}" y="${DIAL.y}" width="${DIAL.x1 - DIAL.x0 + 52}" height="${DIAL.h}" rx="6" fill="transparent"/>
   <circle id="g-led-tune" cx="${DIAL.x1 - 58}" cy="${DIAL.y + DIAL.h + 16}" r="5" fill="#3b1e14"/>
   <text x="${DIAL.x1 - 48}" y="${DIAL.y + DIAL.h + 20}" font-family="Anton, sans-serif" font-size="10" fill="#4a4d52">SINTONÍA</text>
 
@@ -120,16 +122,17 @@ export function grabadoraSvg(): string {
   <g id="g-knob" class="grab" transform="translate(${KNOB.cx} ${KNOB.cy})">
     <circle r="${KNOB.r + 6}" fill="#8b9095"/>
     <g id="g-knob-rot">
-      <circle r="${KNOB.r}" fill="url(#g-knob)"/>
+      <circle r="${KNOB.r}" fill="url(#g-knob-grad)"/>
       ${Array.from({ length: 36 }, (_, i) => `<rect x="-1.5" y="${-KNOB.r}" width="3" height="8" fill="#101114" transform="rotate(${i * 10})"/>`).join('')}
       <circle cx="0" cy="${-KNOB.r + 18}" r="4" fill="#cfd2d4"/>
     </g>
   </g>
   <text x="${KNOB.cx}" y="${KNOB.cy + KNOB.r + 26}" text-anchor="middle" font-family="Anton, sans-serif" font-size="10" fill="#4a4d52" letter-spacing="1">SINTONIZAR</text>
 
-  <!-- function switch: tape / AM / FM -->
+  <!-- function switch: tape (the radio off) / AM / FM -->
   <g id="g-func" class="grab">
     ${['CINTA', 'AM', 'FM'].map((l, i) => `<text x="${FUNC.positions[i]}" y="${FUNC.y - 18}" text-anchor="middle" font-family="Anton, sans-serif" font-size="11" fill="#3d4044">${l}</text>`).join('')}
+    <text x="${FUNC.positions[0]}" y="${FUNC.y + 27}" text-anchor="middle" font-family="Anton, sans-serif" font-size="8" fill="#5d6166" letter-spacing="0.5">RADIO APAGADO</text>
     <rect x="${FUNC.x0}" y="${FUNC.y - 6}" width="${FUNC.x1 - FUNC.x0}" height="12" rx="6" fill="#26282b"/>
     <rect id="g-func-thumb" x="${FUNC.positions[2] - 14}" y="${FUNC.y - 16}" width="28" height="32" rx="4" fill="#2e3034" stroke="#8b9095" stroke-width="2"/>
     <rect x="${FUNC.x0 - 10}" y="${FUNC.y - 30}" width="${FUNC.x1 - FUNC.x0 + 20}" height="52" fill="transparent"/>
@@ -148,7 +151,7 @@ export function grabadoraSvg(): string {
   <rect x="${DECK.x}" y="${DECK.y}" width="${DECK.w}" height="${DECK.h}" rx="8" fill="#1b1d21"/>
   <g id="g-slot"></g>
   <g id="g-door" class="grab">
-    <rect x="${DECK.x}" y="${DECK.y}" width="${DECK.w}" height="${DECK.h}" rx="8" fill="url(#g-door)" stroke="#55595e" stroke-width="3"/>
+    <rect x="${DECK.x}" y="${DECK.y}" width="${DECK.w}" height="${DECK.h}" rx="8" fill="url(#g-door-grad)" stroke="#55595e" stroke-width="3"/>
     <rect x="${DECK.x + 16}" y="${DECK.y + 10}" width="${DECK.w - 32}" height="6" rx="3" fill="#fff" opacity="0.1"/>
     <text x="${DECK.x + DECK.w / 2}" y="${DECK.y + DECK.h - 10}" text-anchor="middle" font-family="Anton, sans-serif" font-size="9" fill="#9aa0a6" letter-spacing="2">PUSH ▲ EJECT</text>
   </g>
@@ -166,9 +169,11 @@ export function grabadoraSvg(): string {
   <!-- recording light and counter -->
   <circle id="g-led-rec" cx="652" cy="${COUNTER.y + 17}" r="6" fill="#3a1410"/>
   <text x="664" y="${COUNTER.y + 21}" font-family="Anton, sans-serif" font-size="10" fill="#4a4d52">GRABANDO</text>
-  <text x="${COUNTER.x - 78}" y="${COUNTER.y + 21}" font-family="Anton, sans-serif" font-size="10" fill="#4a4d52">CONTADOR</text>
-  <g id="g-reset" class="grab" transform="translate(${COUNTER.x - 16} ${COUNTER.y + 17})">
+  <text x="${COUNTER.x - 70}" y="${COUNTER.y + 21}" font-family="Anton, sans-serif" font-size="10" fill="#4a4d52">CONTADOR</text>
+  <!-- the counter's reset button, to its right (away from the keys) -->
+  <g id="g-reset" class="grab" transform="translate(${COUNTER.x + 98} ${COUNTER.y + 17})">
     <circle r="9" fill="#2e3034" stroke="#8b9095" stroke-width="1.5"/><circle r="3" fill="#6f7478"/>
+    <text y="24" text-anchor="middle" font-family="Anton, sans-serif" font-size="7" fill="#5d6166">000</text>
   </g>
   <rect x="${COUNTER.x}" y="${COUNTER.y}" width="80" height="34" rx="3" fill="#0e0f11"/>
   ${[0, 1, 2]
