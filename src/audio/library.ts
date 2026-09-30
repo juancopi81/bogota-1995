@@ -14,7 +14,7 @@ import { songShape, renderSong, renderJingle, renderBed, renderTeletype, type St
 import { matchSong } from './matching';
 import { readTags } from './tags';
 import { SONGS, song } from '../content/songs';
-import { HOUSE_MUSIC, pickStandIn, bedsFor, type HouseTrack } from '../content/housemusic';
+import { HOUSE_ANTHEM, HOUSE_MUSIC, pickStandIn, bedsFor, type HouseTrack } from '../content/housemusic';
 import { idb, kv } from '../world/store';
 import { bus } from '../world/bus';
 import { hash } from '../util/rng';
@@ -49,7 +49,9 @@ class Library {
   /** Your songs (by song id), saved in IndexedDB, and how long each one is. */
   private yours = new Set<string>();
   private durations: Record<string, number> = kv.get(DURATIONS, {});
+  /** Keep your anthem separate so concurrent startup loads cannot replace it. */
   private anthemBuffer: AudioBuffer | undefined;
+  private bundledAnthem: AudioBuffer | undefined;
   private house = new Map<string, House>();
   /** Decoded real songs, least recently used first. */
   private decoded = new Map<string, AudioBuffer>();
@@ -99,6 +101,11 @@ class Library {
         const res = await fetch(`music/${encodeURIComponent(file)}`);
         if (!res.ok) continue;
         const data = await res.arrayBuffer();
+        if (file === HOUSE_ANTHEM.file) {
+          this.bundledAnthem = await this.decode(data);
+          bus.emit('media:loaded', { kind: 'anthem', id: 'anthem' });
+          continue;
+        }
         const match = matchSong({ path: file, tags: readTags(data) }, HOUSE_MUSIC);
         const track = HOUSE_MUSIC.find((t) => match?.target.kind === 'song' && t.id === match.target.id);
         if (!track || this.house.has(track.id)) continue;
@@ -206,12 +213,12 @@ class Library {
   // ---------- songs ----------
 
   isUploaded(id: string): boolean {
-    return this.yours.has(id);
+    return id === 'anthem' ? !!this.anthemBuffer : this.yours.has(id);
   }
 
   /** How long one of your files is (seconds), if it's loaded. */
   lengthOf(id: string): number | undefined {
-    return id === 'anthem' ? this.anthemBuffer?.duration : this.yours.has(id) ? this.durations[id] : undefined;
+    return id === 'anthem' ? this.anthem()?.duration : this.yours.has(id) ? this.durations[id] : undefined;
   }
 
   /** The house track that fills a 1995 song's slot on a station (none if you loaded the song). */
@@ -297,7 +304,7 @@ class Library {
   // ---------- the anthem ----------
 
   anthem(): AudioBuffer | undefined {
-    return this.anthemBuffer;
+    return this.anthemBuffer ?? this.bundledAnthem;
   }
 
   // ---------- your files ----------

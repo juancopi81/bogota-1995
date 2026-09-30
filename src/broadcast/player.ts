@@ -147,10 +147,11 @@ export class StationPlayer {
       case 'song': {
         // a loaded file can start and stop mid-phrase (30-second previews do): soften the edges
         if (seg.audio) {
-          gain.gain.setValueAtTime(0, startCtx);
-          gain.gain.linearRampToValueAtTime(1, startCtx + 0.4);
+          // Joining mid-song can put its original start before audio time zero.
+          gain.gain.setValueAtTime(0, Math.max(0, startCtx));
+          gain.gain.linearRampToValueAtTime(1, Math.max(0, startCtx + 0.4));
           if (!item.cut) {
-            gain.gain.setValueAtTime(1, Math.max(startCtx + 0.4, endCtx - 1.8));
+            gain.gain.setValueAtTime(1, Math.max(0, startCtx + 0.4, endCtx - 1.8));
             gain.gain.linearRampToValueAtTime(0, endCtx);
           }
         }

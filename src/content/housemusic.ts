@@ -24,6 +24,16 @@ export interface HouseTrack {
 const BY = 'https://creativecommons.org/licenses/by/4.0/';
 const BY_NC_SA = 'https://creativecommons.org/licenses/by-nc-sa/4.0/';
 
+/** The anthem is a scheduled broadcast, never a stand-in for a song. */
+export const HOUSE_ANTHEM = {
+  file: 'himno-nacional-de-colombia.mp3',
+  title: 'Himno Nacional de la República de Colombia',
+  artist: 'United States Navy Band',
+  source: 'https://commons.wikimedia.org/wiki/File:United_States_Navy_Band_-_%C2%A1Oh,_gloria_inmarcesible!.ogg',
+  license: 'Dominio público (EE. UU.)',
+  licenseUrl: 'https://creativecommons.org/publicdomain/mark/1.0/',
+};
+
 export const HOUSE_MUSIC: HouseTrack[] = [
   {
     id: 'errante-diamante',

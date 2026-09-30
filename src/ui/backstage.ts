@@ -14,7 +14,7 @@ import { tagsOfFile } from '../audio/tags';
 import { isAudioName, plan, type Candidate, type Target } from '../audio/matching';
 import { checkManifest, readManifest, type ManifestCheck } from '../audio/manifest';
 import { SONGS, REQUESTABLE, song } from '../content/songs';
-import { HOUSE_MUSIC } from '../content/housemusic';
+import { HOUSE_ANTHEM, HOUSE_MUSIC } from '../content/housemusic';
 import { STATIONS } from '../content/stations';
 import { allLines, SPEAKERS, type Speaker } from '../content/lines';
 import { clock, formatTime, at } from '../world/clock';
@@ -318,6 +318,8 @@ export class Backstage {
     const unknownRows = this.unknown
       .map((f, i) => `<div class="row"><span class="path">${escape(f.path)}${f.tags.title ? `<br><small>${escape(f.tags.title)}${f.tags.artist ? ` · ${escape(f.tags.artist)}` : ''}</small>` : ''}</span><select data-assign="${i}">${options}</select></div>`)
       .join('');
+    const anthem = library.anthem();
+    const ownAnthem = library.isUploaded('anthem');
 
     this.el.innerHTML = `
       <h2>Trastienda</h2>
@@ -347,9 +349,11 @@ export class Backstage {
       }).join('')}
 
       <h3>Himno Nacional</h3>
-      <p>A las 6:00 p.m. todas las emisoras y canales pasan el himno. Cargue una grabación para que suene.</p>
-      <div class="row"><span>Himno Nacional de la República de Colombia</span>
-        <span>${library.anthem() ? `<span class="ok">✓</span> <small>${mmss(library.anthem()!.duration)}</small> ${this.previewButton('anthem')} <button data-forget="anthem">Quitar</button>` : `<label class="file">Cargar<input type="file" accept="audio/*" data-song="anthem" hidden></label>`}</span></div>
+      <p>A las 6:00 p.m. todas las emisoras y canales pasan el himno. Ya viene una grabación incluida; si carga la suya, tendrá preferencia.</p>
+      <div class="row"><span>${escape(HOUSE_ANTHEM.title)}<br><small>Grabación incluida: ${escape(HOUSE_ANTHEM.artist)} · <a href="${HOUSE_ANTHEM.source}" target="_blank" rel="noopener">fuente</a> · <a href="${HOUSE_ANTHEM.licenseUrl}" target="_blank" rel="noopener">${escape(HOUSE_ANTHEM.license)}</a></small></span>
+        <span>${anthem ? `<span class="ok">✓ ${ownAnthem ? 'suyo' : 'incluido'}</span> <small>${mmss(anthem.duration)}</small> ${this.previewButton('anthem')}` : '<span class="muted">falta el archivo</span>'}
+          ${ownAnthem ? '<button data-forget="anthem">Quitar</button>' : ''}
+          <label class="file">${ownAnthem ? 'Cambiar' : 'Cargar el suyo'}<input type="file" accept="audio/*" data-song="anthem" hidden></label></span></div>
 
       <h3>Voces · ${recorded} de ${spoken.length} líneas</h3>
       <p>Cada archivo se llama como el código de su línea (ver <code>docs/voice-script.md</code>), por ejemplo <code>llamada.andres.hola.m4a</code>. Arrástrelos arriba con lo demás.</p>

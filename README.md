@@ -61,8 +61,8 @@ Other ways to open it:
 - From 5:45 to about 5:48 your mother is on the kitchen extension with tía
   Gloria. Pick up and listen.
 - 117 gives you the time. The pizzería from the radio ad takes orders.
-- Onces at 5:55. At 6:00 the church bells ring, and if you've loaded an
-  anthem recording in the backstage, every station and channel plays it.
+- Onces at 5:55. At 6:00 the church bells ring and every station and channel
+  plays the bundled anthem. Your own recording takes priority if you load one.
 
 </details>
 
@@ -82,7 +82,8 @@ From there you can:
   from it. Files stay in this browser; nothing is uploaded. Until you load a
   song, the room's own Creative Commons music fills in where it fits (see
   [`public/music/`](public/music/README.md)), and a placeholder in the song's
-  style plays otherwise. ▶ plays a few seconds of a loaded file.
+  style plays otherwise. The anthem comes included; removing your uploaded
+  version restores it. ▶ plays a few seconds of a loaded file.
 - **See what's missing:** songs by station (the ones you can request are
   marked), and voice coverage for each character.
 - **Move the clock forward**, or start the afternoon over.
@@ -130,7 +131,8 @@ all be driven from the console.
 
 - Everything in this repository is original (the art, the synthesized sounds
   and placeholder music, the writing), except the music in `public/music/`:
-  Creative Commons tracks, credited in the backstage and in
+  Creative Commons tracks and a public-domain U.S. Navy Band anthem recording,
+  credited in the backstage and in
   [`public/music/README.md`](public/music/README.md).
 - The fonts are under the OFL; see [`src/assets/fonts/LICENSES.md`](src/assets/fonts/LICENSES.md).
 - Real song titles, stations and brands appear by name. That's fine for a
