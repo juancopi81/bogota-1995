@@ -130,6 +130,17 @@ describe('matching', () => {
     expect(what(f('radioactiva_saludo1.wav'))).toBe('voice:radioactiva.saludo1');
   });
 
+  it('preserves registered voice IDs with capitals when matching file names', () => {
+    const ids = new Set(['llamada.andres.deParte', 'radioactiva.introFlorecita']);
+    for (const name of ['llamada.andres.deParte.mp3', 'LLAMADA_ANDRES_DEPARTE.MP3']) {
+      expect(classify(f(name), SONGS, ids)?.target).toEqual({ kind: 'voice', id: 'llamada.andres.deParte' });
+    }
+    const batch = plan([f('radioactiva.introFlorecita.mp3'), f('radioactiva_introflorecita.wav')], SONGS, ids);
+    expect(batch.load.map((entry) => entry.match.target)).toEqual([{ kind: 'voice', id: 'radioactiva.introFlorecita' }]);
+    expect(batch.duplicates).toHaveLength(1);
+    expect(batch.unknown).toHaveLength(0);
+  });
+
   it("recognizes every file in the folder of 30-second previews", () => {
     const folder: [string, string][] = [
       ['01-aterciopelados-bolero-falaz.mp3', 'song:bolero-falaz'],

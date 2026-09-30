@@ -1,12 +1,29 @@
-// Recorded voices, keyed by line id. Loaded from the backstage into the
-// browser (IndexedDB) and never uploaded anywhere.
+// Recorded voices, keyed by line id. The included cast loads automatically;
+// your own recordings from the backstage take priority and stay in IndexedDB.
 
 import { idb } from '../world/store';
 import { estimateSpeech, type Line } from '../content/lines';
 import { bus } from '../world/bus';
 
+const files = import.meta.glob<string>('../assets/voices/*.mp3', { eager: true, query: '?url', import: 'default' });
+
 class Voices {
   private buffers = new Map<string, AudioBuffer>();
+  private bundled = new Map<string, AudioBuffer>();
+
+  async loadBundled(ctx: BaseAudioContext): Promise<void> {
+    await Promise.all(Object.entries(files).map(async ([file, url]) => {
+      const id = file.split('/').pop()!.replace(/\.mp3$/, '');
+      try {
+        const response = await fetch(url);
+        if (!response.ok) return;
+        this.bundled.set(id, await ctx.decodeAudioData(await response.arrayBuffer()));
+        bus.emit('media:loaded', { kind: 'voice', id });
+      } catch {
+        /* unavailable recording: keep its subtitle */
+      }
+    }));
+  }
 
   async loadSaved(ctx: BaseAudioContext): Promise<void> {
     const keys = await idb.keys('voices');
@@ -36,15 +53,15 @@ class Voices {
   }
 
   get(id: string): AudioBuffer | undefined {
-    return id ? this.buffers.get(id) : undefined;
+    return id ? this.buffers.get(id) ?? this.bundled.get(id) : undefined;
   }
 
   has(id: string): boolean {
-    return this.buffers.has(id);
+    return !!this.get(id);
   }
 
   count(): number {
-    return this.buffers.size;
+    return new Set([...this.bundled.keys(), ...this.buffers.keys()]).size;
   }
 
   async clear(): Promise<void> {

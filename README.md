@@ -19,6 +19,11 @@ npm run dev
 
 Open http://localhost:5173 with **headphones on**. Laptop first; touch works too.
 
+The voices of your mother, Andrés's mother, Andrés, and Radioactiva's DJ and
+request desk come included (79 lines). They play automatically; subtitles
+stay visible. Other characters still use subtitles. No ElevenLabs account,
+API key, or uploads are needed to hear the included cast.
+
 Other ways to open it:
 
 - **A private claude.ai link**, updated with each iteration. The real TV
@@ -85,7 +90,8 @@ From there you can:
   style plays otherwise. The anthem comes included; removing your uploaded
   version restores it. ▶ plays a few seconds of a loaded file.
 - **See what's missing:** songs by station (the ones you can request are
-  marked), and voice coverage for each character.
+  marked), and voice coverage for each character. Your own voice recordings
+  override the included takes and stay in this browser.
 - **Move the clock forward**, or start the afternoon over.
 - **Erase the tape** (it asks twice).
 
@@ -120,6 +126,7 @@ close-up. In dev, `window.room1995` exposes the objects in the console.
 | `src/scene/` | The room, the close-ups, the light, the city view. |
 | `src/world/` | The clock, what happened this afternoon (`flags`), the traffic schedule, storage. |
 | `public/music/` | The room's own Creative Commons music (see its README). |
+| `src/assets/voices/` | The included ElevenLabs dialogue recordings and casting manifest. |
 | `docs/` | Vision, v0 decisions, voice script, TV clips, the public-path proposal for music. |
 
 Every object is a small state machine with plain methods (`deck.press('rec')`,
@@ -129,11 +136,14 @@ all be driven from the console.
 
 ## Rights
 
-- Everything in this repository is original (the art, the synthesized sounds
-  and placeholder music, the writing), except the music in `public/music/`:
+- The art, synthesized sounds, placeholder music, and writing are original.
+  The music in `public/music/` includes
   Creative Commons tracks and a public-domain U.S. Navy Band anthem recording,
   credited in the backstage and in
   [`public/music/README.md`](public/music/README.md).
+- The included dialogue was generated with ElevenLabs on a paid Starter plan.
+  Casting and generation details are in
+  [`src/assets/voices/README.md`](src/assets/voices/README.md).
 - The fonts are under the OFL; see [`src/assets/fonts/LICENSES.md`](src/assets/fonts/LICENSES.md).
 - Real song titles, stations and brands appear by name. That's fine for a
   private prototype, but it needs review before anything public.

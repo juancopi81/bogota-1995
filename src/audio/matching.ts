@@ -131,8 +131,10 @@ export function isAnthem(file: Candidate): boolean {
 /** A recorded line, named after its id ("llamada.andres.hola.m4a"); underscores work too. */
 export function matchVoice(file: Candidate, lineIds: Set<string>): Match | null {
   const name = basename(file.path).trim().toLowerCase();
+  const canonicalIds = new Map([...lineIds].map((id) => [id.toLowerCase(), id]));
   for (const guess of [name, name.replace(/_/g, '.'), name.replace(/\s+/g, '')]) {
-    if (lineIds.has(guess)) return { target: { kind: 'voice', id: guess }, score: 100, by: 'id' };
+    const id = canonicalIds.get(guess);
+    if (id) return { target: { kind: 'voice', id }, score: 100, by: 'id' };
   }
   return null;
 }

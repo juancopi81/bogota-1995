@@ -112,9 +112,9 @@ function titleCard(onEnter: () => void): void {
   title.addEventListener('pointerdown', enter);
 }
 
-// the room's own music loads in the background; entering waits for it a few seconds at most
+// Music and the included cast load before the afternoon starts. Your recordings take priority.
 const house = library.loadHouse();
-const ready = Promise.all([library.loadSaved(), voices.loadSaved(engine.ctx), grabadora.init(), Promise.race([house, new Promise((r) => setTimeout(r, 4000))])]);
+const ready = Promise.all([library.loadSaved(), voices.loadBundled(engine.ctx), voices.loadSaved(engine.ctx), grabadora.init(), Promise.race([house, new Promise((r) => setTimeout(r, 4000))])]);
 
 async function enter(): Promise<void> {
   await engine.unlock();

@@ -1,9 +1,9 @@
 // Spoken lines.
 //
 // Everything anybody says in the room (on the radio, the TV, the phone, from
-// the kitchen) is a Line with a stable id. v0 shows lines as subtitles. When a
-// recording exists for a line id (loaded in the backstage), it plays instead,
-// still with its subtitle. `npm run voices` turns this registry into the
+// the kitchen) is a Line with a stable id. Included recordings and your own
+// backstage recordings play alongside their subtitles. Lines without a
+// recording still show subtitles. `npm run voices` turns this registry into the
 // recording script in docs/voice-script.md.
 
 export type Speaker =

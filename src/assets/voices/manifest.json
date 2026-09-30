@@ -1,0 +1,1035 @@
+{
+  "generated_on": "2026-09-30",
+  "provider": "ElevenLabs",
+  "model": "eleven_v4",
+  "seed": 1995,
+  "clips": [
+    {
+      "id": "llamada.andres.hola",
+      "speaker": "mamaAndres",
+      "voice_id": "oWSxI36XAKnfMWmzmQok",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Aló?",
+      "input_text": "[polite, conversational, brisk] ¿Aló?",
+      "sha256": "c30772a431c9bb6daa907cbdef174bcc1613ae02b92ba3cf6458802925d022a5"
+    },
+    {
+      "id": "llamada.andres.deParte",
+      "speaker": "mamaAndres",
+      "voice_id": "oWSxI36XAKnfMWmzmQok",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿De parte de quién?",
+      "input_text": "[polite, conversational, brisk] ¿De parte de quién?",
+      "sha256": "98a622992a5a4f391f419080b591d5af2691c961fa4e755f91335cc8bb5897c0"
+    },
+    {
+      "id": "llamada.andres.quienLo",
+      "speaker": "mamaAndres",
+      "voice_id": "oWSxI36XAKnfMWmzmQok",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Quién lo necesita?",
+      "input_text": "[polite, conversational, brisk] ¿Quién lo necesita?",
+      "sha256": "3539c9fb6c0f4e0dc0c0a25f62c24ceae1fe6eaaa490f7c04d18e275d7e7ee44"
+    },
+    {
+      "id": "llamada.andres.noEsta",
+      "speaker": "mamaAndres",
+      "voice_id": "oWSxI36XAKnfMWmzmQok",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "No, Andrés no está. Salió desde temprano con los primos y todavía no ha llegado.",
+      "input_text": "[polite, conversational, brisk] No, Andrés no está. Salió desde temprano con los primos y todavía no ha llegado.",
+      "sha256": "c42714ba01912d9a915c6dd924260f9dc1178361b8575ac9769a8112b648307f"
+    },
+    {
+      "id": "llamada.andres.razon",
+      "speaker": "mamaAndres",
+      "voice_id": "oWSxI36XAKnfMWmzmQok",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Le dejo la razón?",
+      "input_text": "[polite, conversational, brisk] ¿Le dejo la razón?",
+      "sha256": "8edc70c43c01e9bf47d2d06c395e1ac6d2dd6e53b025a315e41c06925d4f5d02"
+    },
+    {
+      "id": "llamada.andres.dondeFue",
+      "speaker": "mamaAndres",
+      "voice_id": "oWSxI36XAKnfMWmzmQok",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Dijo que iban para Unicentro. Pero con este aguacero, quién sabe dónde estarán.",
+      "input_text": "[polite, conversational, brisk] Dijo que iban para Unicentro. Pero con este aguacero, quién sabe dónde estarán.",
+      "sha256": "10ad003c69dd146e0aee97d29b8c8c782f6e918643a397fb625e7d2c691517be"
+    },
+    {
+      "id": "llamada.andres.yoLeDigo",
+      "speaker": "mamaAndres",
+      "voice_id": "oWSxI36XAKnfMWmzmQok",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Bueno, yo le digo que lo llame apenas llegue.",
+      "input_text": "[polite, conversational, brisk] Bueno, yo le digo que lo llame apenas llegue.",
+      "sha256": "0271e5082c30d0f2452a22ef6d6552bd045134f557a1d0620a74f5e0dbd14cde"
+    },
+    {
+      "id": "llamada.andres.chao",
+      "speaker": "mamaAndres",
+      "voice_id": "oWSxI36XAKnfMWmzmQok",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Bueno. Chao, pues.",
+      "input_text": "[polite, conversational, brisk] Bueno. Chao, pues.",
+      "sha256": "40952841c57af32b93d832e17d6c4b8174ff14419acdda0a6ea2c8285dba46f1"
+    },
+    {
+      "id": "llamada.andres.otraVez",
+      "speaker": "mamaAndres",
+      "voice_id": "oWSxI36XAKnfMWmzmQok",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Otra vez usted... No, todavía no ha llegado. Yo ya le dejé la razón.",
+      "input_text": "[slightly impatient, brisk] Otra vez usted... No, todavía no ha llegado. Yo ya le dejé la razón.",
+      "sha256": "47e12ffe2bd87f028711485d3a7e5a290465e2e7d29ab2ce189857c1953a2181"
+    },
+    {
+      "id": "llamada.andres.momentico",
+      "speaker": "mamaAndres",
+      "voice_id": "oWSxI36XAKnfMWmzmQok",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Ah, sí, ya llegó. Un momentico, ya se lo paso.",
+      "input_text": "[polite, conversational, brisk] Ah, sí, ya llegó. Un momentico, ya se lo paso.",
+      "sha256": "2ffc77c055e159f745849112bcea9ad15841c4847f1410fb0b1cf28cd21f0cc9"
+    },
+    {
+      "id": "llamada.andres.grita",
+      "speaker": "mamaAndres",
+      "voice_id": "oWSxI36XAKnfMWmzmQok",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Andrés! ¡Teléfono!",
+      "input_text": "[calling out loudly, brisk] ¡Andrés! ¡Teléfono!",
+      "sha256": "1f2a6e6ddeb56c387e552f52d215cbf82bfa86ba6655ec4793f9ecf9aab8f1ba"
+    },
+    {
+      "id": "llamada.andres.alo",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Aló? ¿Quiubo?",
+      "input_text": "[casual, youthful, brisk] ¿Aló? ¿Quiubo?",
+      "sha256": "be31f86fc86a49671c05ffc748992fb0b6ebc6cea01fa638ae0e158af64282a7"
+    },
+    {
+      "id": "llamada.andres.meLlamo",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Quiubo, parce? ¿Me llamó? Mi mamá me dejó la razón.",
+      "input_text": "[casual, youthful, brisk] ¿Quiubo, parce? ¿Me llamó? Mi mamá me dejó la razón.",
+      "sha256": "aca01d8a77cba1bd40d1b86089bd2f07c56511a92220428cb1155ad4f97e5a78"
+    },
+    {
+      "id": "llamada.andres.queMas",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Nada, aquí, mamado. Nos cogió el aguacero en Unicentro y nos tocó esperar como una hora.",
+      "input_text": "[casual, slightly tired, brisk] Nada, aquí, mamado. Nos cogió el aguacero en Unicentro y nos tocó esperar como una hora.",
+      "sha256": "268b735d4f4e69f868e9a9287f1840348687ec13c1bbe39e61436c6b6d09b769"
+    },
+    {
+      "id": "llamada.andres.grabadora",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Oiga, ¿usted tiene la grabadora buena? A la mía se le enredó la cinta y se tragó el casete.",
+      "input_text": "[casual, youthful, brisk] Oiga, ¿usted tiene la grabadora buena? A la mía se le enredó la cinta y se tragó el casete.",
+      "sha256": "c682d2a145bf6308820b3ffb20094b668c9b3a4dc69a7d06acbf291e0dbf2055"
+    },
+    {
+      "id": "llamada.andres.pedido",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Me graba «Florecita rockera» de la radio? En Radioactiva la ponen a cada rato.",
+      "input_text": "[casual, youthful, brisk] ¿Me graba «Florecita rockera» de la radio? En Radioactiva la ponen a cada rato.",
+      "sha256": "b79253f69e5a2ac06ac30d4f57416e7c01718924f829d1a390361db92e4a427b"
+    },
+    {
+      "id": "llamada.andres.pilas",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Pero pilas, que el locutor siempre habla encima del principio.",
+      "input_text": "[casual, youthful, brisk] Pero pilas, que el locutor siempre habla encima del principio.",
+      "sha256": "0a8671f5f99fa7f8c37e37b9fc059c89304544a0f79cee24140ac785721074bd"
+    },
+    {
+      "id": "llamada.andres.yaGrabo",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿En serio ya grabó? ¡Qué bacano! Me lo presta el lunes en el colegio.",
+      "input_text": "[pleasantly surprised, brisk] ¿En serio ya grabó? ¡Qué bacano! Me lo presta el lunes en el colegio.",
+      "sha256": "9eb5c595b23aff1eeb2b3afd5eab490bace7d8ccdf89d4e14fbe262f3f81a9d6"
+    },
+    {
+      "id": "llamada.andres.deUna",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡De una! Me lo trae el lunes, pues.",
+      "input_text": "[casual, youthful, brisk] ¡De una! Me lo trae el lunes, pues.",
+      "sha256": "0b4e05c3cf25cb2adaa68c605ac96415ce7e72e5e623cc1569a8bc3510bdfc90"
+    },
+    {
+      "id": "llamada.andres.noImporta",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Bueno, no importa. Si puede, me avisa.",
+      "input_text": "[casual, youthful, brisk] Bueno, no importa. Si puede, me avisa.",
+      "sha256": "b05030203905ce7321282cf7c0363793f6bf68de94e25c2594814dfd0e4a5384"
+    },
+    {
+      "id": "llamada.andres.chisme",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Ah, y ¿sí supo? Angie va a ir a la fiesta de Diana el otro sábado.",
+      "input_text": "[casual, conspiratorial, brisk] Ah, y ¿sí supo? Angie va a ir a la fiesta de Diana el otro sábado.",
+      "sha256": "e2cb58b9009df2f98196f123a1af1a570e8563351843551910b5a9b82e38c1f6"
+    },
+    {
+      "id": "llamada.andres.colgar",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Bueno, me toca colgar, que mi mamá necesita el teléfono. ¡Chao, pues!",
+      "input_text": "[casual, youthful, brisk] Bueno, me toca colgar, que mi mamá necesita el teléfono. ¡Chao, pues!",
+      "sha256": "7265f8c71b67c62807b3c0e78f05092f1da051d8076f58d23a1b28e6da916079"
+    },
+    {
+      "id": "extension.m1",
+      "speaker": "mama",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "...y yo le dije que no, que eso no era así, que primero hablara con el papá.",
+      "input_text": "[warm, conversational, brisk] ...y yo le dije que no, que eso no era así, que primero hablara con el papá.",
+      "sha256": "9bf101aa5de53df0266985ff1560c54607f5065efc954e57680c5b0021262973"
+    },
+    {
+      "id": "extension.m2",
+      "speaker": "mama",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Nada, se puso a llorar. Usted sabe cómo es ella.",
+      "input_text": "[warm, conversational, brisk] Nada, se puso a llorar. Usted sabe cómo es ella.",
+      "sha256": "001da301f76422cb8b267a2276661663acfe4467fe593f98b2b11e3b0bbdbb80"
+    },
+    {
+      "id": "extension.m3",
+      "speaker": "mama",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Aló? ¿Quién levantó el teléfono? ¡Cuelgue, que estoy hablando!",
+      "input_text": "[warm, conversational, brisk] ¿Aló? ¿Quién levantó el teléfono? ¡Cuelgue, que estoy hablando!",
+      "sha256": "6abe2dd85f00ebe3e76d277b6dee2fd1907b6d661d5295c337067de7256e8d09"
+    },
+    {
+      "id": "extension.m4",
+      "speaker": "mama",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Que cuelgue, le digo!",
+      "input_text": "[warm, conversational, brisk] ¡Que cuelgue, le digo!",
+      "sha256": "134aba42df6f70f64e85dcbf7f814db5442d9ee71156c1985ed8ccb933d3e7dc"
+    },
+    {
+      "id": "casa.contesten",
+      "speaker": "mama",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Contesten ese teléfono!",
+      "input_text": "[calling out impatiently, brisk] ¡Contesten ese teléfono!",
+      "sha256": "a73acb8a0e4925d01ec530d61319e8375bdb97352fd5225e7ee4cd5725a8448e"
+    },
+    {
+      "id": "casa.telefono",
+      "speaker": "mama",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Teléfono! ¡Es Andrés!",
+      "input_text": "[calling out loudly, brisk] ¡Teléfono! ¡Es Andrés!",
+      "sha256": "3f1a5a245c87ad70423528f6046af2767d166b0ef70b3a3c12fca1b29a3c8d24"
+    },
+    {
+      "id": "casa.noContesta",
+      "speaker": "mama",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Ay, no sé dónde se metió... Yo le digo que te llame, Andrés.",
+      "input_text": "[warm, conversational, brisk] Ay, no sé dónde se metió... Yo le digo que te llame, Andrés.",
+      "sha256": "35d13f94bc9ca601282802113bf74d6781f99a86c769dead5f20a873a7187c8e"
+    },
+    {
+      "id": "casa.onces",
+      "speaker": "mama",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡A tomar onces! ¡Hay chocolate con almojábanas!",
+      "input_text": "[warm, conversational voice, calling out briskly] ¡A tomar onces! ¡Hay chocolate con almojábanas!",
+      "sha256": "c4306ea9a37027a8df0a0f1c006cfd7f4ee365e1dd67c134e67960df61877cb1"
+    },
+    {
+      "id": "casa.volumen",
+      "speaker": "mama",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Bájele a ese radio, que no oigo ni lo que pienso!",
+      "input_text": "[calling out, slightly annoyed] ¡Bájele a ese radio, que no oigo ni lo que pienso!",
+      "sha256": "912e11fc1abf5ef52a486aeb33033a7cb1241679131cfc755e77044aa1a268aa"
+    },
+    {
+      "id": "casa.volumenTv",
+      "speaker": "mama",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Bájele a ese televisor!",
+      "input_text": "[calling out, slightly annoyed] ¡Bájele a ese televisor!",
+      "sha256": "8c95b1cddd48cb9fc9c727de6496dafe77845e6577b9cf45621cf557229faa9b"
+    },
+    {
+      "id": "radioactiva.saludo1",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Muy buenas tardes, Bogotá! Radioactiva, noventa y siete nueve. Sábado por la tarde y cayendo un aguacero de los buenos.",
+      "input_text": "[lively, conversational, brisk] ¡Muy buenas tardes, Bogotá! Radioactiva, noventa y siete nueve. Sábado por la tarde y cayendo un aguacero de los buenos.",
+      "sha256": "35067cb1df491be3318bf219baa87bb43482ad949e5cb26d1b76db43013054b8"
+    },
+    {
+      "id": "radioactiva.saludo2",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Si no tiene nada que hacer, quédese en la casa, prenda la grabadora y súbale, que aquí le tenemos la mejor música.",
+      "input_text": "[lively, conversational, brisk] Si no tiene nada que hacer, quédese en la casa, prenda la grabadora y súbale, que aquí le tenemos la mejor música.",
+      "sha256": "a66a8a174681826430b876ddb99c8a7c8a725e2d1f3a0a2aae0a2c85976a5d0b"
+    },
+    {
+      "id": "radioactiva.transito1",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Reporte de tráfico, parceros: la Caracas está pegada desde la setenta y dos hasta la cuarenta y cinco.",
+      "input_text": "[lively, conversational, brisk] Reporte de tráfico, parceros: la Caracas está pegada desde la setenta y dos hasta la cuarenta y cinco.",
+      "sha256": "549bb4368274ad7dd36b4663891615673a40b9c16d7190639bddac3a53a6b6f0"
+    },
+    {
+      "id": "radioactiva.transito2",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Y en la Séptima, con esta lluvia, las busetas van a paso de tortuga. Paciencia.",
+      "input_text": "[lively, conversational, brisk] Y en la Séptima, con esta lluvia, las busetas van a paso de tortuga. Paciencia.",
+      "sha256": "048535699078aa65ceaa5026c97b874524114a55a06686120ed6c38518fab0a2"
+    },
+    {
+      "id": "radioactiva.dorado1",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Ya está en las tiendas lo nuevo de los Aterciopelados: El Dorado. Salió el martes.",
+      "input_text": "[lively, conversational, brisk] Ya está en las tiendas lo nuevo de los Aterciopelados: El Dorado. Salió el martes.",
+      "sha256": "aa8b6fbfc822fdf33f4a4d1633760b35a68829ba736aef5497116218a1f31eee"
+    },
+    {
+      "id": "radioactiva.dorado2",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Andrea Echeverri y Héctor Buitrago, orgullo bogotano. Aquí en la cabina no lo hemos dejado de poner.",
+      "input_text": "[lively, conversational, brisk] Andrea Echeverri y Héctor Buitrago, orgullo bogotano. Aquí en la cabina no lo hemos dejado de poner.",
+      "sha256": "e6cc48cd96dd637a6995926b54ea2715a5c6d3321cc02d7bc8f9a7ccd027b81e"
+    },
+    {
+      "id": "radioactiva.rap1",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Quién fue a Rock al Parque en mayo? Más de ochenta mil personas en el Simón Bolívar, ¡gratis!",
+      "input_text": "[lively, conversational, brisk] ¿Quién fue a Rock al Parque en mayo? Más de ochenta mil personas en el Simón Bolívar, ¡gratis!",
+      "sha256": "888fbbede8265f79fa64a5f886ef9820099387be107bb23809507381df13c4b0"
+    },
+    {
+      "id": "radioactiva.rap2",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Ojalá lo repitan el otro año. Nosotros ya estamos contando los días.",
+      "input_text": "[lively, conversational, brisk] Ojalá lo repitan el otro año. Nosotros ya estamos contando los días.",
+      "sha256": "9dc2b68114ab56a5a675c08a3f6c872c5a7499475605d1179633b59fc547af0a"
+    },
+    {
+      "id": "radioactiva.zanahoria1",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Y los que van de rumba esta noche, pilas: con la hora zanahoria, a la una de la mañana se acaba la fiesta.",
+      "input_text": "[lively, conversational, brisk] Y los que van de rumba esta noche, pilas: con la hora zanahoria, a la una de la mañana se acaba la fiesta.",
+      "sha256": "be2aa90ce4440509625511e38dbedeff3bbaf12e9f0d50f5d17451eba324c08c"
+    },
+    {
+      "id": "radioactiva.zanahoria2",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Así que arranquen temprano. Y si se toman unos tragos, no manejen.",
+      "input_text": "[lively, conversational, brisk] Así que arranquen temprano. Y si se toman unos tragos, no manejen.",
+      "sha256": "28a003a4eff8afdc191f8ce4b869cbd9d6a1127e69a75de64b13c10b8c7700a0"
+    },
+    {
+      "id": "radioactiva.higuita1",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Yo todavía no supero el escorpión de Higuita en Wembley. ¿Ustedes lo vieron?",
+      "input_text": "[lively, conversational, brisk] Yo todavía no supero el escorpión de Higuita en Wembley. ¿Ustedes lo vieron?",
+      "sha256": "aa74d2243c9b7c9ca7621f7bc320048d767b563dca6067f3fe61c89af774a70a"
+    },
+    {
+      "id": "radioactiva.higuita2",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Los ingleses no lo podían creer. ¡Eso es un arquero colombiano, señores!",
+      "input_text": "[lively, conversational, brisk] Los ingleses no lo podían creer. ¡Eso es un arquero colombiano, señores!",
+      "sha256": "957fa7b1af3aeb926e67ae6b22b30fb534ce409fc007c8d21f6b748e62f69b4d"
+    },
+    {
+      "id": "radioactiva.saludos1",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Van saludos para Diana, en Galerías, de parte de Mauricio, que dice que la extraña mucho.",
+      "input_text": "[lively, conversational, brisk] Van saludos para Diana, en Galerías, de parte de Mauricio, que dice que la extraña mucho.",
+      "sha256": "4d8f991eec1dc7da0582e12c476d1174f72bfb37d60f1d22ae7bb2318056f653"
+    },
+    {
+      "id": "radioactiva.saludos2",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Y para todos los de décimo B, que el lunes tienen examen de química. ¡Ánimo, muchachos!",
+      "input_text": "[lively, conversational, brisk] Y para todos los de décimo B, que el lunes tienen examen de química. ¡Ánimo, muchachos!",
+      "sha256": "711821562e17e117297fd284d09eba393c917f1e214346537c86c426e132c08a"
+    },
+    {
+      "id": "radioactiva.lluvia1",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Mire cómo está esa lluvia... En Bogotá uno sale con sol y vuelve empapado.",
+      "input_text": "[lively, conversational, brisk] Mire cómo está esa lluvia... En Bogotá uno sale con sol y vuelve empapado.",
+      "sha256": "a56dc1b7b699cce6b97518e47dda195ad0b2503f3cac82b5615a6f2b21e12547"
+    },
+    {
+      "id": "radioactiva.lluvia2",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Pero para eso está la radio. Aquí seguimos acompañándolo.",
+      "input_text": "[lively, conversational, brisk] Pero para eso está la radio. Aquí seguimos acompañándolo.",
+      "sha256": "ff378d0be7995acfad97436316aa256a72f9ce3bbcf8be10830a87b3bdff5096"
+    },
+    {
+      "id": "radioactiva.linea1",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "La línea de la cabina está abierta: pida su canción y mande su saludo.",
+      "input_text": "[lively, conversational, brisk] La línea de la cabina está abierta: pida su canción y mande su saludo.",
+      "sha256": "7138e5a5f46811854a9daf4c7d1477f0819491e6e4b3d00ce98b3a90aa66ec16"
+    },
+    {
+      "id": "radioactiva.linea2",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Llámenos al dos, ochenta y cinco, noventa y siete, noventa y siete. Otra vez: dos, ochenta y cinco, noventa y siete, noventa y siete.",
+      "input_text": "[lively, conversational, brisk] Llámenos al dos, ochenta y cinco, noventa y siete, noventa y siete. Otra vez: dos, ochenta y cinco, noventa y siete, noventa y siete.",
+      "sha256": "c278f510c5c8d097e13f01f5a354f3d24bc7ac3d16e2965364da64a05d55ddda"
+    },
+    {
+      "id": "radioactiva.id1",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Radioactiva... ¡noventa y siete nueve!",
+      "input_text": "[lively, conversational, brisk] Radioactiva... ¡noventa y siete nueve!",
+      "sha256": "3ededd0b0d0ed063d402cb7d03ff73a425863e8c2cdf37656fcaacd3ddea7ceb"
+    },
+    {
+      "id": "radioactiva.id2",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Rock y pop. Radioactiva.",
+      "input_text": "[lively, conversational, brisk] Rock y pop. Radioactiva.",
+      "sha256": "fd494bbbf35c0591971dcd7aaef01e97bd5c177e5711ca4ec2c18830b3efc696"
+    },
+    {
+      "id": "radioactiva.introBolero",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Uy, esta sí! Aterciopelados, del disco nuevo: «Bolero falaz».",
+      "input_text": "[lively, conversational, brisk] ¡Uy, esta sí! Aterciopelados, del disco nuevo: «Bolero falaz».",
+      "sha256": "0a0d40ec8628349db074147adf36a3434833d56975c3f3aa69c579ea912ad547"
+    },
+    {
+      "id": "radioactiva.introFlorecita",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Seguimos con los Aterciopelados, que están en todas partes: «Florecita rockera».",
+      "input_text": "[lively, conversational, brisk] Seguimos con los Aterciopelados, que están en todas partes: «Florecita rockera».",
+      "sha256": "e7c107c38b44c0ee41a80650669906545773c30914f089c7c80f7bd3f1c78f1e"
+    },
+    {
+      "id": "radioactiva.introSoda",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Directo desde Buenos Aires, lo nuevo de Soda Stereo: «Ella usó mi cabeza como un revólver».",
+      "input_text": "[lively, conversational, brisk] Directo desde Buenos Aires, lo nuevo de Soda Stereo: «Ella usó mi cabeza como un revólver».",
+      "sha256": "ccdfa86bfa516a378c7b41b437830286fc57e4007714b37da72be153ecdfe59b"
+    },
+    {
+      "id": "radioactiva.introMatador",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Súbale, súbale! Los Fabulosos Cadillacs: «Matador».",
+      "input_text": "[lively, conversational, brisk] ¡Súbale, súbale! Los Fabulosos Cadillacs: «Matador».",
+      "sha256": "809582a129e0f4576828c20787716af14fca65f4f186a3e35e9c9f0f5c92c359"
+    },
+    {
+      "id": "radioactiva.introLamento",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Una que todos nos sabemos: Enanitos Verdes, «Lamento boliviano».",
+      "input_text": "[lively, conversational, brisk] Una que todos nos sabemos: Enanitos Verdes, «Lamento boliviano».",
+      "sha256": "4e455e64c10bb8921bb2f250cb99c68b3e0278130311be4c759fd5f7d18d8300"
+    },
+    {
+      "id": "radioactiva.introAfuera",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Caifanes, «Afuera». Para oír con la ventana abierta... bueno, con esta lluvia, mejor cerrada.",
+      "input_text": "[lively, conversational, brisk] Caifanes, «Afuera». Para oír con la ventana abierta... bueno, con esta lluvia, mejor cerrada.",
+      "sha256": "93e165af2785d4f6bdcf36cf160b356e89bec6c393158549c387d80d4ff3ab72"
+    },
+    {
+      "id": "radioactiva.introZombie",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Desde Irlanda, The Cranberries: «Zombie». ¡Súbale el volumen!",
+      "input_text": "[lively, conversational, brisk] Desde Irlanda, The Cranberries: «Zombie». ¡Súbale el volumen!",
+      "sha256": "1a99855d7f330166508a6244aa65fd9c36ea0d3c15914648d0e5c32375e72535"
+    },
+    {
+      "id": "radioactiva.introGuns",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Aquí nadie se queda quieto! Guns N' Roses: «You Could Be Mine».",
+      "input_text": "[lively, conversational, brisk] ¡Aquí nadie se queda quieto! Guns N' Roses: «You Could Be Mine».",
+      "sha256": "0d329eecf7064e3f942276cb28598d141fdfbb503f8e2739b3607b7a32349626"
+    },
+    {
+      "id": "radioactiva.generico1",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Radioactiva, noventa y siete nueve. ¡Aquí va otra!",
+      "input_text": "[lively, conversational, brisk] Radioactiva, noventa y siete nueve. ¡Aquí va otra!",
+      "sha256": "a92185c2abbabf10cffd259a1372fc918bd2460eaad7e0773a3aa0a203fa2429"
+    },
+    {
+      "id": "radioactiva.banda",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Más Aterciopelados, orgullo bogotano! Súbale.",
+      "input_text": "[lively, conversational, brisk] ¡Más Aterciopelados, orgullo bogotano! Súbale.",
+      "sha256": "72756306e5ba700d7f8863c24ed02a1912c34d07365ec2404dc3988788aade51"
+    },
+    {
+      "id": "radioactiva.generico2",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Seguimos con más música, sin tanta habladera.",
+      "input_text": "[lively, conversational, brisk] Seguimos con más música, sin tanta habladera.",
+      "sha256": "e6d7ea8d09e4a10cd972f12bbcd22b3c6da3411399fcfe4f42236bf7a2bf91cb"
+    },
+    {
+      "id": "radioactiva.pedidos.dedAngie",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Y esta va para Angie, de parte de un admirador secreto en Chapinero. ¡Uy, qué romántico!",
+      "input_text": "[playfully teasing, brisk] Y esta va para Angie, de parte de un admirador secreto en Chapinero. ¡Uy, qué romántico!",
+      "sha256": "73b352cebce547bcf8251f50dafdef7298dce78466d5b2ce0256e4dc0c971621"
+    },
+    {
+      "id": "radioactiva.pedidos.dedColegio",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Esta va para todos los del colegio, de parte de un oyente de Chapinero. ¡Que viva el sábado!",
+      "input_text": "[lively, conversational, brisk] Esta va para todos los del colegio, de parte de un oyente de Chapinero. ¡Que viva el sábado!",
+      "sha256": "ccb66169cd51ae05f92de27442800e51cfa6e7a716f6ff665a888405b6c34fae"
+    },
+    {
+      "id": "radioactiva.pedidos.dedAbuelita",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Y esta va para la abuelita de un oyente de Chapinero. ¡Un saludo, abuelita!",
+      "input_text": "[warm, lively, brisk] Y esta va para la abuelita de un oyente de Chapinero. ¡Un saludo, abuelita!",
+      "sha256": "fbe89b3f71c9af2e763646010116fc19e81d1d95e7b5a0423e2eaf2f76f186ae"
+    },
+    {
+      "id": "radioactiva.pedidos.florecita-rockera",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Complaciendo a los oyentes: Aterciopelados, «Florecita rockera».",
+      "input_text": "[lively, conversational, brisk] Complaciendo a los oyentes: Aterciopelados, «Florecita rockera».",
+      "sha256": "ccc2e049c8fb6d571d98d7391cbd3b14665566db5ec5679f720a39e74ae3e312"
+    },
+    {
+      "id": "radioactiva.pedidos.bolero-falaz",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Complaciendo a los oyentes: Aterciopelados, «Bolero falaz».",
+      "input_text": "[lively, conversational, brisk] Complaciendo a los oyentes: Aterciopelados, «Bolero falaz».",
+      "sha256": "b2d5fdf858b103d82b00ec9c752f1f051b1862675acb0f1bc1954a729ab60801"
+    },
+    {
+      "id": "radioactiva.pedidos.ella-uso-mi-cabeza",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Complaciendo a los oyentes: Soda Stereo, «Ella usó mi cabeza como un revólver».",
+      "input_text": "[lively, conversational, brisk] Complaciendo a los oyentes: Soda Stereo, «Ella usó mi cabeza como un revólver».",
+      "sha256": "c8248c6b3b3ffff288f8fbf0fb6635b185402d289bbb6d885d8b8ffe95b32119"
+    },
+    {
+      "id": "radioactiva.pedidos.matador",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Complaciendo a los oyentes: Los Fabulosos Cadillacs, «Matador».",
+      "input_text": "[lively, conversational, brisk] Complaciendo a los oyentes: Los Fabulosos Cadillacs, «Matador».",
+      "sha256": "a9a2448ef7ccfec56840f98b0fdb8a44e57ae0eb7c858ed00d3f282dbc34711d"
+    },
+    {
+      "id": "radioactiva.pedidos.aterciopelados",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Complaciendo a los oyentes: ¡Aterciopelados!",
+      "input_text": "[lively, conversational, brisk] Complaciendo a los oyentes: ¡Aterciopelados!",
+      "sha256": "06cb5d1f07b5d1e9f3d52c1d068fec7b7790396aa91df192179985460869233a"
+    },
+    {
+      "id": "radioactiva.pedidos.generico",
+      "speaker": "locutorRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Complaciendo a los oyentes, aquí va la suya.",
+      "input_text": "[lively, conversational, brisk] Complaciendo a los oyentes, aquí va la suya.",
+      "sha256": "2013e301ff5a52d40ec10d4af0156b0a138aeb6bb1367cbfb3dc880671b47f71"
+    },
+    {
+      "id": "llamada.cabina.alo",
+      "speaker": "cabinaRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Radioactiva, buenas tardes.",
+      "input_text": "[friendly, matter-of-fact, brisk] Radioactiva, buenas tardes.",
+      "sha256": "087ec073c00021f799c4ffc841f18ce62abc3c1c55a359196e61e4e61791bf6f"
+    },
+    {
+      "id": "llamada.cabina.cancion",
+      "speaker": "cabinaRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Qué canción quiere escuchar?",
+      "input_text": "[friendly, matter-of-fact, brisk] ¿Qué canción quiere escuchar?",
+      "sha256": "5815fb2158126f87b0014a67ae869ad5c7c2f7be5824e14c53a44c52337b0656"
+    },
+    {
+      "id": "llamada.cabina.dedicada",
+      "speaker": "cabinaRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Y va dedicada a alguien?",
+      "input_text": "[friendly, matter-of-fact, brisk] ¿Y va dedicada a alguien?",
+      "sha256": "91f27ead7deaf5f76e66c0a0e9b3072bbce3bab0a855fded9387f9478bf5763a"
+    },
+    {
+      "id": "llamada.cabina.barrio",
+      "speaker": "cabinaRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Desde qué barrio nos llama?",
+      "input_text": "[friendly, matter-of-fact, brisk] ¿Desde qué barrio nos llama?",
+      "sha256": "b8b389f1ace0e0d4178c7159f0b8567bfc2d1985815a93edf97fb261e6cbc71e"
+    },
+    {
+      "id": "llamada.cabina.listo",
+      "speaker": "cabinaRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Listo. Quédese pendiente, que ya casi se la ponemos.",
+      "input_text": "[friendly, matter-of-fact, brisk] Listo. Quédese pendiente, que ya casi se la ponemos.",
+      "sha256": "83253fc1aa0ed85adff1831e58db37b5d226ce48b03fc15d88f1f83dd9c71016"
+    },
+    {
+      "id": "llamada.cabina.yaTenemos",
+      "speaker": "cabinaRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Ya tenemos su pedido anotado. ¡Pilas con el radio!",
+      "input_text": "[friendly, matter-of-fact, brisk] Ya tenemos su pedido anotado. ¡Pilas con el radio!",
+      "sha256": "a1977a985d0ead262cedc128e0d5df147ae924596090036db774c6c69b7c5073"
+    },
+    {
+      "id": "llamada.cabina.yaSono",
+      "speaker": "cabinaRadioactiva",
+      "voice_id": "J2Jb9yZNvpXUNAL3a2bw",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Esa ya se la pusimos, ¿no la oyó? Llame más tarde y pide otra.",
+      "input_text": "[busy, matter-of-fact, brisk] Esa ya se la pusimos, ¿no la oyó? Llame más tarde y pide otra.",
+      "sha256": "337d74dfd56bfbabba24fd7e26dbdcda3ec7aa29b6d7fcf2fe5beb93b12a6dca"
+    }
+  ]
+}
