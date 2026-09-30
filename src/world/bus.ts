@@ -39,7 +39,7 @@ export type WorldEvents = {
   /** Recording started or stopped on the deck. */
   'tape:recording': { on: boolean };
   /** A song or voice file was loaded in the backstage. */
-  'media:loaded': { kind: 'song' | 'voice' | 'anthem'; id: string };
+  'media:loaded': { kind: 'song' | 'voice' | 'anthem' | 'house'; id: string };
   /** The light switch. */
   'light:bulb': { on: boolean };
   /** The TV was switched on or off. */

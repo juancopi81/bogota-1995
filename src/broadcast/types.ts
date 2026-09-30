@@ -14,7 +14,14 @@ export interface Song {
 
 export type Segment =
   /** A song; `over` are DJ lines spoken over its intro. */
-  | { kind: 'song'; songId: string; over?: Line[]; request?: { dedication: string | null } }
+  | {
+      kind: 'song';
+      songId: string;
+      /** The real audio it carries (your file, or a house track standing in); null for a placeholder. */
+      audio?: string | null;
+      over?: Line[];
+      request?: { dedication: string | null };
+    }
   /** The DJ (or the news anchor) talking over a music bed. */
   | { kind: 'talk'; lines: Line[] }
   /** A radio ad (cuña). */

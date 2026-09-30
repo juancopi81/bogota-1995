@@ -146,7 +146,7 @@ export class StationPlayer {
     switch (seg.kind) {
       case 'song': {
         // a loaded file can start and stop mid-phrase (30-second previews do): soften the edges
-        if (library.isUploaded(seg.songId)) {
+        if (seg.audio) {
           gain.gain.setValueAtTime(0, startCtx);
           gain.gain.linearRampToValueAtTime(1, startCtx + 0.4);
           if (!item.cut) {
@@ -154,18 +154,18 @@ export class StationPlayer {
             gain.gain.linearRampToValueAtTime(0, endCtx);
           }
         }
-        withBuffer(library.song(seg.songId), () => library.whenSong(seg.songId), (b) => play(b, startCtx));
+        withBuffer(library.song(seg.songId, seg.audio ?? null), () => library.whenSong(seg.songId, seg.audio ?? null), (b) => play(b, startCtx));
         // the DJ ducks the music a little while talking over the intro
         voicesAt(item.cues);
         break;
       }
       case 'talk':
-        withBuffer(library.peek(`bed:${def.id}`), () => library.whenBed(def.id, def.bed), (b) => play(b, startCtx, { loop: true, level: def.band === 'AM' ? 0.12 : 0.3 }));
+        withBuffer(library.bed(def.id), () => library.whenBed(def.id, def.bed), (b) => play(b, startCtx, { loop: true, level: def.band === 'AM' ? 0.12 : 0.3 }));
         voicesAt(item.cues);
         break;
       case 'ad':
         withBuffer(library.peek(`jingle:${def.id}`), () => library.whenJingle(def.id, def.jingle), (b) => play(b, startCtx, { level: 0.5, until: startCtx + JINGLE_SECONDS }));
-        withBuffer(library.peek(`bed:${def.id}`), () => library.whenBed(def.id, def.bed), (b) => play(b, startCtx + 0.4, { loop: true, level: 0.18 }));
+        withBuffer(library.bed(def.id), () => library.whenBed(def.id, def.bed), (b) => play(b, startCtx + 0.4, { loop: true, level: 0.18 }));
         voicesAt(item.cues);
         break;
       case 'id':

@@ -1,6 +1,6 @@
 # Voice recording script
 
-Every line spoken in the room (183 lines), grouped by voice. v0 shows them as subtitles;
+Every line spoken in the room (186 lines), grouped by voice. v0 shows them as subtitles;
 a recording named after a line's id replaces the subtitle-only version (the
 subtitle stays).
 
@@ -158,6 +158,7 @@ _Young FM rock DJ, energetic, talks over the intros._
 | `radioactiva.introZombie` | Desde Irlanda, The Cranberries: «Zombie». ¡Súbale el volumen! |
 | `radioactiva.introGuns` | ¡Aquí nadie se queda quieto! Guns N' Roses: «You Could Be Mine». |
 | `radioactiva.generico1` | Radioactiva, noventa y siete nueve. ¡Aquí va otra! |
+| `radioactiva.banda` | ¡Más Aterciopelados, orgullo bogotano! Súbale. |
 | `radioactiva.generico2` | Seguimos con más música, sin tanta habladera. |
 | `radioactiva.pedidos.dedAngie` | Y esta va para Angie, de parte de un admirador secreto en Chapinero. ¡Uy, qué romántico! |
 | `radioactiva.pedidos.dedColegio` | Esta va para todos los del colegio, de parte de un oyente de Chapinero. ¡Que viva el sábado! |
@@ -166,6 +167,8 @@ _Young FM rock DJ, energetic, talks over the intros._
 | `radioactiva.pedidos.bolero-falaz` | Complaciendo a los oyentes: Aterciopelados, «Bolero falaz». |
 | `radioactiva.pedidos.ella-uso-mi-cabeza` | Complaciendo a los oyentes: Soda Stereo, «Ella usó mi cabeza como un revólver». |
 | `radioactiva.pedidos.matador` | Complaciendo a los oyentes: Los Fabulosos Cadillacs, «Matador». |
+| `radioactiva.pedidos.aterciopelados` | Complaciendo a los oyentes: ¡Aterciopelados! |
+| `radioactiva.pedidos.generico` | Complaciendo a los oyentes, aquí va la suya. |
 
 ## Cabina · Radioactiva
 

@@ -14,6 +14,7 @@ import { tagsOfFile } from '../audio/tags';
 import { isAudioName, plan, type Candidate, type Target } from '../audio/matching';
 import { checkManifest, readManifest, type ManifestCheck } from '../audio/manifest';
 import { SONGS, REQUESTABLE, song } from '../content/songs';
+import { HOUSE_MUSIC } from '../content/housemusic';
 import { STATIONS } from '../content/stations';
 import { allLines, SPEAKERS, type Speaker } from '../content/lines';
 import { clock, formatTime, at } from '../world/clock';
@@ -209,10 +210,11 @@ export class Backstage {
     return `<button data-preview="${id}" title="${on ? 'Parar' : 'Oír unos segundos'}">${on ? '■' : '▶'}</button>`;
   }
 
-  private togglePreview(id: string): void {
+  private async togglePreview(id: string): Promise<void> {
     const was = this.preview?.id;
     this.stopPreview();
-    const buffer = id === 'anthem' ? library.anthem() : library.song(id);
+    // your song, the anthem, or one of the house tracks ('house:<id>')
+    const buffer = was === id ? undefined : id === 'anthem' ? library.anthem() : ((await library.whenAudio(id.startsWith('house:') ? id : `yours:${id}`)) ?? undefined);
     if (was !== id && buffer) {
       const src = this.ctx.createBufferSource();
       src.buffer = buffer;
@@ -290,8 +292,8 @@ export class Backstage {
       const s = song(id);
       const requestable = REQUESTABLE.includes(id) ? ' <span class="tag" title="Se puede pedir en la cabina de Radioactiva">se puede pedir</span>' : '';
       const status = library.isUploaded(id)
-        ? `<span class="ok">✓ suya</span> <small>${mmss(library.song(id)!.duration)}</small> ${this.previewButton(id)} <button data-forget="${id}">Quitar</button>`
-        : `<span class="muted">relleno</span> <label class="file">Cargar<input type="file" accept="audio/*" data-song="${id}" hidden></label>`;
+        ? `<span class="ok">✓ suya</span> <small>${mmss(library.lengthOf(id) ?? 0)}</small> ${this.previewButton(id)} <button data-forget="${id}">Quitar</button>`
+        : `<span class="muted">${library.houseLoaded.length ? 'suena la de la casa' : 'relleno'}</span> <label class="file">Cargar<input type="file" accept="audio/*" data-song="${id}" hidden></label>`;
       return `<div class="row"><span>${escape(s.title)}${requestable}<br><small>${escape(s.artist)} · ${s.year}</small></span><span>${status}</span></div>`;
     };
 
@@ -333,8 +335,16 @@ export class Backstage {
       ${this.unknown.length ? `<h3>Sin reconocer (${this.unknown.length})</h3><p>Dígame qué es cada uno.</p>${unknownRows}` : ''}
 
       <h3>Canciones · ${mine} de ${SONGS.length} son suyas</h3>
-      <p>Mientras no cargue la de verdad, suena un relleno con el mismo estilo.</p>
+      <p>Mientras no cargue la de verdad, en su puesto suena música de la casa (o un relleno con el mismo estilo, si no está).</p>
       ${groups.map((g) => `<h4>${escape(g.label)}</h4>${g.ids.map(songRow).join('')}`).join('')}
+
+      <h3>Música de la casa</h3>
+      <p>Canciones con licencia Creative Commons que vienen con el cuarto. No son de 1995: suenan en el puesto de las canciones que usted no ha cargado, y el locutor no dice que sean de ese año.</p>
+      ${HOUSE_MUSIC.map((t) => {
+        const here = library.houseLoaded.some((h) => h.id === t.id);
+        return `<div class="row"><span>${escape(t.title)} <small>· ${escape(t.artist)} · ${t.year}</small><br><small><a href="${t.source}" target="_blank" rel="noopener">fuente</a> · <a href="${t.licenseUrl}" target="_blank" rel="noopener">${escape(t.license)}</a></small></span>
+          <span>${here ? `<span class="ok">✓</span> ${this.previewButton(`house:${t.id}`)}` : '<span class="muted">falta el archivo</span>'}</span></div>`;
+      }).join('')}
 
       <h3>Himno Nacional</h3>
       <p>A las 6:00 p.m. todas las emisoras y canales pasan el himno. Cargue una grabación para que suene.</p>
@@ -377,7 +387,7 @@ export class Backstage {
       }),
     );
     this.el.querySelectorAll<HTMLButtonElement>('button[data-preview]').forEach((b) =>
-      b.addEventListener('click', () => this.togglePreview(b.dataset.preview!)),
+      b.addEventListener('click', () => void this.togglePreview(b.dataset.preview!)),
     );
     this.el.querySelectorAll<HTMLButtonElement>('button[data-forget]').forEach((b) =>
       b.addEventListener('click', async () => {

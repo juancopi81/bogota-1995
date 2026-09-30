@@ -4,6 +4,7 @@ import { Timeline, type Measured } from './timeline';
 import type { Cue, Scheduled, Segment } from './types';
 import type { StationDef, Dedication } from '../content/stations';
 import { requestIntro } from '../content/stations';
+import { song } from '../content/songs';
 import type { Line } from '../content/lines';
 import { library } from '../audio/library';
 import { lineDuration } from '../audio/voices';
@@ -61,9 +62,15 @@ export class Station {
       case 'song': {
         if (!def.catalog.length) return this.next(start);
         const songId = this.nextSong();
+        // what will really play: your file, a house track standing in, or a placeholder
+        const audio = library.audioFor(songId, def.id);
         const talkOver = this.rng() < 0.6;
-        const over = talkOver ? (def.intros[songId] ?? (def.genericIntros.length ? pick(this.rng, def.genericIntros) : undefined)) : undefined;
-        return { kind: 'song', songId, over };
+        const generic = () => (def.genericIntros.length ? pick(this.rng, def.genericIntros) : undefined);
+        // the DJ only names what's true: a stand-in gets its band's name if it's the same band, or a generic intro
+        const stand = library.houseTrack(audio);
+        const named = stand ? (stand.artist === song(songId).artist ? def.bandIntros?.[stand.artist] : undefined) : def.intros[songId];
+        const over = talkOver ? (named ?? generic()) : undefined;
+        return { kind: 'song', songId, audio, over };
       }
       case 'talk':
         return { kind: 'talk', lines: this.cycle('talk', def.talks) };
@@ -98,7 +105,7 @@ export class Station {
     const end = (cues: Cue[], tail: number) => (cues.length ? cues[cues.length - 1].at + cues[cues.length - 1].dur + tail : tail);
     switch (seg.kind) {
       case 'song': {
-        const { duration } = library.shape(seg.songId);
+        const { duration } = library.shape(seg.songId, seg.audio ?? null);
         return { dur: duration, cues: this.cues(seg.over ?? [], 0.8, 0.25) };
       }
       case 'talk': {
@@ -133,17 +140,21 @@ export class Station {
    */
   request(t: number, songId: string, dedication: Dedication): Scheduled {
     const ads = { kind: 'ad', lines: [...this.cycle('ads', this.def.ads), ...this.cycle('ads', this.def.ads)] } as Segment;
-    const song: Segment = { kind: 'song', songId, over: requestIntro(songId, dedication), request: { dedication } };
-    const [, placed] = this.timeline.rewrite(t, [ads, song]);
-    library.prefetch([songId]);
+    const audio = library.audioFor(songId, this.def.id);
+    const requested: Segment = { kind: 'song', songId, audio, over: requestIntro(songId, dedication, library.houseTrack(audio)), request: { dedication } };
+    const [, placed] = this.timeline.rewrite(t, [ads, requested]);
+    library.prefetch([{ songId, audio }]);
     return placed;
   }
 
-  /** Songs coming up soon (to render their placeholders ahead of time). */
-  upcomingSongs(t: number, horizon = 600): string[] {
+  /** Songs coming up soon (to get their audio ready ahead of time). */
+  upcomingSongs(t: number, horizon = 600): { songId: string; audio: string | null }[] {
     this.timeline.ensure(t + horizon);
     return this.timeline.items
       .filter((i) => i.end > t && i.start < t + horizon && i.seg.kind === 'song')
-      .map((i) => (i.seg as { songId: string }).songId);
+      .map((i) => {
+        const seg = i.seg as { songId: string; audio?: string | null };
+        return { songId: seg.songId, audio: seg.audio ?? null };
+      });
   }
 }

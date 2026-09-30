@@ -112,7 +112,9 @@ function titleCard(onEnter: () => void): void {
   title.addEventListener('pointerdown', enter);
 }
 
-const ready = Promise.all([library.loadSaved(), voices.loadSaved(engine.ctx), grabadora.init()]);
+// the room's own music loads in the background; entering waits for it a few seconds at most
+const house = library.loadHouse();
+const ready = Promise.all([library.loadSaved(), voices.loadSaved(engine.ctx), grabadora.init(), Promise.race([house, new Promise((r) => setTimeout(r, 4000))])]);
 
 async function enter(): Promise<void> {
   await engine.unlock();

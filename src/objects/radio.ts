@@ -178,7 +178,8 @@ export class Radio {
 
     if (t - this.lastPrefetch > 15) {
       this.lastPrefetch = t;
-      for (const { station } of this.tuned) library.prefetch(station.upcomingSongs(t, 420));
+      // only for stations you can hear: decoding full songs is heavy
+      for (const { station } of this.tuned) if ((this.strengths.get(station) ?? 0) > 0.002) library.prefetch(station.upcomingSongs(t, 420));
     }
   }
 
@@ -191,8 +192,9 @@ export class Radio {
     const label = `Radio · ${dom.station.def.label}`;
     const clarity = clamp((dom.strength - 0.3) / 0.6, 0, 1);
     if (now?.cue) return { label, line: now.cue.line, clarity };
-    if (now && now.item.seg.kind === 'song' && t - now.item.start < 9 && !library.isUploaded(now.item.seg.songId)) {
-      const s = song(now.item.seg.songId);
+    // a song you haven't loaded: say what's really playing (a house track, or the placeholder's song)
+    if (now && now.item.seg.kind === 'song' && t - now.item.start < 9 && !now.item.seg.audio?.startsWith('yours:')) {
+      const s = library.houseTrack(now.item.seg.audio ?? null) ?? song(now.item.seg.songId);
       return { label, line: dynamicLine('jugador', `♪ ${s.artist} — «${s.title}»`), clarity };
     }
     if (now && now.item.seg.kind === 'anthem') return { label, line: dynamicLine('jugador', '♪ Himno Nacional de la República de Colombia'), clarity };

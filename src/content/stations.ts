@@ -5,6 +5,8 @@
 // that week, reported without invented quotes.
 
 import { lines, dynamicLine, type Line } from './lines';
+import { song } from './songs';
+import type { HouseTrack } from './housemusic';
 import { clockParts, spanishNumber, spokenTime } from '../world/clock';
 import type { Style } from '../audio/music';
 
@@ -20,6 +22,8 @@ export interface StationDef {
   catalog: string[];
   /** Songs that come around more often (the new releases). */
   heavy?: string[];
+  /** What the DJ says over a house track by a band that's also on the list (only the band's name is true). */
+  bandIntros?: Record<string, Line[]>;
   jingle: Style;
   bed: Style;
   format: FormatSlot[];
@@ -88,6 +92,7 @@ const RA = lines('radioactiva', {
   introZombie: ['locutorRadioactiva', 'Desde Irlanda, The Cranberries: «Zombie». ¡Súbale el volumen!'],
   introGuns: ['locutorRadioactiva', '¡Aquí nadie se queda quieto! Guns N\' Roses: «You Could Be Mine».'],
   generico1: ['locutorRadioactiva', 'Radioactiva, noventa y siete nueve. ¡Aquí va otra!'],
+  banda: ['locutorRadioactiva', '¡Más Aterciopelados, orgullo bogotano! Súbale.'],
   generico2: ['locutorRadioactiva', 'Seguimos con más música, sin tanta habladera.'],
 });
 
@@ -117,6 +122,7 @@ export const RADIOACTIVA: StationDef = {
   label: 'Radioactiva 97.9',
   catalog: ['bolero-falaz', 'florecita-rockera', 'ella-uso-mi-cabeza', 'matador', 'lamento-boliviano', 'afuera', 'zombie', 'you-could-be-mine'],
   heavy: ['bolero-falaz', 'florecita-rockera'],
+  bandIntros: { Aterciopelados: [RA.banda] },
   jingle: 'rock',
   bed: 'rock',
   format: ['id', 'song', 'request', 'song', 'ads', 'time', 'song', 'talk', 'song', 'ads', 'request', 'song', 'talk', 'song', 'ads', 'talk'],
@@ -158,11 +164,14 @@ export const REQUEST_LINES = lines('radioactiva.pedidos', {
   'bolero-falaz': ['locutorRadioactiva', 'Complaciendo a los oyentes: Aterciopelados, «Bolero falaz».'],
   'ella-uso-mi-cabeza': ['locutorRadioactiva', 'Complaciendo a los oyentes: Soda Stereo, «Ella usó mi cabeza como un revólver».'],
   matador: ['locutorRadioactiva', 'Complaciendo a los oyentes: Los Fabulosos Cadillacs, «Matador».'],
+  // when a house track stands in for the song that was asked for, the DJ doesn't name it
+  aterciopelados: ['locutorRadioactiva', 'Complaciendo a los oyentes: ¡Aterciopelados!'],
+  generico: ['locutorRadioactiva', 'Complaciendo a los oyentes, aquí va la suya.'],
 });
 
 export type Dedication = 'angie' | 'colegio' | 'abuelita' | null;
 
-export function requestIntro(songId: string, dedication: Dedication): Line[] {
+export function requestIntro(songId: string, dedication: Dedication, standIn?: HouseTrack): Line[] {
   const ded =
     dedication === 'angie'
       ? REQUEST_LINES.dedAngie
@@ -171,7 +180,11 @@ export function requestIntro(songId: string, dedication: Dedication): Line[] {
         : dedication === 'abuelita'
           ? REQUEST_LINES.dedAbuelita
           : null;
-  const announce = (REQUEST_LINES as Record<string, Line>)[songId];
+  const announce = standIn
+    ? standIn.artist === 'Aterciopelados' && song(songId).artist === 'Aterciopelados'
+      ? REQUEST_LINES.aterciopelados
+      : REQUEST_LINES.generico
+    : (REQUEST_LINES as Record<string, Line>)[songId];
   return [ded, announce].filter((l): l is Line => !!l);
 }
 
