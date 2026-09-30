@@ -614,13 +614,15 @@ body {
   transform: translateY(4px);
 }
 
-#g-door {
+#g-door,
+#g-door1 {
   transform-box: fill-box;
   transform-origin: 50% 100%;
   transition: transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
-#g-door.open {
+#g-door.open,
+#g-door1.open {
   transform: translateY(18px) scaleY(0.72);
 }
 
@@ -628,8 +630,21 @@ body {
   transition: transform 0.2s ease;
 }
 
-#g-dial {
-  cursor: ew-resize;
+.closeup .tune-button .tune-cap {
+  transition: transform 0.06s ease-out, fill 0.06s;
+}
+
+.closeup .tune-button.down .tune-cap {
+  transform: scale(0.9);
+  fill: #1b1c1f;
+}
+
+#g-lcd-bg {
+  cursor: ns-resize;
+}
+
+#g-vol {
+  cursor: grab;
 }
 
 /* ---------- phone ---------- */

@@ -11,10 +11,9 @@ export const ROOM = {
   window: { x: 540, y: 110, w: 460, h: 360 },
   tvScreen: { x: 1115, y: 322, w: 138, h: 112 },
   clock: { cx: 1354, cy: 452, r: 13 },
-  grabadora: { x: 104, y: 392, w: 300, h: 156 },
+  grabadora: { x: 100, y: 400, w: 316, h: 156 },
   tv: { x: 1090, y: 130, w: 250, h: 345 },
   phone: { x: 1170, y: 730, w: 300, h: 130 },
-  deckWindow: { x: 222, y: 462, w: 64, h: 40 },
 } as const;
 
 const paperTexture = (id: string, base: number) => `
@@ -198,38 +197,46 @@ export function wallSvg(): string {
     <rect x="-4" y="-2" width="34" height="8" fill="#e8e1cf" opacity="0.7"/>
   </g>
 
-  <!-- the grabadora on the desk (details live in the close-up) -->
+  <!-- the grabadora on the desk: the close-up's own shapes, shrunk (details live in the close-up) -->
   <g class="hot" data-hot="grabadora">
-    <rect x="96" y="380" width="324" height="176" fill="transparent"/>
-    <path d="M150 424 V 404 Q 150 394 162 394 H 352 Q 364 394 364 404 V 424" stroke="#2c2d30" stroke-width="10" fill="none" stroke-linecap="round"/>
-    <rect x="108" y="420" width="300" height="126" rx="14" fill="url(#silver)"/>
-    <rect x="108" y="420" width="300" height="126" rx="14" fill="none" stroke="#6f7478" stroke-width="2"/>
-    <circle cx="162" cy="486" r="42" fill="#2e3033"/>
-    <circle cx="162" cy="486" r="42" fill="none" stroke="#8b8f93" stroke-width="3"/>
-    <circle cx="162" cy="486" r="14" fill="#1d1e20"/>
-    <circle cx="354" cy="486" r="42" fill="#2e3033"/>
-    <circle cx="354" cy="486" r="42" fill="none" stroke="#8b8f93" stroke-width="3"/>
-    <circle cx="354" cy="486" r="14" fill="#1d1e20"/>
-    <rect x="214" y="428" width="88" height="24" rx="3" fill="#20242a"/>
-    <path d="M220 440 H296" stroke="#d9c690" stroke-width="1" stroke-dasharray="2 4"/>
-    <rect class="dial-needle" x="251" y="431" width="2" height="18" fill="#e04a2f"/>
-    <rect x="218" y="458" width="72" height="48" rx="4" fill="#26282c"/>
-    <rect x="${ROOM.deckWindow.x}" y="${ROOM.deckWindow.y}" width="${ROOM.deckWindow.w}" height="${ROOM.deckWindow.h}" rx="3" fill="#3b3f45"/>
-    <g class="deck-cassette" opacity="1">
-      <rect x="228" y="468" width="52" height="30" rx="2" fill="#e8e3d6"/>
-      <circle class="reel-l" cx="243" cy="484" r="6" fill="#4a3a2c"/>
-      <circle class="reel-r" cx="265" cy="484" r="6" fill="#4a3a2c"/>
+    <rect x="96" y="398" width="324" height="158" fill="transparent"/>
+    <g transform="translate(84.1 378.6) scale(0.2174)">
+      <ellipse cx="800" cy="772" rx="700" ry="20" fill="#000" opacity="0.25"/>
+      <path d="M470 236 C 480 150 540 132 610 132 H 990 C 1060 132 1120 150 1130 236" stroke="#1b1c1f" stroke-width="36" fill="none"/>
+      <rect x="386" y="194" width="68" height="40" rx="8" fill="#1d1e21"/>
+      <circle cx="420" cy="212" r="34" fill="#3d3f44"/>
+      <rect x="110" y="232" width="1380" height="540" rx="150" fill="#27292c"/>
+      <path d="M200 250 H 1400" stroke="#5a5d62" stroke-width="9" stroke-linecap="round" opacity="0.6"/>
+      <rect x="110" y="232" width="1380" height="540" rx="150" fill="none" stroke="#0f1011" stroke-width="7"/>
+      <ellipse cx="800" cy="242" rx="190" ry="16" fill="#36383c"/>
+      ${[372, 1228]
+        .map(
+          (cx, i) => `<ellipse cx="${cx}" cy="500" rx="234" ry="224" fill="#17181a"/>
+      <ellipse cx="${cx}" cy="500" rx="222" ry="212" fill="#2d2f33"/>
+      <circle cx="${cx}" cy="514" r="118" fill="#37393d"/>
+      <circle cx="${cx}" cy="514" r="44" fill="#1f2023"/>
+      <circle cx="${cx + (i ? -102 : 102)}" cy="411" r="34" fill="#333539"/>
+      <ellipse cx="${cx}" cy="500" rx="222" ry="212" fill="none" stroke="#46494e" stroke-width="8"/>`,
+        )
+        .join('')}
+      <rect x="598" y="290" width="404" height="190" rx="60" fill="url(#silver)"/>
+      <rect x="676" y="302" width="248" height="108" rx="12" fill="#3b3e42"/>
+      <rect class="room-lcd" x="684" y="310" width="232" height="92" rx="6" fill="#7d8a70"/>
+      <circle cx="640" cy="356" r="31" fill="#7a7f84"/><circle cx="640" cy="356" r="27" fill="#2c2e32"/>
+      <circle cx="960" cy="356" r="31" fill="#7a7f84"/><circle cx="960" cy="356" r="27" fill="#2c2e32"/>
+      <rect x="690" y="445" width="220" height="10" rx="5" fill="#26282b"/>
+      ${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="${612 + i * 63}" y="490" width="56" height="54" rx="4" fill="${i ? '#34363a' : '#6e2a22'}"/>`).join('')}
+      <rect x="610" y="560" width="186" height="168" rx="8" fill="#1b1c1f"/>
+      <rect x="628" y="588" width="150" height="104" rx="6" fill="#383c42"/>
+      <rect x="804" y="560" width="186" height="168" rx="8" fill="#1b1c1f"/>
+      <rect x="822" y="588" width="150" height="104" rx="6" fill="#383c42"/>
+      <g class="deck-cassette">
+        <rect x="830" y="596" width="134" height="86" rx="5" fill="#e8e3d6"/>
+        <circle cx="872" cy="640" r="15" fill="#4a3a2c"/>
+        <circle cx="922" cy="640" r="15" fill="#4a3a2c"/>
+      </g>
+      <circle class="rec-led" cx="640" cy="750" r="13" fill="#5a1a14"/>
     </g>
-    <g fill="#3a3c40">
-      <rect x="218" y="512" width="10" height="16" rx="1"/>
-      <rect x="230" y="512" width="10" height="16" rx="1"/>
-      <rect x="242" y="512" width="10" height="16" rx="1"/>
-      <rect x="254" y="512" width="10" height="16" rx="1"/>
-      <rect x="266" y="512" width="10" height="16" rx="1"/>
-      <rect x="278" y="512" width="10" height="16" rx="1"/>
-    </g>
-    <rect x="218" y="512" width="10" height="16" rx="1" fill="${P.rec}"/>
-    <circle class="rec-led" cx="296" cy="520" r="3" fill="#5a1a14"/>
   </g>
 
   <!-- cassettes: a pile of cases and one standing, handwritten -->

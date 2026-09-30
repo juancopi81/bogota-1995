@@ -67,21 +67,22 @@ await page.evaluate(() => window.room1995.phone.hangUp());
 await page.evaluate((to) => { const c = window.room1995.clock; c.skip(to - c.now()); }, req.songStart - 20);
 await page.evaluate(() => window.room1995.closeups.open('grabadora'));
 await page.waitForTimeout(800);
-await page.mouse.click(641 + 5 * 54 + 24, 669); // PAUSE
-await page.mouse.click(641 + 24, 669); // REC
+const key = (k) => page.click(`#cu-grabadora .key[data-key="${k}"]`);
+await key('pause');
+await key('rec');
 await page.waitForTimeout(19500);
-await page.mouse.click(641 + 5 * 54 + 24, 669); // release PAUSE: recording
+await key('pause'); // released: recording
 await page.waitForTimeout(8000);
 const onAir = await page.evaluate(() => ({ subs: [...document.querySelectorAll('.sub')].map((e) => e.textContent), aired: window.room1995.flags.requestAiredAt }));
 console.log('on air:', JSON.stringify(onAir));
 await page.screenshot({ path: process.argv[2] ?? 'e2e.png' });
-await page.mouse.click(641 + 4 * 54 + 24, 669); // STOP
+await key('stop');
 await page.waitForTimeout(800);
 const tape = await page.evaluate(() => window.room1995.grabadora.deck.cassette.segments().map((s) => [s.start.toFixed(1), s.dur.toFixed(1)]));
 console.log('tape:', JSON.stringify(tape));
-await page.mouse.click(641 + 2 * 54 + 24, 669); // REW
+await key('rew');
 await page.waitForTimeout(3000);
-await page.mouse.click(641 + 54 + 24, 669); // PLAY
+await key('play');
 await page.waitForTimeout(1500);
 console.log('tape subtitles:', JSON.stringify(await page.evaluate(() => [...document.querySelectorAll('.sub-tape')].map((e) => e.textContent))));
 console.log('playback:', JSON.stringify(await page.evaluate(() => { const d = window.room1995.grabadora.deck; return { transport: d.transport, tapeAudible: d.tapeAudible, pos: d.cassette.pos.toFixed(1) }; })));

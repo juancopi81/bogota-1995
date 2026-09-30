@@ -1,9 +1,11 @@
-// The grabadora: radio + cassette deck in one silver box, and its close-up.
+// The grabadora: a mid-90s CD radio-cassette with a digital tuner, and its
+// close-up. The radio steps from frequency to frequency (the static in
+// between is still there); deck 2 records and plays, deck 1 just opens.
 
 import { Radio, FM_RANGE, AM_RANGE } from './radio';
 import { Deck, type Key } from './deck';
 import { takeUpRadius, supplyRadius, counterDisplay } from './tape';
-import { grabadoraSvg, fmX, amX, KNOB, FUNC, VOL, DIAL, CASSETTE_AT } from '../art/grabadora';
+import { grabadoraSvg, lcdSvg, FUNC, VOLUME, GRILLE_L, GRILLE_R, CASSETTE_AT, CASSETTE_SCALE, type LcdState } from '../art/grabadora';
 import { cassetteSvg, HUB_L, HUB_R } from '../art/cassette';
 import { shownText } from '../content/lines';
 import type { AudioEngine } from '../audio/engine';
@@ -17,6 +19,11 @@ import { glide } from '../audio/param';
 type Func = 'tape' | 'AM' | 'FM';
 
 const MM = 2.4; // cassette drawing scale: px per mm
+/** One step of the digital tuner: 0.1 MHz on FM, 10 kHz on AM (the Americas' spacing). */
+const STEP = { FM: 0.1, AM: 10 } as const;
+/** Holding a TUNING button this long starts a search. */
+const HOLD_TO_SEARCH = 450;
+const SEARCH_EVERY = 70;
 
 export class Grabadora {
   readonly radio: Radio;
@@ -29,19 +36,25 @@ export class Grabadora {
   private readonly analyser: AnalyserNode;
   private readonly level = new Float32Array(256);
   private func: Func;
-  private knobAngle = 0;
   private lastT = 0;
   private reelAngles = [0, 0];
   private slotKey = '';
   private deskKey = '';
+  private lcdKey = '';
   private roomLed: SVGElement | null = null;
-  private roomNeedle: SVGElement | null = null;
+  private roomLcd: SVGElement | null = null;
+  private roomTape: SVGElement | null = null;
   private readonly cones: HTMLElement[];
   private lastPump = '';
+  private searching: { dir: 1 | -1; timer: number } | null = null;
+  private door1Open = false;
 
   constructor(private readonly engine: AudioEngine) {
     const ctx = engine.ctx;
     this.radio = new Radio(engine);
+    // a digital tuner sits on its grid
+    this.radio.freq.FM = Math.round(this.radio.freq.FM / STEP.FM) * STEP.FM;
+    this.radio.freq.AM = Math.round(this.radio.freq.AM / STEP.AM) * STEP.AM;
 
     // speaker chain: radio or tape → volume → a boombox speaker's EQ → the radio's spot in the room
     this.radioGate = ctx.createGain();
@@ -79,10 +92,10 @@ export class Grabadora {
     this.el.id = 'cu-grabadora';
     this.el.innerHTML = grabadoraSvg();
     this.svg = this.el.querySelector('svg')!;
-    this.cones = [385, 1215].map((cx) => {
+    this.cones = [GRILLE_L, GRILLE_R].map((g) => {
       const cone = document.createElement('div');
       cone.className = 'speaker-cone';
-      Object.assign(cone.style, { left: `${cx - 50}px`, top: `${510 - 50}px` });
+      Object.assign(cone.style, { left: `${g.cx - 50}px`, top: `${g.cy + 14 - 50}px` });
       this.el.appendChild(cone);
       return cone;
     });
@@ -96,7 +109,8 @@ export class Grabadora {
   /** Connect the little grabadora drawn in the room so it mirrors this one. */
   bindRoom(roomSvg: SVGSVGElement): void {
     this.roomLed = roomSvg.querySelector('.rec-led');
-    this.roomNeedle = roomSvg.querySelector('.dial-needle');
+    this.roomLcd = roomSvg.querySelector('.room-lcd');
+    this.roomTape = roomSvg.querySelector('.deck-cassette');
   }
 
   // ---------- controls ----------
@@ -116,69 +130,93 @@ export class Grabadora {
     kv.set('grabadora.volume', this.radio.volume);
   }
 
+  /** The little electronic beep of the tuner's buttons. */
+  private beep(): void {
+    const ctx = this.engine.ctx;
+    const osc = ctx.createOscillator();
+    osc.type = 'square';
+    osc.frequency.value = 2400;
+    const g = ctx.createGain();
+    const now = ctx.currentTime;
+    g.gain.setValueAtTime(0.018, now);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+    osc.connect(g).connect(this.deck.mech);
+    osc.start(now);
+    osc.stop(now + 0.06);
+  }
+
+  /** One step of the tuner. Past the end of the band it wraps round, like the real ones. */
+  step(dir: 1 | -1): void {
+    if (!this.radio.power) return;
+    const band = this.radio.band;
+    const [lo, hi] = band === 'FM' ? FM_RANGE : AM_RANGE;
+    let f = Math.round((this.radio.freq[band] + dir * STEP[band]) / STEP[band]) * STEP[band];
+    if (f > hi + 1e-6) f = lo;
+    if (f < lo - 1e-6) f = hi;
+    this.radio.tune(f);
+  }
+
+  /** Hold a TUNING button: step until a station comes in clearly. */
+  private search(dir: 1 | -1): void {
+    this.stopSearch();
+    const tick = () => {
+      this.step(dir);
+      const dom = this.radio.dominant();
+      if (dom && dom.strength > 0.9) this.stopSearch();
+    };
+    this.searching = { dir, timer: window.setInterval(tick, SEARCH_EVERY) };
+  }
+
+  private stopSearch(): void {
+    if (this.searching) clearInterval(this.searching.timer);
+    this.searching = null;
+  }
+
   private wire(): void {
     const svg = this.svg;
     const $ = <T extends SVGElement = SVGGElement>(sel: string) => svg.querySelector<T>(sel)!;
 
-    // tuning knob: drag around its rim to turn it, or drag across it (right or up tunes up)
-    const knob = $('#g-knob');
-    let turning: { mode: 'turn' | 'slide'; angle: number; x: number; y: number } | null = null;
-    knob.addEventListener('pointerdown', (e) => {
-      knob.setPointerCapture(e.pointerId);
-      const p = svgPoint(svg, e.clientX, e.clientY);
-      const fromRim = Math.hypot(p.x - KNOB.cx, p.y - KNOB.cy) > KNOB.r * 0.55;
-      turning = { mode: fromRim ? 'turn' : 'slide', angle: Math.atan2(p.y - KNOB.cy, p.x - KNOB.cx), x: p.x, y: p.y };
-    });
-    knob.addEventListener('pointermove', (e) => {
-      if (!turning) return;
-      const p = svgPoint(svg, e.clientX, e.clientY);
-      if (turning.mode === 'turn') {
-        const a = Math.atan2(p.y - KNOB.cy, p.x - KNOB.cx);
-        let d = a - turning.angle;
-        if (d > Math.PI) d -= 2 * Math.PI;
-        if (d < -Math.PI) d += 2 * Math.PI;
-        turning.angle = a;
-        this.turnKnob(d);
-      } else {
-        this.turnKnob((p.x - turning.x - (p.y - turning.y)) / 70);
-        turning.x = p.x;
-        turning.y = p.y;
-      }
-    });
-    const endKnob = () => (turning = null);
-    knob.addEventListener('pointerup', endKnob);
-    knob.addEventListener('pointercancel', endKnob);
-    const wheel = (e: WheelEvent) => {
-      e.preventDefault();
-      this.turnKnob(Math.sign(e.deltaY) * -0.12);
-    };
-    knob.addEventListener('wheel', wheel, { passive: false });
+    // TUNING ◄◄ ►►: a press is one step; held, the tuner searches
+    for (const [sel, dir] of [
+      ['#g-tune-down', -1],
+      ['#g-tune-up', 1],
+    ] as const) {
+      const button = $(sel);
+      let hold = 0;
+      button.addEventListener('pointerdown', (e) => {
+        button.setPointerCapture(e.pointerId);
+        button.classList.add('down');
+        this.beep();
+        this.step(dir);
+        hold = window.setTimeout(() => this.search(dir), HOLD_TO_SEARCH);
+      });
+      const release = () => {
+        clearTimeout(hold);
+        button.classList.remove('down');
+        // a search keeps going on its own once started, like the real thing
+      };
+      button.addEventListener('pointerup', release);
+      button.addEventListener('pointercancel', release);
+    }
+    // the wheel over the display steps too
+    $('#g-lcd-bg').addEventListener(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        this.stopSearch();
+        this.step(e.deltaY < 0 ? 1 : -1);
+      },
+      { passive: false },
+    );
 
-    // the dial window: drag the needle along it (the knob turns with it), or use the wheel
-    const dial = $('#g-dial');
-    let dialX: number | null = null;
-    dial.addEventListener('pointerdown', (e) => {
-      dial.setPointerCapture(e.pointerId);
-      dialX = svgPoint(svg, e.clientX, e.clientY).x;
-    });
-    dial.addEventListener('pointermove', (e) => {
-      if (dialX === null) return;
-      const x = svgPoint(svg, e.clientX, e.clientY).x;
-      this.tuneBy(this.freqAtX(x) - this.freqAtX(dialX));
-      dialX = x;
-    });
-    const endDial = () => (dialX = null);
-    dial.addEventListener('pointerup', endDial);
-    dial.addEventListener('pointercancel', endDial);
-    dial.addEventListener('wheel', wheel, { passive: false });
-
-    // function switch: CINTA / AM / FM
+    // function switch: TAPE (radio off) / AM / FM
     const func = $('#g-func');
     const setFuncFromX = (x: number) => {
       const i = FUNC.positions.reduce((best, px, idx) => (Math.abs(px - x) < Math.abs(FUNC.positions[best] - x) ? idx : best), 0);
       const next = (['tape', 'AM', 'FM'] as Func[])[i];
       if (next !== this.func) {
         this.func = next;
+        this.stopSearch();
         this.applyFunc();
       }
     };
@@ -191,17 +229,30 @@ export class Grabadora {
     func.addEventListener('pointermove', (e) => funcDrag && setFuncFromX(svgPoint(svg, e.clientX, e.clientY).x));
     func.addEventListener('pointerup', () => (funcDrag = false));
 
-    // volume slider
+    // the volume knob on top: drag up (or right) to turn it up, or use the wheel
     const vol = $('#g-vol');
-    let volDrag = false;
-    const setVolFromX = (x: number) => this.setVolume((x - VOL.x0) / (VOL.x1 - VOL.x0));
+    let volFrom: { x: number; y: number; v: number } | null = null;
     vol.addEventListener('pointerdown', (e) => {
-      volDrag = true;
       vol.setPointerCapture(e.pointerId);
-      setVolFromX(svgPoint(svg, e.clientX, e.clientY).x);
+      const p = svgPoint(svg, e.clientX, e.clientY);
+      volFrom = { x: p.x, y: p.y, v: this.radio.volume };
     });
-    vol.addEventListener('pointermove', (e) => volDrag && setVolFromX(svgPoint(svg, e.clientX, e.clientY).x));
-    vol.addEventListener('pointerup', () => (volDrag = false));
+    vol.addEventListener('pointermove', (e) => {
+      if (!volFrom) return;
+      const p = svgPoint(svg, e.clientX, e.clientY);
+      this.setVolume(volFrom.v + (p.x - volFrom.x - (p.y - volFrom.y)) / 160);
+    });
+    const endVol = () => (volFrom = null);
+    vol.addEventListener('pointerup', endVol);
+    vol.addEventListener('pointercancel', endVol);
+    vol.addEventListener(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        this.setVolume(this.radio.volume + (e.deltaY < 0 ? 0.04 : -0.04));
+      },
+      { passive: false },
+    );
 
     // piano keys
     for (const key of svg.querySelectorAll<SVGGElement>('.key')) {
@@ -215,12 +266,17 @@ export class Grabadora {
       });
     }
 
-    // the door ("PUSH ▲ EJECT"): pushing it closed opens it; open, it shuts
+    // deck 2's door: pushing it closed ejects; open, it shuts
     $('#g-door').addEventListener('pointerdown', () => {
       if (this.deck.door === 'open') this.deck.closeDoor();
       else this.deck.eject();
     });
-    // the cassette sticking out of the open door: take it out
+    // deck 1 is empty: its door just opens and shuts
+    $('#g-door1').addEventListener('pointerdown', () => {
+      this.door1Open = !this.door1Open;
+      play(this.engine.ctx, this.door1Open ? sfx.doorOpen(this.engine.ctx) : sfx.hook(this.engine.ctx), this.deck.mech, { gain: 0.7 });
+    });
+    // the cassette sticking out of deck 2: take it out
     $('#g-slot').addEventListener('pointerdown', (e) => {
       if (this.deck.door === 'open' && this.deck.cassette) {
         e.stopPropagation();
@@ -242,32 +298,12 @@ export class Grabadora {
 
     window.addEventListener('keydown', (e) => {
       if (!this.el.classList.contains('open')) return;
-      if (e.key === 'ArrowLeft') this.turnKnob(-0.08);
-      if (e.key === 'ArrowRight') this.turnKnob(0.08);
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        this.stopSearch();
+        this.beep();
+        this.step(e.key === 'ArrowRight' ? 1 : -1);
+      }
     });
-  }
-
-  /** The frequency under a point of the dial window, on the band you're on. */
-  private freqAtX(x: number): number {
-    const k = clamp((x - DIAL.x0) / (DIAL.x1 - DIAL.x0), 0, 1);
-    if (this.radio.band === 'FM') return FM_RANGE[0] + k * (FM_RANGE[1] - FM_RANGE[0]);
-    return Math.exp(Math.log(AM_RANGE[0]) + k * (Math.log(AM_RANGE[1]) - Math.log(AM_RANGE[0])));
-  }
-
-  /** Move the needle by some MHz (or kHz), turning the knob with it. */
-  private tuneBy(delta: number): void {
-    const perTurn = this.radio.band === 'FM' ? 2.4 : 150;
-    this.turnKnob((delta / perTurn) * 2 * Math.PI);
-  }
-
-  private turnKnob(radians: number): void {
-    this.knobAngle += radians;
-    const perTurn = this.radio.band === 'FM' ? 2.4 : 150;
-    this.radio.tune(this.radio.freq[this.radio.band] + (radians / (2 * Math.PI)) * perTurn);
-    // a faint friction tick as the string drags the needle
-    if (Math.random() < Math.min(1, Math.abs(radians) * 3)) {
-      play(this.engine.ctx, sfx.click(this.engine.ctx), this.deck.mech, { gain: 0.06, rate: 1.6 });
-    }
   }
 
   // ---------- every frame ----------
@@ -286,27 +322,46 @@ export class Grabadora {
     this.draw(dt);
   }
 
+  /** What the green display shows. */
+  private lcd(): LcdState {
+    const radio = this.radio;
+    if (!radio.power) return { band: '', digits: 'tAPE', point: false, unit: '', stereo: false, bars: 0 };
+    const dom = radio.dominant();
+    const strength = dom?.strength ?? 0;
+    const fm = radio.band === 'FM';
+    const f = radio.freq[radio.band];
+    return {
+      band: radio.band,
+      digits: fm ? String(Math.round(f * 10)).padStart(4) : String(Math.round(f)).padStart(4),
+      point: fm,
+      unit: fm ? 'MHz' : 'kHz',
+      stereo: fm && strength > 0.8,
+      bars: Math.round(strength * 4),
+    };
+  }
+
   private draw(dt: number): void {
     const svg = this.svg;
     const radio = this.radio;
     const deck = this.deck;
 
-    const x = radio.band === 'FM' ? fmX(radio.freq.FM) : amX(radio.freq.AM);
-    setAttr(svg.querySelector('#g-needle'), 'x', (x - 1.5).toFixed(1));
-    setAttr(svg.querySelector('#g-knob-rot'), 'transform', `rotate(${((this.knobAngle * 180) / Math.PI).toFixed(1)})`);
+    // the display, redrawn only when it changes
+    const lcd = this.lcd();
+    const lcdKey = JSON.stringify(lcd);
+    if (lcdKey !== this.lcdKey) {
+      this.lcdKey = lcdKey;
+      svg.querySelector('#g-lcd')!.innerHTML = lcdSvg(lcd);
+    }
+    setAttr(svg.querySelector('#g-vol-rot'), 'transform', `translate(${VOLUME.cx} ${VOLUME.cy}) rotate(${(-135 + radio.volume * 270).toFixed(1)})`);
     const fi = ['tape', 'AM', 'FM'].indexOf(this.func);
     setAttr(svg.querySelector('#g-func-thumb'), 'x', String(FUNC.positions[fi] - 14));
-    setAttr(svg.querySelector('#g-vol-thumb'), 'x', (VOL.x0 + radio.volume * (VOL.x1 - VOL.x0) - 9).toFixed(1));
+    toggleClass(svg.querySelector('#g-door1'), 'open', this.door1Open);
 
-    const dom = radio.power ? radio.dominant() : null;
-    setAttr(svg.querySelector('#g-led-tune'), 'fill', dom ? `rgba(120, 230, 110, ${(0.25 + dom.strength * 0.75).toFixed(2)})` : '#1f2a1c');
     const rec = deck.isRecording;
     setAttr(svg.querySelector('#g-led-rec'), 'fill', rec ? '#ff4a36' : '#3a1410');
     setAttr(this.roomLed, 'fill', rec ? '#ff4a36' : '#5a1a14');
-    if (this.roomNeedle) {
-      const roomX = 222 + ((x - 646) / (954 - 646)) * 72;
-      setAttr(this.roomNeedle, 'x', roomX.toFixed(1));
-    }
+    setAttr(this.roomLcd, 'fill', radio.power ? '#b7c9a0' : '#7d8a70');
+    setAttr(this.roomTape, 'opacity', deck.cassette ? '1' : '0');
 
     // keys: which ones are held down
     for (const key of svg.querySelectorAll<SVGGElement>('.key')) {
@@ -324,7 +379,7 @@ export class Grabadora {
     svg.querySelectorAll('.g-digit').forEach((d, i) => setText(d, digits[i]));
     toggleClass(svg.querySelector('#g-door'), 'open', deck.door === 'open');
 
-    // the cassette in the deck, its reels turning
+    // the cassette in deck 2, its reels turning
     const c = deck.cassette;
     const slotKey = c ? `${c.data.id}:${c.side}:${c.data.label}` : '';
     const slot = svg.querySelector<SVGGElement>('#g-slot')!;
@@ -332,7 +387,7 @@ export class Grabadora {
       this.slotKey = slotKey;
       slot.innerHTML = c ? cassetteSvg(c.data) : '';
     }
-    setAttr(slot, 'transform', `translate(${CASSETTE_AT.x} ${CASSETTE_AT.y - (deck.door === 'open' ? 26 : 0)})`);
+    setAttr(slot, 'transform', `translate(${CASSETTE_AT.x} ${CASSETTE_AT.y - (deck.door === 'open' ? 24 : 0)}) scale(${CASSETTE_SCALE})`);
     toggleClass(slot, 'grab', deck.door === 'open' && !!c);
     if (c) {
       const rTake = takeUpRadius(c.pos);
@@ -346,11 +401,10 @@ export class Grabadora {
       setAttr(slot.querySelector('.hub-r'), 'transform', `translate(${HUB_R.x} ${HUB_R.y}) rotate(${this.reelAngles[1].toFixed(1)})`);
     }
 
-    // cassettes lying on the desk
+    // cassettes lying on the desk, each with a little arrow to turn it over
     const deskKey = deck.desk.map((d) => `${d.data.id}:${d.side}:${d.data.label}`).join('|');
     if (deskKey !== this.deskKey) {
       this.deskKey = deskKey;
-      // each one with a little arrow to turn it over
       svg.querySelector('#g-desk')!.innerHTML = deck.desk
         .map((d, i) => {
           const x = 1090 + i * 220;
