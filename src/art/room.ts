@@ -239,6 +239,50 @@ export function wallSvg(): string {
     <rect x="416" y="506" width="74" height="12" fill="#2d2f33"/><rect x="420" y="508" width="66" height="8" fill="#e0d4a8"/>
   </g>
 
+  <!-- the desk chair, pulled out, back to us, with Friday's uniform on it -->
+  <g class="chair">
+    <!-- far legs and the seat behind the backrest -->
+    <rect x="338" y="668" width="7" height="50" fill="${P.woodDark}"/>
+    <rect x="415" y="668" width="7" height="50" fill="${P.woodDark}"/>
+    <rect x="330" y="656" width="100" height="14" rx="2" fill="${P.wood}"/>
+    <!-- the gray pants, hanging over the seat -->
+    <path d="M338 662 H 424 L 428 708 Q 414 712 402 706 L 396 684 L 388 706 Q 374 712 362 706 L 352 684 L 342 708 Q 334 710 332 704 Z" fill="#7b7e83"/>
+    <path d="M352 684 L 350 706 M 396 684 L 398 706 M 362 668 Q 366 686 360 704" stroke="#5f6267" stroke-width="2" fill="none"/>
+    <!-- the backrest: two posts that are also the near legs, two rails -->
+    <rect x="318" y="566" width="10" height="172" rx="2" fill="${P.wood}"/>
+    <rect x="432" y="566" width="10" height="172" rx="2" fill="${P.wood}"/>
+    <rect x="322" y="624" width="116" height="9" fill="${P.woodDark}"/>
+    <rect x="312" y="564" width="136" height="16" rx="4" fill="${P.woodLight}"/>
+    <!-- the school sweater (saco), thrown over the backrest, crest and all -->
+    <path d="M314 568 Q 380 548 446 568 L 452 616 Q 446 640 440 646 H 322 Q 314 640 310 616 Z" fill="#1f2b47"/>
+    <path d="M322 638 H 440 L 438 648 H 324 Z" fill="#2c3b5e"/>
+    <path d="M356 560 L 380 588 L 404 560" stroke="#2c3b5e" stroke-width="5" fill="none"/>
+    <path d="M312 574 C 300 600 304 650 306 690 L 322 692 C 322 650 326 610 326 580 Z" fill="#1b2640"/>
+    <path d="M448 574 C 460 600 456 650 454 690 L 438 692 C 438 650 434 610 434 580 Z" fill="#1b2640"/>
+    <rect x="304" y="684" width="20" height="10" rx="2" fill="#2c3b5e"/>
+    <rect x="436" y="684" width="20" height="10" rx="2" fill="#2c3b5e"/>
+    <!-- the crest: a small shield, gold and red -->
+    <path d="M414 588 h16 v8 q0 9 -8 13 q-8 -4 -8 -13 z" fill="#b8322a" stroke="#e1b43c" stroke-width="2"/>
+    <path d="M422 591 v14" stroke="#e1b43c" stroke-width="1.5"/>
+    <!-- the tie, hanging off the top rail -->
+    <path d="M352 566 l7 -3 l7 3 l-3 8 h-8 z" fill="#5d1b25"/>
+    <path d="M355 574 h8 l5 74 l-9 10 l-9 -10 z" fill="#6d1f2a"/>
+    <path d="M354 590 l12 -8 M353 606 l14 -9 M352 622 l16 -10 M352 638 l16 -10" stroke="#c9b27a" stroke-width="2" opacity="0.8"/>
+  </g>
+
+  <!-- white school tennis shoes, kicked off by the dresser -->
+  <g class="shoes">
+    <ellipse cx="1022" cy="756" rx="78" ry="7" fill="#000" opacity="0.16"/>
+    <path d="M958 750 Q 956 734 972 730 L 1000 722 Q 1012 718 1022 728 L 1030 738 Q 1040 742 1040 750 Z" fill="#ecebe6"/>
+    <path d="M956 750 H 1041 V 756 H 956 Z" fill="#c4a578"/>
+    <path d="M984 726 L 1004 738 M 990 723 L 1010 736 M 996 721 L 1014 733" stroke="#b9b6ad" stroke-width="2"/>
+    <path d="M962 744 Q 998 740 1034 746" stroke="#2f5da8" stroke-width="3" fill="none"/>
+    <!-- the other one, on its side, sole to us -->
+    <path d="M1046 760 Q 1040 742 1058 736 H 1094 Q 1108 738 1106 752 Q 1104 762 1090 762 H 1056 Q 1048 762 1046 760 Z" fill="#c4a578"/>
+    <path d="M1056 742 H 1094 M 1054 750 H 1098 M 1056 757 H 1092" stroke="#a88c62" stroke-width="2"/>
+    <path d="M1060 736 Q 1072 726 1090 730 L 1094 736 Z" fill="#ecebe6"/>
+  </g>
+
   <!-- the school backpack (morral), dropped under the window -->
   <g class="backpack" transform="translate(716 598)">
     <ellipse cx="62" cy="106" rx="70" ry="8" fill="#000" opacity="0.18"/>
@@ -421,7 +465,34 @@ export function bedSvg(): string {
       <ellipse cx="-44" cy="6" rx="9" ry="6" fill="#d9b23a"/>
       <ellipse cx="-43" cy="6" rx="3" ry="5" fill="${P.tigerDark}"/>
     </g>
+    <!-- nobody made the bed: the blanket's pulled askew and rucked up -->
+    <path d="M60 812 C 120 796 180 818 250 800 M 150 846 C 210 828 260 850 330 834" stroke="${P.tigerLight}" stroke-width="7" fill="none" opacity="0.45"/>
   </g>
+  <!-- the sheet showing where the blanket slid off -->
+  <path d="M-20 770 C 40 762 90 760 130 762 C 120 776 70 788 -20 796 Z" fill="#ece6d6"/>
+  <path d="M10 772 C 40 770 70 772 104 768" stroke="#cfc6b2" stroke-width="2" fill="none"/>
   <path d="M-20 770 C 120 752 300 748 470 760 C 540 766 600 778 640 800" stroke="${P.tigerLight}" stroke-width="4" fill="none" opacity="0.5"/>
+
+  <!-- homework on the bed: a spiral notebook, a pencil, and the Álgebra de Baldor on top -->
+  <g transform="translate(372 806) rotate(-7)">
+    <rect x="0" y="0" width="118" height="80" rx="3" fill="#2f6f9f"/>
+    <rect x="80" y="10" width="26" height="18" rx="2" fill="#f2d24a" transform="rotate(8 93 19)"/>
+    ${Array.from({ length: 9 }, (_, i) => `<circle cx="4" cy="${8 + i * 8}" r="2.4" fill="none" stroke="#c9ccce" stroke-width="1.5"/>`).join('')}
+  </g>
+  <path d="M362 874 L 452 858" stroke="#e8b923" stroke-width="7" stroke-linecap="round"/>
+  <path d="M452 858 L 462 856" stroke="#e59aa0" stroke-width="7" stroke-linecap="round"/>
+  <path d="M358 875 L 350 877" stroke="#3a3a3a" stroke-width="3" stroke-linecap="round"/>
+  <g transform="translate(448 776) rotate(9)">
+    <rect x="-3" y="4" width="126" height="92" rx="3" fill="#000" opacity="0.2"/>
+    <rect x="0" y="0" width="120" height="90" rx="3" fill="#6f2a1d"/>
+    <rect x="116" y="0" width="6" height="90" rx="2" fill="#efe7d4"/>
+    <text x="58" y="20" text-anchor="middle" font-family="Anton, sans-serif" font-size="17" fill="#f0dfb0" letter-spacing="1">ÁLGEBRA</text>
+    <!-- the man in the turban on the cover -->
+    <ellipse cx="58" cy="44" rx="17" ry="10" fill="#ece3cc"/>
+    <ellipse cx="58" cy="52" rx="10" ry="11" fill="#c8946a"/>
+    <path d="M47 55 Q 58 76 69 55 Q 64 64 58 64 Q 52 64 47 55 Z" fill="#3a2418"/>
+    <path d="M40 76 Q 58 66 76 76 V 82 H 40 Z" fill="#8d4a2a"/>
+    <text x="58" y="87" text-anchor="middle" font-family="'Special Elite', monospace" font-size="8" fill="#f0dfb0" letter-spacing="1">BALDOR</text>
+  </g>
 </svg>`;
 }
