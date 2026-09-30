@@ -23,9 +23,9 @@ export interface PhoneWorld {
 export const LIBRETA = [
   { name: 'Abuelita', number: '2321745' },
   { name: 'Andrés', number: '2483107' },
-  { name: 'Carolina', number: '2125864', heart: true },
+  { name: 'Angie', number: '2125864', heart: true },
   { name: 'Droguería La Sexta', number: '2176033' },
-  { name: 'Felipe', number: '2369012', crossed: 'se trasteó a Medellín' },
+  { name: 'Gustavo', number: '2369012', crossed: 'se trasteó a Medellín' },
   { name: 'Hora exacta', number: '117' },
 ];
 
@@ -65,7 +65,7 @@ const A = lines('llamada.andres', {
   yaGrabo: ['andres', '¿En serio ya grabó? ¡Qué bacano! Me lo presta el lunes en el colegio.'],
   deUna: ['andres', '¡De una! Me lo trae el lunes, pues.'],
   noImporta: ['andres', 'Bueno, no importa. Si puede, me avisa.'],
-  chisme: ['andres', 'Ah, y ¿sí supo? Carolina va a ir a la fiesta de Diana el otro sábado.'],
+  chisme: ['andres', 'Ah, y ¿sí supo? Angie va a ir a la fiesta de Diana el otro sábado.'],
   colgar: ['andres', 'Bueno, me toca colgar, que mi mamá necesita el teléfono. ¡Chao, pues!'],
 });
 
@@ -159,32 +159,32 @@ const andres: CallScript = async (call) => {
 };
 
 // ---------------------------------------------------------------------------
-// Carolina's house (her father guards the phone)
+// Angie's house (her father guards the phone)
 // ---------------------------------------------------------------------------
 
-const C = lines('llamada.carolina', {
-  alo: ['papaCarolina', '¿Aló?'],
-  conQuien: ['papaCarolina', '¿Con quién desea hablar?'],
-  deParte: ['papaCarolina', '¿Y de parte de quién?'],
-  tareas: ['papaCarolina', 'Carolina está haciendo tareas. ¿Es algo del colegio?'],
-  unMomento: ['papaCarolina', 'Un momento.'],
-  grita: ['papaCarolina', '¡Carolina! ¡Al teléfono! ¡Que es para una tarea!'],
-  noPuede: ['papaCarolina', 'Ella ahora no puede pasar. Llame otro día.'],
-  hola: ['carolina', '¿Aló? Ah... hola. ¿Qué más?'],
-  tarea: ['carolina', '¿La tarea de sociales? Es para el martes, ¿no? Yo todavía no he empezado.'],
-  dedicatoria: ['carolina', 'Oye... lo de la dedicatoria en Radioactiva, ¿fuiste tú?'],
-  pena: ['carolina', '¡Jajaja! Me dio mucha pena... pero me gustó.'],
-  radio: ['carolina', 'Sí, estoy oyendo Radioactiva mientras hago las tareas. Pusieron lo nuevo de los Aterciopelados.'],
-  papa: ['carolina', 'Bueno, me tengo que ir, que mi papá necesita el teléfono. Chao.'],
+const C = lines('llamada.angie', {
+  alo: ['papaAngie', '¿Aló?'],
+  conQuien: ['papaAngie', '¿Con quién desea hablar?'],
+  deParte: ['papaAngie', '¿Y de parte de quién?'],
+  tareas: ['papaAngie', 'Angie está haciendo tareas. ¿Es algo del colegio?'],
+  unMomento: ['papaAngie', 'Un momento.'],
+  grita: ['papaAngie', '¡Angie! ¡Al teléfono! ¡Que es para una tarea!'],
+  noPuede: ['papaAngie', 'Ella ahora no puede pasar. Llame otro día.'],
+  hola: ['angie', '¿Aló? Ah... hola. ¿Qué más?'],
+  tarea: ['angie', '¿La tarea de sociales? Es para el martes, ¿no? Yo todavía no he empezado.'],
+  dedicatoria: ['angie', 'Oye... lo de la dedicatoria en Radioactiva, ¿fuiste tú?'],
+  pena: ['angie', '¡Jajaja! Me dio mucha pena... pero me gustó.'],
+  radio: ['angie', 'Sí, estoy oyendo Radioactiva mientras hago las tareas. Pusieron lo nuevo de los Aterciopelados.'],
+  papa: ['angie', 'Bueno, me tengo que ir, que mi papá necesita el teléfono. Chao.'],
 });
 
-const carolina: CallScript = async (call) => {
+const angie: CallScript = async (call) => {
   call.ambience('radio');
-  flags.carolinaCalls++;
+  flags.angieCalls++;
   await call.say(C.alo);
   await call.choose([
-    { text: 'Buenas noches... digo, buenas tardes, señor. ¿Me hace el favor con Carolina?', value: 1 },
-    { text: 'Buenas tardes. ¿Está Carolina?', value: 2 },
+    { text: 'Buenas noches... digo, buenas tardes, señor. ¿Me hace el favor con Angie?', value: 1 },
+    { text: 'Buenas tardes. ¿Está Angie?', value: 2 },
   ]);
   await call.say(C.deParte);
   await call.choose([{ text: `De parte de ${who()}.`, value: 1 }]);
@@ -201,9 +201,9 @@ const carolina: CallScript = async (call) => {
   await call.say(C.grita);
   await call.pause(4);
   call.click();
-  flags.carolinaTalked = true;
+  flags.angieTalked = true;
   await call.say(C.hola);
-  const dedicated = flags.request?.dedication === 'carolina' && flags.requestAiredAt !== null;
+  const dedicated = flags.request?.dedication === 'angie' && flags.requestAiredAt !== null;
   if (dedicated) {
     await call.say(C.dedicatoria);
     await call.choose([
@@ -365,7 +365,7 @@ function cabina(world: PhoneWorld): CallScript {
     );
     await call.say(R.dedicada);
     const dedication = await call.choose<Dedication>([
-      { text: 'Para Carolina, de parte de un admirador secreto.', value: 'carolina' },
+      { text: 'Para Angie, de parte de un admirador secreto.', value: 'angie' },
       { text: 'Para todos los del colegio.', value: 'colegio' },
       { text: 'Para mi abuelita.', value: 'abuelita' },
       { text: 'No, sin dedicatoria.', value: null },
@@ -468,13 +468,13 @@ export function route(number: string, t: number, world: PhoneWorld): Route {
     switch (entry.name) {
       case 'Andrés':
         return { kind: 'answer', rings: 3, script: andres };
-      case 'Carolina':
-        return t < SCHEDULE.carolinaBusyUntil ? { kind: 'busy' } : { kind: 'answer', rings: 4, script: carolina };
+      case 'Angie':
+        return t < SCHEDULE.angieBusyUntil ? { kind: 'busy' } : { kind: 'answer', rings: 4, script: angie };
       case 'Abuelita':
         return { kind: 'answer', rings: 7, script: abuelita };
       case 'Droguería La Sexta':
         return { kind: 'answer', rings: 2, script: drogueria };
-      case 'Felipe':
+      case 'Gustavo':
         return { kind: 'unassigned' };
     }
   }

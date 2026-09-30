@@ -9,8 +9,8 @@
 export type Speaker =
   | 'mamaAndres'
   | 'andres'
-  | 'papaCarolina'
-  | 'carolina'
+  | 'papaAngie'
+  | 'angie'
   | 'abuelita'
   | 'mama'
   | 'tia'
@@ -31,8 +31,8 @@ export type Speaker =
 export const SPEAKERS: Record<Speaker, { name: string; direction: string }> = {
   mamaAndres: { name: 'Mamá de Andrés', direction: 'A Bogotá mother in her forties. Polite, a bit guarded with callers she does not know.' },
   andres: { name: 'Andrés', direction: 'Fifteen, your best friend from school. Fast, relaxed, very rolo.' },
-  papaCarolina: { name: 'Papá de Carolina', direction: 'Fifties, formal and dry. Guards the phone.' },
-  carolina: { name: 'Carolina', direction: 'Fifteen, a classmate. Friendly, a little shy on the phone.' },
+  papaAngie: { name: 'Papá de Angie', direction: 'Fifties, formal and dry. Guards the phone.' },
+  angie: { name: 'Angie', direction: 'Fifteen, a classmate. Friendly, a little shy on the phone.' },
   abuelita: { name: 'Abuelita', direction: 'Seventies, warm, talks a lot, never wants to hang up.' },
   mama: { name: 'Mamá', direction: 'Your mother, heard from the kitchen or on the other extension.' },
   tia: { name: 'Tía Gloria', direction: 'Your aunt, on the phone with your mother.' },

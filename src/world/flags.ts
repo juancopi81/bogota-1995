@@ -13,8 +13,8 @@ export const flags = {
   andresTalked: false,
   /** Andrés asked you to tape "Florecita rockera" for him. */
   andresAsked: false,
-  carolinaCalls: 0,
-  carolinaTalked: false,
+  angieCalls: 0,
+  angieTalked: false,
   cabinaCalls: 0,
   request: null as { songId: string; dedication: Dedication; at: number } | null,
   requestAiredAt: null as number | null,
@@ -30,8 +30,8 @@ export function setName(name: string): void {
 export const SCHEDULE = {
   /** A señora calls looking for the bakery. */
   wrongNumberRings: 330,
-  /** Carolina's sister is on the phone until then. */
-  carolinaBusyUntil: 600,
+  /** Angie's sister is on the phone until then. */
+  angieBusyUntil: 600,
   /** Andrés gets home from Unicentro. */
   andresHome: 720,
   /** Your mother is on the kitchen extension with tía Gloria. */

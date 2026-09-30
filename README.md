@@ -54,7 +54,7 @@ Other ways to open it:
 - Andrés isn't home until about 5:42. Leave a message with his mother and
   he'll call back. If you don't pick up, your mother will, in the kitchen.
   He has a favor to ask about your grabadora.
-- Carolina's line is busy until 5:40. Her father answers after that.
+- Angie's line is busy until 5:40. Her father answers after that.
 - Around 5:35 somebody calls looking for the bakery.
 - From 5:45 to about 5:48 your mother is on the kitchen extension with tía
   Gloria. Pick up and listen.

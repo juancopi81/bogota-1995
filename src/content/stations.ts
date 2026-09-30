@@ -151,7 +151,7 @@ export const RADIOACTIVA: StationDef = {
 
 /** What the DJ says over the intro of a song somebody requested on the phone. */
 export const REQUEST_LINES = lines('radioactiva.pedidos', {
-  dedCarolina: ['locutorRadioactiva', 'Y esta va para Carolina, de parte de un admirador secreto en Chapinero. ¡Uy, qué romántico!'],
+  dedAngie: ['locutorRadioactiva', 'Y esta va para Angie, de parte de un admirador secreto en Chapinero. ¡Uy, qué romántico!'],
   dedColegio: ['locutorRadioactiva', 'Esta va para todos los del colegio, de parte de un oyente de Chapinero. ¡Que viva el sábado!'],
   dedAbuelita: ['locutorRadioactiva', 'Y esta va para la abuelita de un oyente de Chapinero. ¡Un saludo, abuelita!'],
   'florecita-rockera': ['locutorRadioactiva', 'Complaciendo a los oyentes: Aterciopelados, «Florecita rockera».'],
@@ -160,12 +160,12 @@ export const REQUEST_LINES = lines('radioactiva.pedidos', {
   matador: ['locutorRadioactiva', 'Complaciendo a los oyentes: Los Fabulosos Cadillacs, «Matador».'],
 });
 
-export type Dedication = 'carolina' | 'colegio' | 'abuelita' | null;
+export type Dedication = 'angie' | 'colegio' | 'abuelita' | null;
 
 export function requestIntro(songId: string, dedication: Dedication): Line[] {
   const ded =
-    dedication === 'carolina'
-      ? REQUEST_LINES.dedCarolina
+    dedication === 'angie'
+      ? REQUEST_LINES.dedAngie
       : dedication === 'colegio'
         ? REQUEST_LINES.dedColegio
         : dedication === 'abuelita'

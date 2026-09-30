@@ -51,7 +51,7 @@ const pick = async (i) => {
   await page.waitForTimeout(300);
 };
 await pick(1); // «Florecita rockera»
-await pick(1); // para Carolina
+await pick(1); // para Angie
 await pick(1); // desde Chapinero
 await page.waitForTimeout(7000);
 const req = await page.evaluate(() => {
