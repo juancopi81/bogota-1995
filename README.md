@@ -30,14 +30,16 @@ Other ways to open it:
 
 ## What's in the room
 
-- **The grabadora.** Three FM stations and one AM, live on the world clock:
-  you tune into whatever is on air. Press REC to tape what you hear onto a
-  blank TDK, rewind it in (scaled) real time, and play back your copy. The
-  tape survives reloads.
+- **The grabadora.** A black CD boombox with a digital tuner: step through
+  the dial with ◀◀ ▶▶ (hold to search), and slide the switch to TAPE, AM or
+  FM. Three FM stations and one AM, live on the world clock: you tune into
+  whatever is on air. Press REC to tape what you hear onto a blank TDK in
+  deck 2, rewind it in (scaled) real time, and play back your copy. The tape
+  survives reloads.
 - **The phone.** A rotary dial (drag a finger hole round to the stop, or type
   digits) and the libreta with the numbers you know by heart.
-- **The TV.** Push POWER, turn the channel knob, move the rabbit ears when
-  the picture is snow, whack the cabinet. Canal A (9) airs real 1995 clips
+- **The TV.** A wood-grain set. Push POWER, turn the VHF knob (2 to 13),
+  move the rabbit ears when the picture is snow, whack the cabinet. Canal A (9) airs real 1995 clips
   when it can (see [`docs/clips-shortlist.md`](docs/clips-shortlist.md)).
 - **The window.** Wipe the fog, open the pane, listen to the street.
 - **The alarm clock** on the dresser keeps the afternoon's time; up close it ticks.
@@ -78,7 +80,9 @@ From there you can:
   `titulo`, `artista_o_grupo`, `emisora`, `archivo_mp3_sugerido`), it says
   exactly which file is which, and the backstage lists where the room differs
   from it. Files stay in this browser; nothing is uploaded. Until you load a
-  song, a placeholder in its style plays. ▶ plays a few seconds of a loaded file.
+  song, the room's own Creative Commons music fills in where it fits (see
+  [`public/music/`](public/music/README.md)), and a placeholder in the song's
+  style plays otherwise. ▶ plays a few seconds of a loaded file.
 - **See what's missing:** songs by station (the ones you can request are
   marked), and voice coverage for each character.
 - **Move the clock forward**, or start the afternoon over.
@@ -114,6 +118,7 @@ close-up. In dev, `window.room1995` exposes the objects in the console.
 | `src/art/` | The drawings, as SVG built in code. |
 | `src/scene/` | The room, the close-ups, the light, the city view. |
 | `src/world/` | The clock, what happened this afternoon (`flags`), the traffic schedule, storage. |
+| `public/music/` | The room's own Creative Commons music (see its README). |
 | `docs/` | Vision, v0 decisions, voice script, TV clips, the public-path proposal for music. |
 
 Every object is a small state machine with plain methods (`deck.press('rec')`,
@@ -123,8 +128,10 @@ all be driven from the console.
 
 ## Rights
 
-- Everything in this repository is original: the art, the synthesized sounds
-  and placeholder music, and the writing.
+- Everything in this repository is original (the art, the synthesized sounds
+  and placeholder music, the writing), except the music in `public/music/`:
+  Creative Commons tracks, credited in the backstage and in
+  [`public/music/README.md`](public/music/README.md).
 - The fonts are under the OFL; see [`src/assets/fonts/LICENSES.md`](src/assets/fonts/LICENSES.md).
 - Real song titles, stations and brands appear by name. That's fine for a
   private prototype, but it needs review before anything public.
