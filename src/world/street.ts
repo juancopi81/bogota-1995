@@ -24,21 +24,26 @@ export interface Vehicle {
   honk: boolean;
 }
 
-// Destination boards as they were painted and propped in the windshield.
+// Route cards as they were painted and propped in the windshield: where it
+// goes, and the way it takes.
 const ROUTES = [
-  'CHAPINERO · 7a · CENTRO',
-  'CALLE 72 · CARACAS · RESTREPO',
-  'UNICENTRO · CRA 15 · CENTRO',
-  'LOURDES · CRA 13 · LAS AGUAS',
-  'SUBA · CALLE 80 · CHAPINERO',
-  'KENNEDY · AV 1o MAYO · CALLE 72',
+  'CHAPINERO · CL 72',
+  'CARACAS · RESTREPO',
+  'UNICENTRO · CRA 15',
+  'LOURDES · LAS AGUAS',
+  'SUBA · CALLE 80',
+  'KENNEDY · 1o DE MAYO',
+  'CENTRO · CRA 7a',
 ];
 
+// Company liveries: body, band, pinstripe, nose. Most wear the one in the
+// photo, white with an ochre band, a thin red line and a red-orange front.
 const BUS_COLORS = [
-  ['#e8dfc4', '#2f6d4f', '#d9a531'],
-  ['#e9e3d2', '#b8412f', '#2f4f8a'],
-  ['#dfe4e2', '#2b5c8a', '#e0b23a'],
-  ['#ece2c9', '#6b8e3a', '#c24a2c'],
+  ['#f0ece1', '#c9982f', '#b3321f', '#d4552b'],
+  ['#f0ece1', '#c9982f', '#b3321f', '#d4552b'],
+  ['#f0ece1', '#c9982f', '#b3321f', '#d4552b'],
+  ['#ece6d6', '#2f6d4f', '#d9a531', '#2f6d4f'],
+  ['#e9e3d2', '#2f4f8a', '#b8412f', '#b8412f'],
 ];
 const CAR_COLORS = ['#7d2b2b', '#2d4a6b', '#bdbbb4', '#3f5a3e', '#6e6258', '#1f2326'];
 

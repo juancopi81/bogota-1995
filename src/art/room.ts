@@ -320,7 +320,7 @@ export function wallSvg(): string {
     <path d="M1100 476 H1348" stroke="#d8d2c2" stroke-width="1" stroke-dasharray="3 3"/>
   </g>
 
-  <!-- the TV: a small color set with knobs, rabbit ears with foil on the tips -->
+  <!-- the TV: a small color set in wood-grain vinyl, rabbit ears with foil on the tips -->
   <g class="hot" data-hot="tv">
     <rect x="1090" y="130" width="250" height="345" fill="transparent"/>
     <path class="ear-l" d="M1210 300 L 1150 150" stroke="#8d9296" stroke-width="3"/>
@@ -328,19 +328,24 @@ export function wallSvg(): string {
     <path class="foil-l" d="M1142 142 l 10 -4 l 6 6 l -2 10 l -10 2 l -6 -6z" fill="#cfd3d6"/>
     <path class="foil-r" d="M1286 130 l 10 -2 l 5 7 l -3 9 l -10 1 l -5 -7z" fill="#d7dbde"/>
     <ellipse cx="1212" cy="302" rx="22" ry="9" fill="#2a2b2d"/>
-    <rect x="1098" y="304" width="228" height="170" rx="10" fill="${P.tvBody}"/>
-    <rect x="1098" y="304" width="228" height="12" rx="6" fill="${P.tvBodyLight}"/>
+    <rect x="1098" y="304" width="228" height="170" rx="8" fill="#7f4f2d"/>
+    ${[308, 312, 444, 449, 455, 460, 466, 470]
+      .map((gy, i) => `<path d="M1100 ${gy} q 56 ${i % 2 ? 2 : -2} 112 0 t 112 0" stroke="#3b1f0d" stroke-opacity="${0.18 + (i % 3) * 0.08}" stroke-width="${1 + (i % 2)}" fill="none"/>`)
+      .join('')}
+    <rect x="1098" y="304" width="228" height="4" rx="2" fill="#fff" opacity="0.12"/>
+    <rect x="1104" y="312" width="216" height="130" rx="5" fill="none" stroke="#b5b9bc" stroke-width="1.5"/>
     <rect x="1107" y="315" width="154" height="126" rx="16" fill="#1e1f20"/>
     <rect class="tv-screen-off" x="${ROOM.tvScreen.x}" y="${ROOM.tvScreen.y}" width="${ROOM.tvScreen.w}" height="${ROOM.tvScreen.h}" rx="12" fill="url(#screen-off)"/>
     <path d="M1124 330 q 30 -6 60 2" stroke="#fff" stroke-opacity="0.12" stroke-width="5" fill="none"/>
-    <rect x="1268" y="318" width="50" height="146" rx="4" fill="#3b3733"/>
-    <circle cx="1293" cy="346" r="15" fill="#2a2725"/><circle cx="1293" cy="346" r="15" fill="none" stroke="#6b6560" stroke-width="2"/>
+    <rect x="1268" y="316" width="50" height="124" rx="3" fill="url(#silver)"/>
+    <circle cx="1293" cy="346" r="16" fill="#8d9296"/><circle cx="1293" cy="346" r="14" fill="#2a2725"/>
     <rect class="tv-knob-mark" x="1292" y="333" width="3" height="10" fill="#d9d4cc"/>
-    <circle cx="1293" cy="388" r="10" fill="#2a2725"/><circle cx="1293" cy="388" r="10" fill="none" stroke="#6b6560" stroke-width="2"/>
-    <rect x="1280" y="410" width="26" height="12" rx="2" fill="#1f1d1b"/>
-    <circle class="tv-led" cx="1311" cy="416" r="2.5" fill="#3a1410"/>
-    ${[432, 440, 448, 456].map((y) => `<rect x="1277" y="${y}" width="32" height="3" fill="#1f1d1b"/>`).join('')}
-    <text x="1184" y="458" text-anchor="middle" font-family="Anton, sans-serif" font-size="9" fill="#a39c94" letter-spacing="2">COLOR</text>
+    <circle cx="1282" cy="381" r="7" fill="#2a2725"/><circle cx="1304" cy="381" r="7" fill="#2a2725"/>
+    <rect x="1276" y="397" width="20" height="9" rx="1.5" fill="#2a2b2d"/>
+    <circle class="tv-led" cx="1306" cy="401.5" r="2.5" fill="#3a1410"/>
+    ${[414, 420, 426, 432].map((gy) => `<rect x="1276" y="${gy}" width="34" height="2.5" rx="1" fill="#4a4d50"/>`).join('')}
+    <rect x="1170" y="449" width="28" height="9" rx="1.5" fill="url(#silver)"/>
+    <text x="1184" y="456" text-anchor="middle" font-family="Anton, sans-serif" font-size="6" fill="#3a3d40" letter-spacing="1">COLOR</text>
   </g>
 
   <!-- alarm clock: two bells and a handle (its hands keep the afternoon's time) -->

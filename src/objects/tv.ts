@@ -8,7 +8,7 @@ import { CHANNELS, clipProgram, type ChannelDef, type TvSegment } from '../conte
 import { ClipScreen, clipsPlayable, workingClips } from './clipscreen';
 import { AD_BREAKS } from '../content/clips';
 import { dynamicLine } from '../content/lines';
-import { tvSvg, SCREEN, CHANNEL_KNOB, VOLUME_KNOB, ANTENNA, channelAngle } from '../art/tv';
+import { tvSvg, SCREEN, CHANNEL_KNOB, UHF_KNOB, VOLUME_KNOB, ANTENNA, channelAngle } from '../art/tv';
 import { drawScene, drawAnthem, TV_W, TV_H } from './tvscenes';
 import type { AudioEngine } from '../audio/engine';
 import { library } from '../audio/library';
@@ -200,6 +200,8 @@ export class Tv {
   channel: number;
   volume: number;
   ears: [number, number];
+  /** The UHF knob's angle. It tunes nothing: everything this set gets is on VHF. */
+  private uhf = 0;
   private warm = 0;
   private offAnim = 1;
   private slap = 0;
@@ -357,6 +359,33 @@ export class Tv {
       (e) => {
         e.preventDefault();
         this.setVolume(this.volume - Math.sign(e.deltaY) * 0.05);
+      },
+      { passive: false },
+    );
+
+    // the UHF knob turns freely and finds nothing
+    const uhf = q('#tv-uhf');
+    let uhfFrom: number | null = null;
+    const uhfAngle = (e: PointerEvent) => {
+      const p = svgPoint(svg, e.clientX, e.clientY);
+      return (Math.atan2(p.y - UHF_KNOB.cy, p.x - UHF_KNOB.cx) * 180) / Math.PI;
+    };
+    uhf.addEventListener('pointerdown', (e) => {
+      uhf.setPointerCapture(e.pointerId);
+      uhfFrom = uhfAngle(e);
+    });
+    uhf.addEventListener('pointermove', (e) => {
+      if (uhfFrom === null) return;
+      const a = uhfAngle(e);
+      this.uhf += ((a - uhfFrom + 540) % 360) - 180;
+      uhfFrom = a;
+    });
+    uhf.addEventListener('pointerup', () => (uhfFrom = null));
+    uhf.addEventListener(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        this.uhf += Math.sign(e.deltaY) * 12;
       },
       { passive: false },
     );
@@ -524,6 +553,7 @@ export class Tv {
     // knobs and ears
     setAttr(this.svg.querySelector('#tv-channel-rot'), 'transform', `rotate(${channelAngle(this.channel) + 90} ${CHANNEL_KNOB.cx} ${CHANNEL_KNOB.cy})`);
     setAttr(this.svg.querySelector('#tv-volume-rot'), 'transform', `rotate(${-135 + this.volume * 270} ${VOLUME_KNOB.cx} ${VOLUME_KNOB.cy})`);
+    setAttr(this.svg.querySelector('#tv-uhf-rot'), 'transform', `rotate(${this.uhf.toFixed(1)} ${UHF_KNOB.cx} ${UHF_KNOB.cy})`);
     setAttr(this.svg.querySelector('#tv-ear-l'), 'transform', `translate(${ANTENNA.cx - 8} ${ANTENNA.cy}) rotate(${this.ears[0]})`);
     setAttr(this.svg.querySelector('#tv-ear-r'), 'transform', `translate(${ANTENNA.cx + 8} ${ANTENNA.cy}) rotate(${this.ears[1]})`);
     setAttr(this.svg.querySelector('#tv-led'), 'fill', this.power ? '#ff4a36' : '#3a1410');

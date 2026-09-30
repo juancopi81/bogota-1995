@@ -219,16 +219,22 @@ function vehicleGroup(v: Vehicle, dark: number): SVGGElement {
   const night = (hex: string) => mixNight(hex, dark * 0.7);
   const flip = v.dir === -1 ? ' transform="scale(-1 1) translate(-230 0)"' : '';
   if (v.kind === 'buseta') {
-    const [body, stripe, stripe2] = v.colors.map(night);
-    const board = v.route ?? '';
+    const [body, band, line, nose] = v.colors.map(night);
+    const [where, way = ''] = (v.route ?? '').split(' · ');
+    // lettering stays readable when the bus drives the other way
+    const unflip = (cx: number) => (flip ? ` transform="translate(${cx * 2} 0) scale(-1 1)"` : '');
     g.innerHTML = `<g${flip}>
       <rect x="4" y="-78" width="222" height="70" rx="10" fill="${body}"/>
-      <rect x="4" y="-40" width="222" height="10" fill="${stripe}"/>
-      <rect x="4" y="-28" width="222" height="5" fill="${stripe2}"/>
+      <path d="M196 -44 H 216 Q 226 -44 226 -34 V -14 Q 226 -8 220 -8 H 196Z" fill="${nose}"/>
+      <rect x="4" y="-42" width="200" height="13" fill="${band}"/>
+      <rect x="4" y="-27" width="222" height="2.5" fill="${line}"/>
       ${[20, 62, 104, 146].map((x) => `<rect x="${x}" y="-70" width="34" height="24" rx="3" fill="#39434a"/>`).join('')}
       <path d="M188 -70 H214 Q222 -70 222 -58 V-46 H188Z" fill="#48545c"/>
-      <rect x="190" y="-66" width="30" height="9" fill="#f3efe2"/>
-      <text x="205" y="-59.5" font-size="4.3" text-anchor="middle" font-family="Anton, sans-serif" fill="#b3261e">${board.split(' · ')[0] ?? ''}</text>
+      <rect x="189" y="-68" width="31" height="13" fill="#f3efe2"/>
+      <g${unflip(204.5)}>
+        <text x="204.5" y="-62.4" font-size="4.4" text-anchor="middle" font-family="Anton, sans-serif" fill="#b3261e">${where}</text>
+        <text x="204.5" y="-57" font-size="3.8" text-anchor="middle" font-family="Anton, sans-serif" fill="#1f3f7a">${way}</text>
+      </g>
       <rect x="200" y="-10" width="30" height="6" fill="#2a2a2a"/>
       <circle cx="46" cy="-8" r="14" fill="#1d1f21"/><circle cx="46" cy="-8" r="6" fill="#7b7f83"/>
       <circle cx="182" cy="-8" r="14" fill="#1d1f21"/><circle cx="182" cy="-8" r="6" fill="#7b7f83"/>

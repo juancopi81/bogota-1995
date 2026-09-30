@@ -54,8 +54,6 @@ export const P = {
   plasticDark: '#3a3c40',
   ivory: '#e3d7bb',
   ivoryDark: '#c8b995',
-  tvBody: '#4a4541',
-  tvBodyLight: '#5c5651',
   screenOff: '#2f3a3a',
   crt: '#bcd6f0',
   rec: '#c0392b',
