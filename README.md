@@ -26,6 +26,9 @@ API key, or uploads are needed to hear the included cast.
 
 Other ways to open it:
 
+- **The public site**, https://juancopi81.github.io/bogota-1995/, published
+  from `main` by GitHub Actions once Pages is switched on (see
+  [`docs/research-setup.md`](docs/research-setup.md)).
 - **A private claude.ai link**, updated with each iteration. The real TV
   clips don't play there, because artifacts can't embed other sites.
 - **One file you can double-click:** `npm run build:single` writes
@@ -95,6 +98,16 @@ From there you can:
 - **Move the clock forward**, or start the afternoon over.
 - **Erase the tape** (it asks twice).
 
+## The test
+
+A small study of whether the room makes people nostalgic, and which parts do
+it: a few questions at the door and on the way out, and an anonymous log of
+the visit. The plan is in [`docs/test-plan.md`](docs/test-plan.md). It runs on
+the public site once it's connected to a Google Sheet
+([`docs/research-setup.md`](docs/research-setup.md)); locally, add
+`?research` to the address to try it (the answers go to the console). Phones
+get a note asking for a computer.
+
 ## Development
 
 ```sh
@@ -108,11 +121,13 @@ npm run voices         # regenerate docs/voice-script.md from the content
 
 End-to-end scripts in `scripts/` (`e2e-*.mjs`) drive the room in headless
 Chromium against the dev server: the request-line thread, the callback, the
-TV clips (with a stand-in YouTube player) and loading files.
+TV clips (with a stand-in YouTube player), loading files, and the test from
+the door to the exit.
 
 URL parameters for poking around: `?skip` skips the title card, `?t=900`
-starts 15 minutes in, and `?open=grabadora|phone|tv|window|clock` opens a
-close-up. In dev, `window.room1995` exposes the objects in the console.
+starts 15 minutes in, `?open=grabadora|phone|tv|window|clock` opens a
+close-up, `?research` runs the test without a sheet, and `?anyway` opens the
+room on a phone. In dev, `window.room1995` exposes the objects in the console.
 
 ### Where things live
 
@@ -127,7 +142,9 @@ close-up. In dev, `window.room1995` exposes the objects in the console.
 | `src/world/` | The clock, what happened this afternoon (`flags`), the traffic schedule, storage. |
 | `public/music/` | The room's own Creative Commons music (see its README). |
 | `src/assets/voices/` | The included ElevenLabs dialogue recordings and casting manifest. |
-| `docs/` | Vision, v0 decisions, voice script, TV clips, the public-path proposal for music. |
+| `src/research/` | The test: its questions, the screens, the visit log and what gets sent. |
+| `research/` | The Google Apps Script that receives the visits in a sheet. |
+| `docs/` | Vision, v0 decisions, voice script, TV clips, the public-path proposal for music, the test plan and its setup. |
 
 Every object is a small state machine with plain methods (`deck.press('rec')`,
 `phone.lift()`, `tv.setPower(true)`). That's the natural way to build a
