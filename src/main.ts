@@ -24,6 +24,8 @@ import { Backstage } from './ui/backstage';
 import { flags } from './world/flags';
 import { bus } from './world/bus';
 import { ROOM } from './art/room';
+import { Study } from './research/study';
+import type { Snapshot } from './research/log';
 
 const params = new URLSearchParams(location.search);
 
@@ -112,9 +114,35 @@ function titleCard(onEnter: () => void): void {
   title.addEventListener('pointerdown', enter);
 }
 
+// the test (docs/test-plan.md): questions at the door and on the way out, and an anonymous log
+const study = new Study(params, stage.el, (on) => engine.master.gain.setTargetAtTime(on ? 0.25 : 0.9, engine.ctx.currentTime, 0.4));
+// phones get a note asking for a computer instead, and nothing heavy loads
+const gated = study.gate(() => {
+  params.set('anyway', '');
+  location.search = params.toString();
+});
+
 // Music and the included cast load before the afternoon starts. Your recordings take priority.
-const house = library.loadHouse();
-const ready = Promise.all([library.loadSaved(), voices.loadBundled(engine.ctx), voices.loadSaved(engine.ctx), grabadora.init(), Promise.race([house, new Promise((r) => setTimeout(r, 4000))])]);
+const house = gated ? Promise.resolve() : library.loadHouse();
+const ready = gated
+  ? Promise.resolve()
+  : Promise.all([library.loadSaved(), voices.loadBundled(engine.ctx), voices.loadSaved(engine.ctx), grabadora.init(), Promise.race([house, new Promise((r) => setTimeout(r, 4000))])]);
+
+/** What the room is doing right now, for the test's log. */
+function snapshot(): Snapshot {
+  const radio = grabadora.radio;
+  const deck = grabadora.deck;
+  const audible = radio.power && radio.volume > 0.05;
+  const dom = audible ? radio.dominant() : null;
+  return {
+    view: closeups.current ?? 'room',
+    radio: !audible ? null : dom && dom.strength > 0.5 ? dom.station.def.id : 'static',
+    tv: tv.power ? tv.channel : null,
+    clip: tv.playingClip,
+    phone: phone.state !== 'idle',
+    tape: deck.isRecording ? 'rec' : deck.transport === 'play' && !deck.paused ? 'play' : null,
+  };
+}
 
 async function enter(): Promise<void> {
   await engine.unlock();
@@ -124,14 +152,17 @@ async function enter(): Promise<void> {
   if (skipTo > 0) clock.skip(skipTo);
   const open = params.get('open');
   if (open === 'grabadora' || open === 'phone' || open === 'tv' || open === 'window' || open === 'clock') closeups.open(open);
+  study.inRoom(snapshot);
 }
 
 // for poking at the room from the browser console while developing
-if (import.meta.env.DEV) Object.assign(window, { room1995: { grabadora, phone, tv, windowView, alarmClock, clock, engine, closeups, library, voices, flags } });
+if (import.meta.env.DEV) Object.assign(window, { room1995: { grabadora, phone, tv, windowView, alarmClock, clock, engine, closeups, library, voices, flags, study } });
 
 startLoop();
-if (params.has('skip')) {
+if (gated) {
+  // the note for phones is up: the room waits for a computer
+} else if (params.has('skip')) {
   void enter();
 } else {
-  titleCard(() => void enter());
+  titleCard(() => void study.atTheDoor().then(enter));
 }
