@@ -1,0 +1,808 @@
+@font-face {
+  font-family: 'Caveat';
+  src: url('./assets/fonts/caveat-latin.woff2') format('woff2');
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Special Elite';
+  src: url('./assets/fonts/special-elite-latin.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Anton';
+  src: url('./assets/fonts/anton-latin.woff2') format('woff2');
+  font-display: swap;
+}
+
+:root {
+  --ink: #2b2f3a;
+  --paper: #e8dfc8;
+  --night: #05070b;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--night);
+  overflow: hidden;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+#viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--night);
+}
+
+#stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1600px;
+  height: 900px;
+  transform-origin: 0 0;
+  overflow: hidden;
+  background: #111;
+}
+
+/* ---------- the room ---------- */
+
+#room {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50%;
+  transition: transform 0.7s cubic-bezier(0.6, 0, 0.2, 1), filter 0.7s ease;
+}
+
+#room.away {
+  filter: blur(3px) brightness(0.55);
+}
+
+.layer {
+  position: absolute;
+  inset: -30px;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.layer > svg,
+.layer > .fill {
+  position: absolute;
+  left: 30px;
+  top: 30px;
+  width: 1600px;
+  height: 900px;
+}
+
+.room-svg .hot {
+  cursor: pointer;
+  pointer-events: visiblePainted;
+}
+
+.room-svg .hot > rect:first-child {
+  pointer-events: all;
+}
+
+.room-svg .hot:hover {
+  filter: brightness(1.07) saturate(1.05);
+}
+
+.city {
+  position: absolute;
+  overflow: hidden;
+  background: #98a4ae;
+}
+
+.city > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.city > svg.city-traffic {
+  pointer-events: none;
+}
+
+.city canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.cloud {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(214, 219, 222, 0.85), rgba(214, 219, 222, 0));
+  will-change: transform;
+  pointer-events: none;
+}
+
+.screen-canvas {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 12px;
+}
+
+/* ---------- light ---------- */
+
+.light {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Plain alpha overlays (blend modes are expensive to composite on every frame). */
+.light.dusk {
+  background: radial-gradient(ellipse 70% 80% at 48% 30%, rgba(14, 20, 40, 0.72), rgba(8, 11, 24, 0.95) 70%);
+  opacity: 0;
+}
+
+.light.bulb {
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 190, 110, 0.22), rgba(255, 170, 90, 0.1) 60%, rgba(255, 160, 80, 0.05));
+  opacity: 0;
+  transition: opacity 0.12s linear;
+}
+
+.light.crt {
+  opacity: 0;
+}
+
+.light.crt.room-glow {
+  mix-blend-mode: screen;
+}
+
+.light.vignette {
+  background: radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.35) 100%);
+}
+
+#grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  z-index: 50;
+}
+
+/* ---------- close-ups ---------- */
+
+.closeup {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.45s ease, visibility 0s linear 0.45s;
+  z-index: 10;
+}
+
+.closeup.open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.45s ease 0.25s, visibility 0s;
+}
+
+.closeup > svg.art {
+  position: absolute;
+  inset: 0;
+  width: 1600px;
+  height: 900px;
+}
+
+#back {
+  position: absolute;
+  left: 22px;
+  top: 18px;
+  z-index: 30;
+  font-family: 'Caveat', cursive;
+  font-size: 30px;
+  color: rgba(240, 232, 214, 0.8);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+#back.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#back:hover {
+  color: #fff;
+}
+
+/* ---------- subtitles ---------- */
+
+#subtitles {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  width: 1180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.sub {
+  max-width: 1100px;
+  background: rgba(12, 12, 14, 0.66);
+  color: #f4efe3;
+  padding: 7px 16px 8px;
+  border-radius: 4px;
+  font-size: 23px;
+  line-height: 1.3;
+  text-align: center;
+  animation: sub-in 0.25s ease;
+  transition: opacity 0.3s;
+}
+
+.sub.leaving {
+  opacity: 0 !important;
+}
+
+.sub-meta {
+  display: block;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #cbbf9f;
+  margin-bottom: 1px;
+}
+
+.sub-phone .sub-text {
+  font-style: normal;
+}
+
+.sub-radio .sub-text,
+.sub-tv .sub-text,
+.sub-tape .sub-text {
+  font-style: italic;
+}
+
+.sub-house .sub-text {
+  font-style: italic;
+  color: #e9dcc0;
+}
+
+@keyframes sub-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* ---------- title card ---------- */
+
+#title {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background: #07080a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #e6ddc8;
+  font-family: 'Special Elite', 'Courier New', monospace;
+  cursor: pointer;
+  transition: opacity 2.2s ease;
+}
+
+#title.gone {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#title .place {
+  font-size: 58px;
+  letter-spacing: 0.04em;
+}
+
+#title .date {
+  margin-top: 18px;
+  font-size: 28px;
+  opacity: 0.85;
+}
+
+#title .hint {
+  margin-top: 90px;
+  font-family: system-ui, sans-serif;
+  font-size: 17px;
+  opacity: 0.55;
+  letter-spacing: 0.04em;
+  animation: breathe 3.5s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* ---------- dialogue (what you say on the phone) ---------- */
+
+#dialogue {
+  position: absolute;
+  right: 40px;
+  top: 120px;
+  width: 470px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 45;
+}
+
+#dialogue button {
+  font-family: 'Caveat', cursive;
+  font-size: 29px;
+  line-height: 1.1;
+  text-align: left;
+  color: #1d2a55;
+  background: #f1ead6;
+  border: none;
+  border-left: 4px solid #c9423a;
+  padding: 10px 16px 12px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  transform: rotate(-0.4deg);
+  animation: sub-in 0.3s ease;
+}
+
+#dialogue button:nth-child(2n) {
+  transform: rotate(0.5deg);
+}
+
+#dialogue button:hover {
+  background: #fff8e4;
+}
+
+#dialogue .say {
+  font-family: system-ui, sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(240, 232, 214, 0.7);
+}
+
+/* ---------- backstage ---------- */
+
+#backstage-toggle {
+  position: fixed;
+  right: 10px;
+  bottom: 8px;
+  z-index: 200;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+#backstage {
+  position: fixed;
+  right: 10px;
+  bottom: 40px;
+  top: 10px;
+  width: 440px;
+  z-index: 200;
+  background: #f4f1ea;
+  color: #1f1f22;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  padding: 18px 20px;
+  overflow-y: auto;
+  font-size: 14px;
+  display: none;
+  user-select: text;
+  -webkit-user-select: text;
+  /* the panel is light even though the room is dark: its buttons and fields too */
+  color-scheme: light;
+}
+
+#backstage.open {
+  display: block;
+}
+
+#backstage h2 {
+  font-size: 18px;
+  margin: 0 0 4px;
+}
+
+#backstage h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 22px 0 8px;
+  color: #6a5f4d;
+}
+
+#backstage p {
+  margin: 4px 0 10px;
+  color: #555;
+  line-height: 1.4;
+}
+
+#backstage .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid #e3ddd0;
+}
+
+#backstage .row small {
+  color: #7a6f5c;
+}
+
+#backstage button,
+#backstage label.file {
+  font: inherit;
+  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #c9c0ad;
+  background: #fff;
+  color: #1f1f22;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#backstage input,
+#backstage select {
+  background: #fff;
+  color: #1f1f22;
+  border: 1px solid #c9c0ad;
+  border-radius: 4px;
+}
+
+#backstage button:hover,
+#backstage label.file:hover {
+  background: #f0ead9;
+}
+
+#backstage .ok {
+  color: #2f7a3a;
+  font-weight: 600;
+}
+
+#backstage .clock {
+  font-family: 'Special Elite', monospace;
+  font-size: 22px;
+}
+
+#backstage h4 {
+  font-size: 12px;
+  margin: 14px 0 2px;
+  color: #8a7d64;
+  font-weight: 600;
+}
+
+#backstage .drop {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 14px 0 4px;
+  padding: 14px;
+  border: 2px dashed #c9bfa8;
+  border-radius: 8px;
+  background: #fbf9f4;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+#backstage.dropping .drop {
+  border-color: #b8532f;
+  background: #f8e9dc;
+}
+
+#backstage .drop span {
+  color: #555;
+  line-height: 1.4;
+}
+
+#backstage .drop .pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+#backstage .load-report {
+  color: #2f5f3a;
+  min-height: 1em;
+  line-height: 1.4;
+}
+
+#backstage .muted {
+  color: #9a917f;
+  font-size: 12px;
+}
+
+#backstage .tag {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: #efe3c7;
+  color: #7a5a1c;
+  font-size: 11px;
+  vertical-align: 1px;
+}
+
+#backstage .path {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+
+#backstage select {
+  font: inherit;
+  font-size: 12px;
+  max-width: 180px;
+  padding: 3px;
+}
+
+#backstage .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+#backstage .chip {
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: #ebe5d8;
+  color: #6b6252;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+#backstage .chip.some {
+  background: #f1e2bd;
+  color: #6d5214;
+}
+
+#backstage .chip.full {
+  background: #d8ead6;
+  color: #2f6a38;
+}
+
+#backstage button.danger {
+  border-color: #b8532f;
+  color: #b8532f;
+}
+
+/* ---------- grabadora ---------- */
+
+.closeup .grab {
+  cursor: pointer;
+}
+
+.closeup .key .key-cap {
+  transition: transform 0.06s ease-out;
+}
+
+.closeup .key.down .key-cap {
+  transform: translateY(9px);
+}
+
+.closeup .key.bounce .key-cap {
+  transform: translateY(4px);
+}
+
+#g-door,
+#g-door1 {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transition: transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+#g-door.open,
+#g-door1.open {
+  transform: translateY(18px) scaleY(0.72);
+}
+
+#g-slot {
+  transition: transform 0.2s ease;
+}
+
+.closeup .tune-button .tune-cap {
+  transition: transform 0.06s ease-out, fill 0.06s;
+}
+
+.closeup .tune-button.down .tune-cap {
+  transform: scale(0.9);
+  fill: #1b1c1f;
+}
+
+#g-lcd-bg {
+  cursor: ns-resize;
+}
+
+#g-vol {
+  cursor: grab;
+}
+
+/* ---------- phone ---------- */
+
+.room-svg .handset-off {
+  display: none;
+}
+
+.room-svg .off-hook .handset-off {
+  display: inline;
+}
+
+.room-svg .off-hook .handset-on-cradle {
+  display: none;
+}
+
+.room-svg .ringing {
+  animation: ring 0.09s linear infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 80%;
+}
+
+@keyframes ring {
+  0% {
+    transform: rotate(-1.2deg);
+  }
+  50% {
+    transform: rotate(1.2deg);
+  }
+  100% {
+    transform: rotate(-1.2deg);
+  }
+}
+
+.libreta-input {
+  position: absolute;
+  z-index: 12;
+  font-family: 'Caveat', cursive;
+  font-size: 32px;
+  line-height: 37px;
+  color: #1d3f8f;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 0 4px;
+  user-select: text;
+  -webkit-user-select: text;
+  transition: opacity 0.3s;
+}
+
+.libreta-input:focus {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+#ph-libreta {
+  transition: opacity 0.3s;
+}
+
+.closeup.choosing #ph-libreta,
+.closeup.choosing .libreta-input {
+  opacity: 0.25;
+}
+
+.libreta-input::placeholder {
+  color: rgba(29, 63, 143, 0.28);
+}
+
+/* ---------- tv ---------- */
+
+.tv-screen,
+.tv-glass {
+  position: absolute;
+  border-radius: 36px;
+  pointer-events: none;
+}
+
+.tv-glass {
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+    radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.55) 100%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 30%);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+#cu-tv.shake .art,
+#cu-tv.shake .tv-screen,
+#cu-tv.shake .tv-glass {
+  animation: whack 0.35s ease-out;
+}
+
+@keyframes whack {
+  15% {
+    transform: translate(-6px, 2px);
+  }
+  35% {
+    transform: translate(4px, -1px);
+  }
+  60% {
+    transform: translate(-2px, 0);
+  }
+}
+
+/* ---------- window ---------- */
+
+.closeup > .fill {
+  position: absolute;
+  inset: 0;
+}
+
+.glass-layer {
+  position: absolute;
+  pointer-events: none;
+}
+
+.glass-layer.fog {
+  opacity: 0.62;
+}
+
+#cu-window {
+  cursor: grab;
+}
+
+.room-svg .curtain-right.breeze,
+#cu-window.opened .w-curtain-r {
+  animation: breeze 3.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+}
+
+@keyframes breeze {
+  0%,
+  100% {
+    transform: skewX(0deg);
+  }
+  40% {
+    transform: skewX(-2.5deg) scaleX(0.97);
+  }
+  70% {
+    transform: skewX(1.2deg);
+  }
+}
+
+.tv-clip {
+  position: absolute;
+  border: 0;
+  border-radius: 36px;
+  pointer-events: none;
+  filter: saturate(0.85) contrast(1.1) blur(0.4px);
+}
+
+.speaker-cone {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 38%, #2c2e32, #151618 70%);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  will-change: transform;
+}

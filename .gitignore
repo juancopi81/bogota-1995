@@ -1,0 +1,8 @@
+node_modules/
+dist/
+dist-single/
+dist-artifact/
+*.log
+.DS_Store
+# Private media for local testing only (never commit copyrighted songs or personal recordings)
+media/private/

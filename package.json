@@ -1,0 +1,26 @@
+{
+  "name": "bogota-1995",
+  "private": true,
+  "version": "0.1.0",
+  "description": "An interactive Bogotá bedroom, Saturday 28 October 1995, 5:30 p.m. It's raining.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "voices": "vite-node scripts/voice-script.ts",
+    "build:single": "tsc --noEmit && vite build --mode single",
+    "build:artifact": "tsc --noEmit && vite build --mode artifact && node scripts/artifact.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "playwright": "^1.56.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vite-node": "^6.0.0",
+    "vite-plugin-singlefile": "^2.3.3",
+    "vitest": "^5.0.2"
+  }
+}
