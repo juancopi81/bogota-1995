@@ -68,6 +68,20 @@ describe('Timeline', () => {
     for (let i = 1; i < tl.items.length; i++) expect(tl.items[i].start).toBeCloseTo(tl.items[i - 1].end);
   });
 
+  it('re-plans the segment on air too, before anyone has heard it', () => {
+    let len = 100;
+    let n = 0;
+    const tl = new Timeline<Segment>({ from: -250, next: () => song(`s${n++}`), measure: () => ({ dur: len, cues: [] }) });
+    const before = tl.at(0)!;
+    len = 140; // the real recording arrived, and it runs longer
+    tl.replanFrom(0);
+    const after = tl.at(0)!;
+    expect(after).not.toBe(before);
+    expect(after.start).toBe(before.start);
+    expect(after.end - after.start).toBe(140);
+    for (let i = 1; i < tl.items.length; i++) expect(tl.items[i].start).toBeCloseTo(tl.items[i - 1].end);
+  });
+
   it('can put something in right after the cut', () => {
     const tl = makeTimeline(false, 100);
     tl.cutAt(30, [{ kind: 'anthem' }]);

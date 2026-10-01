@@ -110,6 +110,15 @@ export class Timeline<S = Segment> {
     this.rewrite(t, []);
   }
 
+  /** Like regenerateAfter, but the segment on air at time t goes too: for before anyone has heard it. */
+  replanFrom(t: number): void {
+    const current = this.at(t);
+    if (current) this.items.splice(this.items.indexOf(current));
+    const hb = this.opts.hardBreak;
+    this.breakDone = !hb || this.lastEnd() > hb.at;
+    this.ensure(t + 1);
+  }
+
   /** Cut whatever is on air at time t short, air `then` (if anything), and carry on from there. */
   cutAt(t: number, then: S[] = []): void {
     const current = this.at(t);

@@ -93,9 +93,13 @@ export class Radio {
     this.whistle.connect(this.whistleGain).connect(this.powerGain);
     this.whistle.start();
 
-    // a song or the anthem was loaded: re-plan what hasn't aired yet
+    // a song, a voice or the anthem was loaded: re-plan what hasn't aired yet
+    // (until the room opens nothing has, not even the song on air)
     bus.on('media:loaded', () => {
-      for (const { station } of this.tuned) station.timeline.regenerateAfter(clock.now());
+      for (const { station } of this.tuned) {
+        if (clock.started) station.timeline.regenerateAfter(clock.now());
+        else station.timeline.replanFrom(clock.now());
+      }
     });
 
     this.tuned = STATIONS.map((def) => {

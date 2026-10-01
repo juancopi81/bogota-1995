@@ -26,6 +26,7 @@ const DEFAULT_INTRO = 12;
 /** How many decoded songs to keep. */
 const KEEP_DECODED = 4;
 const DURATIONS = 'library.durations';
+const HOUSE_DURATIONS = 'library.houseDurations';
 
 /**
  * The real audio a song slot carries: `yours:<song id>` (your file) or
@@ -53,6 +54,8 @@ class Library {
   private anthemBuffer: AudioBuffer | undefined;
   private bundledAnthem: AudioBuffer | undefined;
   private house = new Map<string, House>();
+  /** How long each house file is, by track and file size: measured once, on the first visit. */
+  private houseDurations: Record<string, number> = kv.get(HOUSE_DURATIONS, {});
   /** Decoded real songs, least recently used first. */
   private decoded = new Map<string, AudioBuffer>();
   private decoding = new Map<string, Promise<AudioBuffer | null>>();
@@ -96,11 +99,19 @@ class Library {
 
   /** The room's own music in public/music/ (it can't be fetched when the page is opened from disk). */
   async loadHouse(): Promise<void> {
-    for (const file of houseFiles) {
+    // Fetch everything at once, but decode one file at a time (a decoded song
+    // takes tens of MB), and put each track on the air as soon as it's ready.
+    // The anthem goes last: it isn't needed until 6:00.
+    const order = [...houseFiles].sort((a, b) => Number(a === HOUSE_ANTHEM.file) - Number(b === HOUSE_ANTHEM.file));
+    const fetched = order.map((file) =>
+      fetch(`music/${encodeURIComponent(file)}`)
+        .then((res) => (res.ok ? res.arrayBuffer() : null))
+        .catch(() => null),
+    );
+    for (const [i, file] of order.entries()) {
       try {
-        const res = await fetch(`music/${encodeURIComponent(file)}`);
-        if (!res.ok) continue;
-        const data = await res.arrayBuffer();
+        const data = await fetched[i];
+        if (!data) continue;
         if (file === HOUSE_ANTHEM.file) {
           this.bundledAnthem = await this.decode(data);
           bus.emit('media:loaded', { kind: 'anthem', id: 'anthem' });
@@ -109,14 +120,21 @@ class Library {
         const match = matchSong({ path: file, tags: readTags(data) }, HOUSE_MUSIC);
         const track = HOUSE_MUSIC.find((t) => match?.target.kind === 'song' && t.id === match.target.id);
         if (!track || this.house.has(track.id)) continue;
-        const buffer = await this.decode(data);
-        this.house.set(track.id, { track, data, duration: buffer.duration });
-        this.remember(`house:${track.id}`, buffer);
+        const key = `${track.id}:${data.byteLength}`;
+        let duration = this.houseDurations[key];
+        if (!duration) {
+          const buffer = await this.decode(data);
+          duration = buffer.duration;
+          this.houseDurations[key] = duration;
+          kv.set(HOUSE_DURATIONS, this.houseDurations);
+          this.remember(`house:${track.id}`, buffer);
+        }
+        this.house.set(track.id, { track, data, duration });
+        bus.emit('media:loaded', { kind: 'house', id: track.id });
       } catch {
         /* a file that won't load: play without it */
       }
     }
-    if (this.house.size) bus.emit('media:loaded', { kind: 'house', id: '' });
   }
 
   // ---------- decoding real songs ----------
