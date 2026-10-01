@@ -7,6 +7,18 @@ import { bus } from '../world/bus';
 
 const files = import.meta.glob<string>('../assets/voices/*.mp3', { eager: true, query: '?url', import: 'default' });
 
+/** A bundled file's bytes. The single-file builds inline them as data: URLs, which a strict page may not let us fetch. */
+async function bytesOf(url: string): Promise<ArrayBuffer | null> {
+  if (url.startsWith('data:')) {
+    const raw = atob(url.slice(url.indexOf(',') + 1));
+    const out = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+    return out.buffer;
+  }
+  const response = await fetch(url);
+  return response.ok ? response.arrayBuffer() : null;
+}
+
 class Voices {
   private buffers = new Map<string, AudioBuffer>();
   private bundled = new Map<string, AudioBuffer>();
@@ -15,9 +27,9 @@ class Voices {
     await Promise.all(Object.entries(files).map(async ([file, url]) => {
       const id = file.split('/').pop()!.replace(/\.mp3$/, '');
       try {
-        const response = await fetch(url);
-        if (!response.ok) return;
-        this.bundled.set(id, await ctx.decodeAudioData(await response.arrayBuffer()));
+        const data = await bytesOf(url);
+        if (!data) return;
+        this.bundled.set(id, await ctx.decodeAudioData(data));
         bus.emit('media:loaded', { kind: 'voice', id });
       } catch {
         /* unavailable recording: keep its subtitle */
