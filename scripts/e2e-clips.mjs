@@ -41,7 +41,8 @@ async function run(label, modeFor) {
     return route.fulfill({ contentType: 'text/html', body: FAKE_PLAYER(mode) });
   });
   await page.goto('http://localhost:5173/?skip&open=tv');
-  await page.waitForTimeout(1200);
+  await page.waitForFunction(() => window.room1995?.clock.started, null, { timeout: 20000 }); // the room opens once its voices and music are in
+  await page.waitForTimeout(800);
   const ev = (fn, arg) => page.evaluate(fn, arg);
   await ev(() => {
     const tv = window.room1995.tv;

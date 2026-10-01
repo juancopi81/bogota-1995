@@ -56,7 +56,8 @@ const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 await page.goto('http://localhost:5173/?skip');
-await page.waitForTimeout(1200);
+await page.waitForFunction(() => window.room1995?.clock.started, null, { timeout: 20000 }); // the room opens once its voices and music are in
+await page.waitForTimeout(500);
 await page.keyboard.press('`');
 const report = () => page.locator('#backstage .load-report').textContent();
 const waitDone = async () => {

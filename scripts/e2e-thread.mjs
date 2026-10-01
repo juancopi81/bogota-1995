@@ -9,7 +9,8 @@ const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 await page.goto('http://localhost:5173/?skip&open=phone');
-await page.waitForTimeout(1500);
+await page.waitForFunction(() => window.room1995?.clock.started, null, { timeout: 20000 }); // the room opens once its voices and music are in
+await page.waitForTimeout(800);
 const state = () => page.evaluate(() => ({ state: window.room1995.phone.state, choices: [...document.querySelectorAll('#dialogue button')].map((b) => b.textContent) }));
 const waitChoices = async (ms = 20000) => {
   const t0 = Date.now();

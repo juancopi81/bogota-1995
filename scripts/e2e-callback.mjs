@@ -8,7 +8,8 @@ const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 await page.goto('http://localhost:5173/?skip&open=phone');
-await page.waitForTimeout(1500);
+await page.waitForFunction(() => window.room1995?.clock.started, null, { timeout: 20000 }); // the room opens once its voices and music are in
+await page.waitForTimeout(800);
 const ev = (fn) => page.evaluate(fn);
 const waitChoices = async () => {
   for (let i = 0; i < 80; i++) {
@@ -43,7 +44,7 @@ for (let i = 0; i < 90; i++) {
 const house = [...seen];
 console.log('from the kitchen:', JSON.stringify(house), 'mom answered:', await ev(() => window.room1995.phone.incoming?.momAnswered));
 await ev(() => { window.room1995.closeups.open('phone'); window.room1995.phone.lift(); });
-await page.waitForTimeout(4000);
+await page.waitForTimeout(1500); // his recorded line lasts about 3.5 s
 console.log('on the line:', JSON.stringify(await ev(() => [...document.querySelectorAll('.sub-phone')].map((e) => e.textContent))));
 if (errors.length) console.log('ERRORS', errors);
 await browser.close();
