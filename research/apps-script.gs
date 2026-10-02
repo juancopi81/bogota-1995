@@ -2,6 +2,11 @@
 // "visitas", one column per field (see docs/research-setup.md). Every send
 // carries the whole visit, so later sends update the same row.
 //
+// It also hands the room the memories visitors agreed to share, once you've
+// read them: write "sí" in the column "aprobado" of that row. To show a
+// memory with names or details taken out, write the version to show in the
+// column "recuerdo_publico"; the visitor's own words stay in "memory".
+//
 // Paste this into Extensions → Apps Script of a Google Sheet, then deploy it
 // as a web app that anyone can reach.
 
@@ -60,9 +65,43 @@ function doPost(e) {
   return reply('ok');
 }
 
-/** Opening the web app's address in a browser says whether it's up. */
-function doGet() {
+/**
+ * Opening the web app's address in a browser says whether it's up. With
+ * ?recuerdos it answers the approved memories, for the room's thanks screen.
+ */
+function doGet(e) {
+  if (e && e.parameter && 'recuerdos' in e.parameter) {
+    return ContentService.createTextOutput(JSON.stringify({ memories: approvedMemories() })).setMimeType(ContentService.MimeType.JSON);
+  }
   return reply('Bogotá 1995: listo para recibir visitas.');
+}
+
+const SHOWN = 30;
+const yes = (v) => v === true || /^\s*(s[ií]|x|yes|true|1)\s*$/i.test(String(v));
+
+/** The memories visitors let others read and you've approved, a different handful each time. */
+function approvedMemories() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET);
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  const rows = sheet.getRange(1, 1, sheet.getLastRow(), sheet.getLastColumn()).getValues();
+  const header = rows[0].map(String);
+  const col = (name) => header.indexOf(name);
+  const memory = col('memory');
+  const share = col('memory_share');
+  const approved = col('aprobado');
+  const edited = col('recuerdo_publico');
+  if (memory === -1 || share === -1 || approved === -1) return [];
+  const out = [];
+  rows.slice(1).forEach((row) => {
+    if (!yes(row[share]) || !yes(row[approved])) return;
+    const text = String((edited !== -1 && row[edited]) || row[memory] || '').trim();
+    if (text) out.push({ text: text.slice(0, 600), age: String(row[col('age_1995')] || ''), lived: String(row[col('lived_1995')] || '') });
+  });
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out.slice(0, SHOWN);
 }
 
 function reply(text) {

@@ -5,6 +5,7 @@
 
 import { AGE, LIVED, MOOD, MOOD_ENDS, RETURN, TRAIT, TRIGGERS, type Choice, type Item } from './questions';
 import type { DoorAnswers, ExitAnswers } from './record';
+import { caption, type SharedMemory } from './memories';
 
 const CONTACT = import.meta.env.VITE_RESEARCH_CONTACT ?? '';
 
@@ -74,6 +75,7 @@ export function consent(host: HTMLElement): Promise<boolean> {
     `<h2>Antes de entrar</h2>
     <p>Este cuarto es parte de un experimento sobre la nostalgia. Si participa, le haremos unas preguntas cortas en la puerta y al salir, y guardaremos lo que hace adentro: qué toca y por cuánto tiempo.</p>
     <p>Es anónimo: no le pedimos su nombre ni su correo, ni guardamos datos que lo identifiquen. Puede salir cuando quiera. Para participar debe ser mayor de 18 años.</p>
+    <p>Al salir puede dejar un recuerdo. Solo si usted lo autoriza, y después de leerlo, podremos mostrarlo a otros visitantes, sin datos suyos.</p>
     <p class="fine">Un proyecto independiente y sin ánimo de lucro, sin relación con las emisoras, los canales ni las marcas que aparecen en el cuarto.${CONTACT ? ` Preguntas: ${escape(CONTACT)}.` : ''}</p>
     <div class="actions"><button type="button" class="primary" data-act="yes">Acepto, sigamos</button><button type="button" class="quiet" data-act="no">Entrar sin participar</button></div>`,
   );
@@ -116,12 +118,13 @@ export function exit(host: HTMLElement, reason: 'button' | '6pm'): Promise<ExitA
     <div class="q">Ahora mismo, ¿qué tan de acuerdo está con cada frase?</div>${likert('mood', MOOD)}
     <div class="q">¿El cuarto le trajo algún recuerdo? Si quiere, escríbalo aquí (sin nombres ni datos personales).</div>
     <textarea data-f="memory" rows="4" maxlength="2000"></textarea>
+    <label class="share"><input type="checkbox" data-f="share"> Pueden mostrar mi recuerdo a otros visitantes, sin datos míos.</label>
     <div class="q">¿Qué se lo trajo? Puede marcar varias.</div>${choices('triggers', TRIGGERS, true)}
     <div class="q">¿Volvería a entrar a este cuarto?</div>${choices('return', RETURN)}
     ${TRAIT.map((item) => `<div class="q">${item.text}</div>${scale(`trait.${item.id}`, item.ends)}`).join('')}
     <div class="q">¿Algo no le sonó a 1995, o no funcionó?</div>
     <textarea data-f="feedback" rows="2" maxlength="1000"></textarea>
-    <div class="actions"><button type="button" class="primary" data-act="send" disabled>Enviar</button><button type="button" class="quiet" data-act="back">Volver al cuarto</button><span class="hint">Solo las seis frases de arriba son obligatorias.</span></div>`,
+    <div class="actions"><button type="button" class="primary" data-act="send" disabled>Enviar</button><button type="button" class="quiet" data-act="back">Volver al cuarto</button><span class="hint">Solo las seis frases de arriba son obligatorias. Al enviar podrá leer recuerdos que dejaron otros visitantes.</span></div>`,
   );
   const send = el.querySelector<HTMLButtonElement>('[data-act="send"]')!;
   const complete = () => MOOD.every((item) => picks.number[`mood.${item.id}`]);
@@ -138,6 +141,7 @@ export function exit(host: HTMLElement, reason: 'button' | '6pm'): Promise<ExitA
         resolve({
           mood: picks.scores('mood', MOOD),
           memory: text('memory'),
+          shareMemory: el.querySelector<HTMLInputElement>('[data-f="share"]')!.checked,
           triggers: [...(picks.many.triggers ?? [])],
           returnIntent: picks.one.return ?? null,
           trait: picks.scores('trait', TRAIT),
@@ -148,17 +152,48 @@ export function exit(host: HTMLElement, reason: 'button' | '6pm'): Promise<ExitA
   });
 }
 
-export function thanks(host: HTMLElement): Promise<void> {
+/** How many memories show at a time. */
+const NOTES = 3;
+
+const note = (m: SharedMemory) => `<figure class="note"><blockquote>${escape(m.text)}</blockquote><figcaption>${escape(caption(m))}</figcaption></figure>`;
+
+/** The thanks, and the memories other visitors left (once they arrive, if there are any). */
+export function thanks(host: HTMLElement, memories: Promise<SharedMemory[]>, shared = false): Promise<void> {
   const el = overlay(
     host,
     `<h2>Gracias</h2>
     <p>Sus respuestas quedaron guardadas. Si quiere, vuelva al cuarto: la tarde sigue.</p>
+    ${shared ? '<p class="fine">Cuando lo leamos, su recuerdo podrá aparecer aquí para otros visitantes.</p>' : ''}
+    <div class="memories" hidden>
+      <div class="q">Recuerdos que dejaron otros visitantes</div>
+      <div class="notes"></div>
+      <button type="button" class="quiet" data-act="more" hidden>Leer otros</button>
+    </div>
     <div class="actions"><button type="button" class="primary" data-act="back">Volver al cuarto</button></div>`,
   );
+  let from = 0;
+  let list: SharedMemory[] = [];
+  const show = () => {
+    const box = el.querySelector<HTMLElement>('.memories')!;
+    box.hidden = list.length === 0;
+    const batch = list.slice(from, from + NOTES);
+    el.querySelector('.notes')!.innerHTML = batch.map(note).join('');
+    el.querySelector<HTMLElement>('[data-act="more"]')!.hidden = list.length <= NOTES;
+  };
+  void memories.then((found) => {
+    list = found;
+    show();
+  });
   return new Promise((resolve) => {
-    el.querySelector('[data-act="back"]')!.addEventListener('click', () => {
-      el.remove();
-      resolve();
+    el.addEventListener('click', (e) => {
+      const act = (e.target as HTMLElement).closest<HTMLElement>('[data-act]')?.dataset.act;
+      if (act === 'more') {
+        from = from + NOTES >= list.length ? 0 : from + NOTES;
+        show();
+      } else if (act === 'back') {
+        el.remove();
+        resolve();
+      }
     });
   });
 }

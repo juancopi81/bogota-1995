@@ -1,6 +1,9 @@
 # Included dialogue voices
 
-All 188 fixed dialogue lines load automatically in the room. They use the
+188 of the 192 fixed dialogue lines load automatically in the room; the four
+lines of Andrés's call from the monedero wait for a take and are subtitles
+until then (listed at the top of `docs/voice-script.md`; once they're in,
+empty `AWAITING_TAKES` in `tests/voices.test.ts`). The included takes use the
 original dialogue in `src/content/` and `src/objects/house.ts`, generated with
 ElevenLabs v4 on a paid Starter plan: 79 clips on 30 September 2026 and the
 remaining 107 on 2 October 2026, followed by two street calls and a bakery
@@ -52,7 +55,8 @@ bakery take now says "La Espiga", matching the shop across the street.
 
 1. Run `npm run dev` and open `http://localhost:5173/?skip` with headphones.
    Use a fresh browser profile to hear bundled recordings without uploaded
-   takes taking priority. Open the ⚙ backstage and check **188 of 188 lines**.
+   takes taking priority. Open the ⚙ backstage and check **188 of 192 lines**
+   (192 of 192 once Andrés's four new lines are recorded).
 2. Call **Abuelita: 2321745**. Finish the conversation, including her attempt
    to keep you on the phone. Check warmth, age, natural pacing, and the
    blessing at the end.
@@ -74,7 +78,11 @@ bakery take now says "La Espiga", matching the shop across the street.
    reciclador passes at 5:34:30. Listen with the pane closed, then open it;
    both the short and drawn-out calls should come from the street. He passes
    again at 5:50:20. The wrong-number caller around 5:35 now asks for La Espiga.
-7. For a retake, send the **line ID** from `docs/voice-script.md`, or its first
+7. Open `http://localhost:5173/?skip&t=70&open=phone`: at 5:31:15 Andrés calls
+   from a monedero in Unicentro (coins drop as you pick up) and asks you to
+   tape «Florecita rockera»; his coins run out. Tape something, then jump to
+   5:43 in the backstage: he calls from home to ask whether you taped it.
+8. For a retake, send the **line ID** from `docs/voice-script.md`, or its first
    words, and a direction such as "faster", "less formal", or "older".
 
 Automated validation checks complete line coverage, original text, file

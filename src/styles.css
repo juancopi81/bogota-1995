@@ -474,6 +474,61 @@ body {
   resize: vertical;
 }
 
+#research label.share {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 16px;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+#research label.share input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #e6ddc8;
+}
+
+/* the memories other visitors left, as notes torn from a cuaderno */
+#research .notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 10px 0 8px;
+}
+
+#research .note {
+  flex: 1 1 250px;
+  margin: 0;
+  padding: 14px 20px 14px;
+  color: #2b2f3a;
+  background: repeating-linear-gradient(to bottom, #e8dfc8 0 31px, rgba(70, 100, 150, 0.22) 31px 32px);
+  background-position: 0 6px;
+  border-radius: 2px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  transform: rotate(-1.2deg);
+}
+
+#research .note:nth-child(2) {
+  transform: rotate(0.9deg);
+}
+
+#research .note:nth-child(3) {
+  transform: rotate(-0.5deg);
+}
+
+#research .note blockquote {
+  margin: 0 0 10px;
+  font: 25px/32px 'Caveat', cursive;
+}
+
+#research .note figcaption {
+  font: 13px/1.4 'Special Elite', monospace;
+  opacity: 0.65;
+}
+
 /* the buttons stay in view while a long screen scrolls */
 #research .actions {
   position: sticky;

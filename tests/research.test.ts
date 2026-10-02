@@ -19,6 +19,7 @@ describe('the questions', () => {
       {
         mood: mood(5, 6, 4),
         memory: '  El casete que me grabó mi hermano.  ',
+        shareMemory: true,
         triggers: ['radio', 'grabadora'],
         returnIntent: 'si',
         trait: { often: 3 },
@@ -26,7 +27,26 @@ describe('the questions', () => {
       },
       door.pre_nostalgia as number,
     );
-    expect(exit).toMatchObject({ post_nostalgia: 5, change: 3, memory: 'El casete que me grabó mi hermano.', triggers: 'radio grabadora', return_intent: 'si', trait_often: 3, trait_prone: null });
+    expect(exit).toMatchObject({ post_nostalgia: 5, change: 3, memory: 'El casete que me grabó mi hermano.', memory_share: true, triggers: 'radio grabadora', return_intent: 'si', trait_often: 3, trait_prone: null });
+  });
+
+  it('only records the permission to share when there is a memory to share', () => {
+    const answers = { mood: mood(4, 4, 4), memory: '   ', shareMemory: true, triggers: [], returnIntent: null, trait: {}, feedback: '' };
+    expect(exitFields(answers, null).memory_share).toBeNull();
+    expect(exitFields({ ...answers, memory: 'La lluvia.', shareMemory: false }, null).memory_share).toBe(false);
+  });
+});
+
+describe('the memories other visitors left', () => {
+  it('takes only memories with text from what the sheet answers, and says who left them without saying who', async () => {
+    const { parseMemories, caption } = await import('../src/research/memories');
+    expect(parseMemories(null)).toEqual([]);
+    expect(parseMemories('Bogotá 1995: listo para recibir visitas.')).toEqual([]);
+    const list = parseMemories({ memories: [{ text: '  La buseta.  ', age: '15-19', lived: 'bogota' }, { text: '' }, { text: 7 }, { text: 'x'.repeat(900) }] });
+    expect(list.map((m) => m.text.length)).toEqual([10, 600]);
+    expect(caption(list[0])).toBe('Tenía de 15 a 19 años en 1995, vivía en Bogotá');
+    expect(caption({ text: 'a', age: 'unborn', lived: 'abroad' })).toBe('No había nacido en 1995');
+    expect(caption({ text: 'a', age: '', lived: '' })).toBe('');
   });
 });
 

@@ -36,13 +36,26 @@ function deploy() {
   const context: Record<string, unknown> = {
     SpreadsheetApp: { getActiveSpreadsheet: () => ({ getSheetByName: () => sheet, insertSheet: () => sheet }) },
     LockService: { getScriptLock: () => ({ waitLock: () => undefined, releaseLock: () => undefined }) },
-    ContentService: { createTextOutput: (text: string) => text },
+    ContentService: {
+      MimeType: { JSON: 'application/json' },
+      createTextOutput: (text: string) => ({
+        text,
+        mime: 'text/plain',
+        setMimeType(mime: string) {
+          this.mime = mime;
+          return this;
+        },
+      }),
+    },
   };
   runInNewContext(readFileSync('research/apps-script.gs', 'utf8'), context);
-  const doPost = context.doPost as (e: { postData: { contents: string } }) => string;
-  const post = (body: unknown) => doPost({ postData: { contents: typeof body === 'string' ? body : JSON.stringify(body) } });
+  type Output = { text: string; mime: string };
+  const doPost = context.doPost as (e: { postData: { contents: string } }) => Output;
+  const doGet = context.doGet as (e?: { parameter: Record<string, string> }) => Output;
+  const post = (body: unknown) => doPost({ postData: { contents: typeof body === 'string' ? body : JSON.stringify(body) } }).text;
+  const get = (parameter: Record<string, string> = {}) => doGet({ parameter });
   const column = (name: string) => (sheet.cells[0] as string[]).indexOf(name);
-  return { sheet, post, column };
+  return { sheet, post, get, column };
 }
 
 const A = 'a1b2c3d4e5f60718';
@@ -69,6 +82,39 @@ describe('the sheet that receives visits', () => {
     const { sheet, post, column } = deploy();
     post({ v: 1, visit: A, fields: { memory: '=IMPORTXML("http://x")' } });
     expect(sheet.cells[1][column('memory')]).toBe('\'=IMPORTXML("http://x")');
+  });
+
+  it('says it is up when opened in a browser', () => {
+    const { get } = deploy();
+    expect(get().text).toBe('Bogotá 1995: listo para recibir visitas.');
+  });
+
+  it('hands the room only the memories visitors let others read and you have approved', () => {
+    const { sheet, post, get, column } = deploy();
+    const visits = [
+      ['a000000000000001', { memory: 'La buseta llena.', memory_share: true, age_1995: '15-19', lived_1995: 'bogota' }],
+      ['a000000000000002', { memory: 'Mi hermano Pedro y yo.', memory_share: true, age_1995: '10-14', lived_1995: 'bogota' }],
+      ['a000000000000003', { memory: 'No lo muestren.', memory_share: false }],
+      ['a000000000000004', { memory: 'Aún sin leer.', memory_share: true }],
+    ] as const;
+    for (const [visit, fields] of visits) post({ v: 1, visit, fields });
+    expect(JSON.parse(get({ recuerdos: '1' }).text)).toEqual({ memories: [] });
+    // you approve three in the sheet, and take the name out of one
+    sheet.cells[0].push('aprobado', 'recuerdo_publico');
+    const approve = (row: number, edit = '') => {
+      sheet.cells[row][column('aprobado')] = 'sí';
+      sheet.cells[row][column('recuerdo_publico')] = edit;
+    };
+    approve(1);
+    approve(2, 'Mi hermano y yo.');
+    approve(3);
+    // a later send from the same visit keeps what you wrote
+    post({ v: 1, visit: 'a000000000000001', fields: { memory: 'La buseta llena.', memory_share: true, stage: 'done' } });
+    const out = get({ recuerdos: '1' });
+    expect(out.mime).toBe('application/json');
+    const memories = (JSON.parse(out.text) as { memories: { text: string; age: string; lived: string }[] }).memories;
+    expect(memories.map((m) => m.text).sort()).toEqual(['La buseta llena.', 'Mi hermano y yo.']);
+    expect(memories.find((m) => m.text === 'La buseta llena.')).toEqual({ text: 'La buseta llena.', age: '15-19', lived: 'bogota' });
   });
 
   it('turns away anything that is not a visit', () => {
