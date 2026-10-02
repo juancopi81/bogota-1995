@@ -19,10 +19,12 @@ npm run dev
 
 Open http://localhost:5173 with **headphones on**. Laptop first; touch works too.
 
-The voices of your mother, Andrés's mother, Andrés, and Radioactiva's DJ and
-request desk come included (79 lines). They play automatically; subtitles
-stay visible. Other characters still use subtitles. No ElevenLabs account,
-API key, or uploads are needed to hear the included cast.
+All 186 fixed dialogue lines come included: the household and phone cast,
+all four radio stations, advertisements, and the fictional TV programs.
+They play automatically alongside subtitles. Live radio and 117 time
+announcements still use subtitles. No ElevenLabs account, API key, or
+uploads are needed to hear the included cast. Listening and regeneration
+instructions are in [`src/assets/voices/README.md`](src/assets/voices/README.md).
 
 Other ways to open it:
 

@@ -356,7 +356,7 @@ export class Backstage {
           <label class="file">${ownAnthem ? 'Cambiar' : 'Cargar el suyo'}<input type="file" accept="audio/*" data-song="anthem" hidden></label></span></div>
 
       <h3>Voces · ${recorded} de ${spoken.length} líneas</h3>
-      <p>Ya vienen las voces de mamá, la mamá de Andrés, Andrés y Radioactiva. Puede agregar las demás o reemplazar una voz con una grabación suya. Cada archivo se llama como el código de su línea (ver <code>docs/voice-script.md</code>), por ejemplo <code>llamada.andres.hola.m4a</code>. Arrástrelos arriba con lo demás.</p>
+      <p>Ya vienen todas las líneas fijas de los personajes, las emisoras y los programas de televisión. Los anuncios de la hora todavía aparecen como subtítulos. Puede reemplazar una línea con una grabación suya. Cada archivo se llama como el código de su línea (ver <code>docs/voice-script.md</code>), por ejemplo <code>llamada.andres.hola.m4a</code>. Arrástrelos arriba con lo demás.</p>
       <div class="chips">${chips}</div>
 
       <h3>Reloj</h3>
