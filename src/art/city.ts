@@ -4,10 +4,17 @@
 
 import { P } from './palette';
 import { mulberry32, type Rng } from '../util/rng';
+import { barrio, type Barrio } from './barrio';
+
+/** Round 6 mockups: ?barrio=a|b|c draws one of the three streets to choose from. */
+function mockup(): Barrio | null {
+  const v = typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('barrio');
+  return v === 'a' || v === 'b' || v === 'c' ? v : null;
+}
 
 const W = 1600;
 
-function brickPattern(id: string, color: string): string {
+export function brickPattern(id: string, color: string): string {
   return `
   <pattern id="${id}" width="18" height="10" patternUnits="userSpaceOnUse">
     <rect width="18" height="10" fill="${color}"/>
@@ -15,7 +22,7 @@ function brickPattern(id: string, color: string): string {
   </pattern>`;
 }
 
-interface Win {
+export interface Win {
   x: number;
   y: number;
   w: number;
@@ -23,7 +30,7 @@ interface Win {
 }
 
 /** Windows that light up at dusk, each with its own moment. */
-function windowRect(rng: Rng, win: Win, frame = true): string {
+export function windowRect(rng: Rng, win: Win, frame = true): string {
   const th = (0.15 + rng() * 0.8).toFixed(2);
   const warm = rng() < 0.8 ? P.glassLit : '#cfe0ea';
   const f = frame
@@ -105,6 +112,8 @@ export interface CityOptions {
 
 export function citySvg({ id, simple = false }: CityOptions): string {
   const rng = mulberry32(1995);
+  const which = mockup();
+  const art = which ? barrio(which, mulberry32(1995), { b1: `${id}-b1`, b2: `${id}-b2`, b3: `${id}-b3` }, simple) : null;
   const b1 = `${id}-b1`;
   const b2 = `${id}-b2`;
   const b3 = `${id}-b3`;
@@ -157,6 +166,11 @@ export function citySvg({ id, simple = false }: CityOptions): string {
     <path d="M0 470 C 200 440 420 460 640 440 C 860 420 1080 452 1300 430 C 1450 416 1540 430 1600 426 V660 H0Z" fill="${P.cerroNear}" opacity="0.55"/>
   </g>
   <rect class="mist" x="0" y="300" width="1600" height="260" fill="url(#${id}-haze)" opacity="0.7"/>
+  ${which ? `<g class="neblina" fill="#c9d0d3">
+    <ellipse cx="300" cy="300" rx="380" ry="26" opacity="0.55"/>
+    <ellipse cx="980" cy="262" rx="300" ry="20" opacity="0.5"/>
+    <ellipse cx="1420" cy="236" rx="240" ry="18" opacity="0.45"/>
+  </g>` : ''}
   <g class="far-roofs" opacity="0.8">`;
 
   // A band of far rooftops and eucalyptus between the street and the hills
@@ -180,6 +194,8 @@ export function citySvg({ id, simple = false }: CityOptions): string {
 
   // The street-front: apartment blocks and Teusaquillo houses
   s += `<g class="block">`;
+  if (art) s += art.front;
+  else {
   s += apartmentBlock(rng, -10, 336, 330, 720, 6, 4, b1);
   s += teusaquilloHouse(rng, 340, 270, 470, 720, b2);
   s += teusaquilloHouse(rng, 630, 250, 480, 720, b1);
@@ -197,6 +213,7 @@ export function citySvg({ id, simple = false }: CityOptions): string {
     <text x="1286" y="627" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="19" fill="#b03026" letter-spacing="1">TIENDA LA ESPERANZA</text>
     <rect x="1382" y="640" width="40" height="40" rx="4" fill="#c8302a"/>
     <text x="1402" y="664" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="9" fill="#fff">GASEOSAS</text>`;
+  }
   s += `</g>`;
 
   // Power and telephone lines, sagging from pole to pole
@@ -219,6 +236,7 @@ export function citySvg({ id, simple = false }: CityOptions): string {
     <rect x="1240" y="760" width="140" height="6" class="tienda-reflection" fill="#dfeedd"/>
   </g>
   <path d="M0 824 H 1600" stroke="#d8d2b5" stroke-width="5" stroke-dasharray="46 40" opacity="0.5"/>
+  ${art ? `<g class="street-life">${art.street}</g>` : ''}
   <g class="traffic"></g>
   <rect x="0" y="872" width="1600" height="28" fill="${P.sidewalk}"/>`;
 
