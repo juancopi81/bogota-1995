@@ -10,17 +10,12 @@ import { P } from '../art/palette';
 import { bus } from '../world/bus';
 import { mulberry32 } from '../util/rng';
 import { setAttr, toggleClass } from '../ui/dom';
+import { daylight } from '../world/clock';
+import { GlassRain, dropSprite } from '../scene/glassrain';
 
 const OPEN = { x: 140, y: 40, w: 1320, h: 720 };
 const TRANSOM = 214; // height of the fixed top band
 const MID = OPEN.x + OPEN.w / 2;
-
-interface Drop {
-  x: number;
-  y: number;
-  r: number;
-  vy: number;
-}
 
 export class WindowView {
   readonly el: HTMLElement;
@@ -33,15 +28,18 @@ export class WindowView {
   private readonly wipedCtx: CanvasRenderingContext2D;
   private readonly drops: HTMLCanvasElement;
   private readonly dropsCtx: CanvasRenderingContext2D;
+  /** The wet trails the running drops leave, fading as the glass dries. */
+  private readonly trails: HTMLCanvasElement;
+  private readonly trailsCtx: CanvasRenderingContext2D;
+  private readonly rain: GlassRain;
   private readonly pane: SVGGElement;
-  private readonly dropList: Drop[] = [];
-  private readonly rng = mulberry32(28);
   private open = false;
   private paneX = 0;
   private sliding = false;
   private roomPane: SVGElement | null = null;
   private roomCurtain: SVGElement | null = null;
-  private readonly sprite: HTMLCanvasElement;
+  private sprite: HTMLCanvasElement | null = null;
+  private spriteDay = -1;
   private frame = 0;
 
   constructor(private readonly engine: AudioEngine) {
@@ -75,8 +73,11 @@ export class WindowView {
       this.el.appendChild(c);
     }
     this.initFog();
-    for (let i = 0; i < 140; i++) this.dropList.push(this.newDrop(true));
-    this.sprite = dropSprite();
+    this.trails = document.createElement('canvas');
+    this.trails.width = this.drops.width;
+    this.trails.height = this.drops.height;
+    this.trailsCtx = this.trails.getContext('2d')!;
+    this.rain = new GlassRain(this.drops.width, this.drops.height, mulberry32(28));
 
     // the frame, curtains and sill drawn over it; the sliding pane is its own layer
     const frame = document.createElement('div');
@@ -126,15 +127,6 @@ export class WindowView {
   /** Whether a point on the glass canvas has glass in front of it. */
   private onGlass(x: number, y: number): boolean {
     return y < TRANSOM / 2 || x < this.glassFreeFrom();
-  }
-
-  private newDrop(anywhere: boolean): Drop {
-    return {
-      x: this.rng() * this.drops.width,
-      y: anywhere ? this.rng() * this.drops.height : -10,
-      r: 1 + Math.pow(this.rng(), 3) * 4.5,
-      vy: 0,
-    };
   }
 
   private wire(frame: HTMLElement): void {
@@ -214,10 +206,10 @@ export class WindowView {
     toggleClass(this.roomCurtain, 'breeze', this.open);
 
     if (!visible) return;
-    this.drawGlass(dt);
+    this.drawGlass(dt, t);
   }
 
-  private drawGlass(dt: number): void {
+  private drawGlass(dt: number, t: number): void {
     const w = this.drops.width;
     const h = this.drops.height;
     const clearX = this.glassFreeFrom();
@@ -236,48 +228,46 @@ export class WindowView {
       this.composeFog();
     }
 
-    // drops: most sit still; the big ones slide down and leave a trail
+    // the rain on the outside of the glass: drops sit, merge, and the heavy ones run down
+    const tc = this.trailsCtx;
+    if (this.frame % 8 === 4) {
+      tc.save();
+      tc.globalCompositeOperation = 'destination-out';
+      tc.fillStyle = 'rgba(0,0,0,0.05)';
+      tc.fillRect(0, 0, w, h);
+      tc.restore();
+    }
+    // the wet trails catch the daylight; at dusk they barely show
+    const day = daylight(t);
+    tc.lineCap = 'round';
+    tc.strokeStyle = `rgba(214,224,232,${(0.05 + 0.11 * day).toFixed(3)})`;
+    this.rain.step(Math.min(dt, 0.05), (x, y) => this.onGlass(x, y), (x0, y0, x1, y1, r) => {
+      tc.lineWidth = r * 0.9;
+      tc.beginPath();
+      tc.moveTo(x0, y0);
+      tc.lineTo(x1, y1);
+      tc.stroke();
+    });
+    if (clearX < w) tc.clearRect(clearX, TRANSOM / 2, w - clearX, h);
+
+    // the sky in the drops dims at dusk
+    if (!this.sprite || Math.abs(day - this.spriteDay) > 0.03) {
+      this.sprite = dropSprite(day);
+      this.spriteDay = day;
+    }
+
     const d = this.dropsCtx;
     d.clearRect(0, 0, w, h);
-    // the rain falling outside, then the drops sitting on the glass
+    // the rain falling outside, then the trails and the drops on the glass
     this.city.drawRain(d, dt, w, h);
-    d.strokeStyle = 'rgba(200,210,218,0.25)';
-    for (let i = 0; i < this.dropList.length; i++) {
-      const drop = this.dropList[i];
-      if (drop.r > 3.2) drop.vy = Math.min(40, drop.vy + dt * 30);
-      drop.y += drop.vy * dt;
-      if (drop.y > h + 10 || (drop.x > clearX && drop.y > TRANSOM / 2)) this.dropList[i] = this.newDrop(false);
-      const size = drop.r * 2;
-      d.drawImage(this.sprite, drop.x - drop.r * 0.85, drop.y - drop.r, size * 0.85, size);
-      if (drop.vy > 0) {
-        d.lineWidth = drop.r * 0.6;
-        d.beginPath();
-        d.moveTo(drop.x, drop.y - drop.r);
-        d.lineTo(drop.x, drop.y - drop.r - drop.vy * 0.6);
-        d.stroke();
-      }
+    d.drawImage(this.trails, 0, 0);
+    for (const drop of this.rain.drops) {
+      const stretch = drop.running && drop.caught <= 0 ? 1 + Math.min(0.45, drop.vy / 70) : 1;
+      const dw = drop.r * 2.2;
+      const dh = drop.r * 2.4 * stretch;
+      d.drawImage(this.sprite, drop.x - dw / 2, drop.y - dh * 0.6, dw, dh);
     }
-    if (this.rng() < dt * 2) this.dropList.push(this.newDrop(false));
-    if (this.dropList.length > 180) this.dropList.shift();
   }
-}
-
-/** One raindrop, drawn once and stamped everywhere. */
-function dropSprite(): HTMLCanvasElement {
-  const c = document.createElement('canvas');
-  c.width = 32;
-  c.height = 32;
-  const g = c.getContext('2d')!;
-  const grad = g.createRadialGradient(12, 11, 0.5, 16, 16, 16);
-  grad.addColorStop(0, 'rgba(255,255,255,0.8)');
-  grad.addColorStop(0.5, 'rgba(160,175,185,0.35)');
-  grad.addColorStop(0.95, 'rgba(40,50,60,0.45)');
-  grad.addColorStop(1, 'rgba(40,50,60,0)');
-  g.fillStyle = grad;
-  g.beginPath();
-  g.arc(16, 16, 16, 0, Math.PI * 2);
-  g.fill();
-  return c;
 }
 
 function curtain(x: number, w: number): string {

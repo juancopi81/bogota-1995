@@ -158,7 +158,7 @@ export function wallSvg(): string {
     <rect width="160" height="226" fill="#000" opacity="0.05" filter="url(#tex-wall)"/>
   </g>
 
-  <!-- the almanaque from the bakery, October 1995 -->
+  <!-- the almanaque from the bakery across the street, October 1995 (its number is one digit off ours) -->
   <g transform="translate(262 116)">
     <path d="M70 -12 L 4 6 M70 -12 L 136 6" stroke="#6b5a46" stroke-width="1.5"/>
     <circle cx="70" cy="-12" r="3" fill="#555"/>
@@ -167,8 +167,8 @@ export function wallSvg(): string {
     <path d="M8 70 C 40 50 70 64 100 46 C 116 38 126 44 132 42 V94 H8Z" fill="#4e6b47"/>
     <path d="M8 84 C 50 76 90 88 132 80 V94 H8Z" fill="#3e5b3a"/>
     <ellipse cx="96" cy="30" rx="18" ry="7" fill="#dfe5ea" opacity="0.8"/>
-    <text x="70" y="110" text-anchor="middle" font-family="Anton, sans-serif" font-size="11" fill="#9a2a22">PANADERÍA LA FLORIDA</text>
-    <text x="70" y="121" text-anchor="middle" font-family="'Special Elite', monospace" font-size="6.5" fill="${P.ink}">Cra. 13 No. 60-24 · Tel. 2 49 51 17</text>
+    <text x="70" y="110" text-anchor="middle" font-family="Anton, sans-serif" font-size="11" fill="#9a2a22">PANADERÍA LA ESPIGA</text>
+    <text x="70" y="121" text-anchor="middle" font-family="'Special Elite', monospace" font-size="6.5" fill="${P.ink}">Cra. 13 No. 60-24 · Tel. 2 45 87 13</text>
     <text x="70" y="137" text-anchor="middle" font-family="Anton, sans-serif" font-size="12" fill="${P.ink}" letter-spacing="1">OCTUBRE 1995</text>
     ${calendar(10, 151, 17.2)}
   </g>
