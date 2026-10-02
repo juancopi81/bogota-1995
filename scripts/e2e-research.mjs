@@ -51,6 +51,9 @@ await page.evaluate(() => {
   window.room1995.closeups.close();
 });
 await page.waitForTimeout(1000);
+// Andrés rings from the monedero at 5:31:15, and the log keeps it
+await page.evaluate(() => { const c = window.room1995.clock; if (c.now() < 76) c.skip(76 - c.now()); });
+await page.waitForFunction(() => !!window.room1995.phone.incoming, null, { timeout: 10000 });
 await shot('room');
 
 await page.click('#leave');
@@ -70,7 +73,7 @@ await page.waitForTimeout(500);
 const f = await fields();
 const pickOut = (keys) => Object.fromEntries(keys.map((k) => [k, f[k]]));
 console.log('exit:', JSON.stringify(pickOut(['stage', 'visit_n', 'pre_nostalgia', 'post_nostalgia', 'change', 'memory', 'triggers', 'return_intent', 'trait_often', 'trait_prone', 'exit_reason'])));
-console.log('log:', JSON.stringify(pickOut(['s_total', 's_view_grabadora', 's_view_phone', 's_view_room', 's_phone', 'calls', 'opens', 'min_room', 'min_at_exit', 'exit_shown'])));
+console.log('log:', JSON.stringify(pickOut(['s_total', 's_view_grabadora', 's_view_phone', 's_view_room', 's_phone', 'calls', 'opens', 'n_andres_rang', 'min_room', 'min_at_exit', 'exit_shown'])));
 console.log('overlay gone:', (await page.$('#research')) === null, '| backstage gear hidden:', await page.$eval('#backstage-toggle', (b) => getComputedStyle(b).display === 'none'));
 if (errors.length) console.log('ERRORS:\n' + [...new Set(errors)].join('\n'));
 await browser.close();

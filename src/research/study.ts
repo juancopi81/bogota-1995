@@ -154,5 +154,6 @@ export class Study {
     bus.on('window:open', ({ open }) => open && this.log.count('window_open'));
     bus.on('light:bulb', () => this.log.count('light'));
     bus.on('tv:power', ({ on }) => on && this.log.count('tv_on'));
+    bus.on('story:andres', ({ step }) => this.log.count(`andres_${step.replace('-', '_')}`));
   }
 }

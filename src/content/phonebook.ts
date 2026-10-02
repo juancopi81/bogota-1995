@@ -7,6 +7,7 @@ import { lines, dynamicLine } from './lines';
 import { REQUEST_LINE, type Dedication } from './stations';
 import { REQUESTABLE, song } from './songs';
 import { flags, SCHEDULE } from '../world/flags';
+import { bus } from '../world/bus';
 import { spokenTime } from '../world/clock';
 import { hash } from '../util/rng';
 import type { CallApi, CallScript, Choice, Route } from '../objects/calls';
@@ -67,22 +68,69 @@ const A = lines('llamada.andres', {
   noImporta: ['andres', 'Bueno, no importa. Si puede, me avisa.'],
   chisme: ['andres', 'Ah, y ¿sí supo? Angie va a ir a la fiesta de Diana el otro sábado.'],
   colgar: ['andres', 'Bueno, me toca colgar, que mi mamá necesita el teléfono. ¡Chao, pues!'],
+  // early on he calls from a monedero in Unicentro; once he's home, he calls again
+  monedero: ['andres', '¿Aló? ¿Quiubo, parce? Habla Andrés. Lo estoy llamando de un monedero, rapidito.'],
+  monedas: ['andres', 'Uy, se me están acabando las monedas. Lo llamo cuando llegue a la casa. ¡Chao!'],
+  yaLlegue: ['andres', '¿Quiubo, parce? Ya llegué a la casa, todo ensopado.'],
+  laGrabo: ['andres', '¿Y qué? ¿Sí me grabó «Florecita rockera»?'],
 });
 
-async function passToAndres(call: CallApi): Promise<void> {
+async function passToAndres(call: CallApi, world: PhoneWorld): Promise<void> {
   await call.say(A.momentico);
   await call.pause(0.6);
   await call.say(A.grita);
   await call.pause(3.5);
   call.click();
-  await andresTalks(call, false);
+  await andresTalks(call, world, 'answers');
 }
 
-/** Andrés on the phone (when you call him, or when he calls you back). */
-export async function andresTalks(call: CallApi, callingBack: boolean): Promise<void> {
+/** The aguacero in Unicentro, then the favor: his grabadora chewed the tape, would you tape «Florecita rockera» off Radioactiva? */
+async function andresAsks(call: CallApi, world: PhoneWorld): Promise<void> {
+  if (!flags.andresToldRain) {
+    flags.andresToldRain = true;
+    await call.say(A.queMas);
+  }
+  await call.say(A.grabadora);
+  await call.say(A.pedido);
+  await call.say(A.pilas);
+  flags.andresAsked = true;
+  bus.emit('story:andres', { step: 'asked' });
+  const options: Choice<boolean | null>[] = [{ text: 'Sí, de una. Yo se la grabo.', value: false }];
+  if (world.hasRecordings()) options.push({ text: 'Ya tengo algo grabado de hoy, ¿quiere?', value: true });
+  options.push({ text: 'Uy, no sé si alcance...', value: null });
+  const already = await call.choose(options);
+  if (already === true) await call.say(A.yaGrabo);
+  else if (already === false) await call.say(A.deUna);
+  else await call.say(A.noImporta);
+}
+
+/** Back home, he wants to know: did you tape it? */
+async function andresChecks(call: CallApi, world: PhoneWorld): Promise<void> {
+  await call.say(A.laGrabo);
+  const options: Choice<boolean>[] = [];
+  if (world.hasRecordings()) options.push({ text: 'Sí, ya la tengo en el casete.', value: true });
+  options.push({ text: 'Todavía no la han puesto.', value: false });
+  const taped = await call.choose(options);
+  bus.emit('story:andres', { step: taped ? 'taped' : 'not-taped' });
+  await call.say(taped ? A.yaGrabo : A.noImporta);
+}
+
+/**
+ * Andrés on the phone, at home: when you call him and he comes to the phone,
+ * when he calls back because you left a message, or when he calls as he
+ * promised from the monedero.
+ */
+export async function andresTalks(call: CallApi, world: PhoneWorld, how: 'answers' | 'message' | 'promised'): Promise<void> {
   flags.andresTalked = true;
-  await call.say(callingBack ? A.meLlamo : A.alo);
-  if (!callingBack) {
+  flags.andresTalkedHome = true;
+  await call.say(how === 'answers' ? A.alo : how === 'message' ? A.meLlamo : A.yaLlegue);
+  if (flags.andresToldRain) {
+    // you've heard about Unicentro already
+    await call.choose([
+      { text: '¡Quiubo! ¿Llegó bien?', value: 1 },
+      { text: 'Quiubo, parce.', value: 2 },
+    ]);
+  } else if (how === 'answers') {
     await call.choose([
       { text: '¿Quiubo, Andrés? ¿Dónde estaba metido?', value: 1 },
       { text: 'Quiubo, parce. Lo estaba llamando hace rato.', value: 2 },
@@ -93,19 +141,8 @@ export async function andresTalks(call: CallApi, callingBack: boolean): Promise<
       { text: 'Quiubo, parce. Nada, era para saber qué hacía.', value: 2 },
     ]);
   }
-  await call.say(A.queMas);
-  await call.say(A.grabadora);
-  await call.say(A.pedido);
-  await call.say(A.pilas);
-  flags.andresAsked = true;
-  const already = await call.choose([
-    { text: 'Sí, de una. Yo se la grabo.', value: false },
-    { text: 'Ya tengo algo grabado de hoy, ¿quiere?', value: true },
-    { text: 'Uy, no sé si alcance...', value: null },
-  ]);
-  if (already === true) await call.say(A.yaGrabo);
-  else if (already === false) await call.say(A.deUna);
-  else await call.say(A.noImporta);
+  if (flags.andresAsked) await andresChecks(call, world);
+  else await andresAsks(call, world);
   await call.say(A.chisme);
   await call.choose([
     { text: '¿En serio? ¿Con quién va a ir?', value: 1 },
@@ -115,48 +152,77 @@ export async function andresTalks(call: CallApi, callingBack: boolean): Promise<
   await call.hangUp();
 }
 
-const andres: CallScript = async (call) => {
-  call.ambience('tv');
-  flags.andresCalls++;
-  await call.say(A.hola);
-  const home = call.now() >= SCHEDULE.andresHome;
-  if (flags.andresMessageAt !== null && !home) {
-    await call.choose([{ text: 'Buenas tardes, señora. ¿Ya llegó Andrés?', value: 1 }]);
-    await call.say(A.otraVez);
-    await call.say(A.chao);
-    return call.hangUp();
-  }
-  const polite = await call.choose([
-    { text: 'Buenas tardes, señora. ¿Me hace el favor con Andrés?', value: true },
-    { text: '¿Está Andrés?', value: false },
-  ]);
-  await call.say(polite ? A.deParte : A.quienLo);
-  await call.choose([{ text: `De parte de ${who()}.`, value: 1 }]);
-  if (home) return passToAndres(call);
-  await call.say(A.noEsta);
-  await call.say(A.razon);
-  let asked = false;
-  for (;;) {
-    const options: Choice<'si' | 'no' | 'donde'>[] = [
-      { text: 'Sí, señora, que me llame, por favor.', value: 'si' },
-      { text: 'No, gracias. Yo lo llamo más tarde.', value: 'no' },
-    ];
-    if (!asked) options.push({ text: '¿Y sabe para dónde se fue?', value: 'donde' });
-    const answer = await call.choose(options);
-    if (answer === 'donde') {
-      asked = true;
-      await call.say(A.dondeFue);
-      await call.say(A.razon);
-      continue;
+/** Early on, stuck in Unicentro by the rain, Andrés calls from a monedero with a favor to ask, and his coins run out. */
+export const andresFromMonedero =
+  (world: PhoneWorld): CallScript =>
+  async (call) => {
+    call.ambience('street');
+    call.coins();
+    flags.andresTalked = true;
+    bus.emit('story:andres', { step: 'answered' });
+    await call.pause(0.6);
+    await call.say(A.monedero);
+    await call.choose([
+      { text: '¿Quiubo, Andrés? ¿Dónde está?', value: 1 },
+      { text: 'Quiubo, parce. ¿Qué más?', value: 2 },
+    ]);
+    await andresAsks(call, world);
+    await call.say(A.monedas);
+    await call.hangUp();
+  };
+
+/** Andrés calls back once he's home (or your mother answers it in the kitchen first). */
+export const andresCallsBack =
+  (world: PhoneWorld): CallScript =>
+  async (call) => {
+    call.ambience('tv');
+    await andresTalks(call, world, flags.andresMessageAt !== null ? 'message' : 'promised');
+  };
+
+const andres =
+  (world: PhoneWorld): CallScript =>
+  async (call) => {
+    call.ambience('tv');
+    flags.andresCalls++;
+    await call.say(A.hola);
+    const home = call.now() >= SCHEDULE.andresHome;
+    if (flags.andresMessageAt !== null && !home) {
+      await call.choose([{ text: 'Buenas tardes, señora. ¿Ya llegó Andrés?', value: 1 }]);
+      await call.say(A.otraVez);
+      await call.say(A.chao);
+      return call.hangUp();
     }
-    if (answer === 'si') {
-      flags.andresMessageAt = call.now();
-      await call.say(A.yoLeDigo);
+    const polite = await call.choose([
+      { text: 'Buenas tardes, señora. ¿Me hace el favor con Andrés?', value: true },
+      { text: '¿Está Andrés?', value: false },
+    ]);
+    await call.say(polite ? A.deParte : A.quienLo);
+    await call.choose([{ text: `De parte de ${who()}.`, value: 1 }]);
+    if (home) return passToAndres(call, world);
+    await call.say(A.noEsta);
+    await call.say(A.razon);
+    let asked = false;
+    for (;;) {
+      const options: Choice<'si' | 'no' | 'donde'>[] = [
+        { text: 'Sí, señora, que me llame, por favor.', value: 'si' },
+        { text: 'No, gracias. Yo lo llamo más tarde.', value: 'no' },
+      ];
+      if (!asked) options.push({ text: '¿Y sabe para dónde se fue?', value: 'donde' });
+      const answer = await call.choose(options);
+      if (answer === 'donde') {
+        asked = true;
+        await call.say(A.dondeFue);
+        await call.say(A.razon);
+        continue;
+      }
+      if (answer === 'si') {
+        flags.andresMessageAt = call.now();
+        await call.say(A.yoLeDigo);
+      }
+      await call.say(A.chao);
+      return call.hangUp();
     }
-    await call.say(A.chao);
-    return call.hangUp();
-  }
-};
+  };
 
 // ---------------------------------------------------------------------------
 // Angie's house (her father guards the phone)
@@ -430,12 +496,6 @@ export const wrongNumberIncoming: CallScript = async (call) => {
   await call.hangUp();
 };
 
-/** Andrés calls back (or your mother answers it in the kitchen first). */
-export const andresCallsBack: CallScript = async (call) => {
-  call.ambience('tv');
-  await andresTalks(call, true);
-};
-
 // ---------------------------------------------------------------------------
 // The other extension: your mother and tía Gloria
 // ---------------------------------------------------------------------------
@@ -467,7 +527,7 @@ export function route(number: string, t: number, world: PhoneWorld): Route {
   if (entry) {
     switch (entry.name) {
       case 'Andrés':
-        return { kind: 'answer', rings: 3, script: andres };
+        return { kind: 'answer', rings: 3, script: andres(world) };
       case 'Angie':
         return t < SCHEDULE.angieBusyUntil ? { kind: 'busy' } : { kind: 'answer', rings: 4, script: angie };
       case 'Abuelita':

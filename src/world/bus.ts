@@ -50,6 +50,8 @@ export type WorldEvents = {
   'tv:clips': { playable: boolean };
   /** The window was opened or closed. */
   'window:open': { open: boolean };
+  /** How far Andrés's errand got: he rang from the monedero, you answered, he asked for the tape, and whether you'd taped it when he checked. */
+  'story:andres': { step: 'rang' | 'answered' | 'asked' | 'taped' | 'not-taped' };
 };
 
 export type CloseupId = 'grabadora' | 'phone' | 'tv' | 'window' | 'clock';

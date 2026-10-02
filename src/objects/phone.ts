@@ -7,6 +7,7 @@ import {
   route,
   wrongNumberIncoming,
   andresCallsBack,
+  andresFromMonedero,
   EXTENSION,
   UNASSIGNED,
   type PhoneWorld,
@@ -62,7 +63,7 @@ export class Phone {
   private autoDial: number | null = null;
   private call: { cancelled: boolean } | null = null;
   private incoming: Incoming | null = null;
-  private fired = { wrong: false, andres: false, onces: false };
+  private fired = { wrong: false, andresEarly: false, andres: false, onces: false };
   private roomPhone: SVGGElement | null = null;
   private stateSince = 0;
   private cordFor: 'on' | 'off' | null = null;
@@ -348,6 +349,7 @@ export class Phone {
       },
       ambience: (kind) => this.line.setAmbience(kind),
       click: () => this.line.click(),
+      coins: () => this.line.coins(),
       now: () => clock.now(),
     };
     try {
@@ -373,12 +375,23 @@ export class Phone {
       this.fired.wrong = true;
       if (this.hook === 'on' && !this.incoming) this.ring(wrongNumberIncoming, null);
     }
-    if (!this.fired.andres && flags.andresMessageAt !== null && !flags.andresTalked) {
-      const due = Math.max(SCHEDULE.andresHome + 80, flags.andresMessageAt + 110);
+    // Andrés, stuck in Unicentro by the rain, calls from a monedero (once the line is free, while he's still there)
+    if (!this.fired.andresEarly && t >= SCHEDULE.andresEarly) {
+      if (t >= SCHEDULE.andresHome - 60 || flags.andresTalked) {
+        this.fired.andresEarly = true;
+      } else if (this.hook === 'on' && !this.incoming) {
+        this.fired.andresEarly = true;
+        this.ring(andresFromMonedero(this.world), 7);
+        bus.emit('story:andres', { step: 'rang' });
+      }
+    }
+    // once home he calls: you left him a message, or he promised to from the monedero
+    if (!this.fired.andres && !flags.andresTalkedHome && (flags.andresMessageAt !== null || flags.andresAsked)) {
+      const due = Math.max(SCHEDULE.andresHome + 80, (flags.andresMessageAt ?? 0) + 110);
       const inExtension = t >= SCHEDULE.extension[0] - 20 && t < SCHEDULE.extension[1] + 10;
       if (t >= due && !inExtension && this.hook === 'on' && !this.incoming) {
         this.fired.andres = true;
-        this.ring(andresCallsBack, 7);
+        this.ring(andresCallsBack(this.world), 7);
       }
     }
     if (!this.fired.onces && t >= SCHEDULE.onces) {

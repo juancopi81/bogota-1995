@@ -14,6 +14,15 @@ vi.mock('../src/world/store', () => ({
   },
 }));
 
+/** Lines written after the last recording session: subtitles until their take is in. Once it is, empty this list. */
+const AWAITING_TAKES = ['llamada.andres.monedero', 'llamada.andres.monedas', 'llamada.andres.yaLlegue', 'llamada.andres.laGrabo'];
+const DIR = join(process.cwd(), 'src/assets/voices');
+const MANIFEST = JSON.parse(readFileSync(join(DIR, 'manifest.json'), 'utf8')) as {
+  clips: { id: string; speaker: string; spoken_text: string; sha256: string; voice_id: string }[];
+};
+/** How many takes are bundled. */
+const BUNDLED = MANIFEST.clips.length;
+
 const data = (id: number) => new Uint8Array([id]).buffer;
 const bundled = { duration: 3.04 } as AudioBuffer;
 const uploaded = { duration: 2.5 } as AudioBuffer;
@@ -53,14 +62,15 @@ describe('included voices', () => {
     await import('../src/content/calle');
     await import('../src/objects/house');
     const fixed = allLines();
-    const dir = join(process.cwd(), 'src/assets/voices');
-    const manifest = JSON.parse(readFileSync(join(dir, 'manifest.json'), 'utf8')) as {
-      clips: { id: string; speaker: string; spoken_text: string; sha256: string; voice_id: string }[];
-    };
-    expect(fixed).toHaveLength(188);
-    expect(manifest.clips.map((line) => line.id).sort()).toEqual(fixed.map((line) => line.id).sort());
-    expect(readdirSync(dir).filter((file) => file.endsWith('.mp3')).sort()).toEqual(fixed.map((line) => `${line.id}.mp3`).sort());
-    for (const line of fixed) {
+    const dir = DIR;
+    const manifest = MANIFEST;
+    expect(fixed).toHaveLength(192);
+    // every line waiting for a take is a real line, and every other line has its take
+    for (const id of AWAITING_TAKES) expect(fixed.map((line) => line.id)).toContain(id);
+    const recorded = fixed.filter((line) => !AWAITING_TAKES.includes(line.id));
+    expect(manifest.clips.map((line) => line.id).sort()).toEqual(recorded.map((line) => line.id).sort());
+    expect(readdirSync(dir).filter((file) => file.endsWith('.mp3')).sort()).toEqual(recorded.map((line) => `${line.id}.mp3`).sort());
+    for (const line of recorded) {
       const clip = manifest.clips.find((clip) => clip.id === line.id)!;
       expect([clip.speaker, clip.spoken_text]).toEqual([line.who, line.text]);
       expect(createHash('sha256').update(readFileSync(join(dir, `${line.id}.mp3`))).digest('hex')).toBe(clip.sha256);
@@ -75,7 +85,7 @@ describe('included voices', () => {
     const { voices, ctx } = await setup();
     const { lineDuration } = await import('../src/audio/voices');
     await Promise.all([voices.loadBundled(ctx), voices.loadSaved(ctx)]);
-    expect(voices.count()).toBe(188);
+    expect(voices.count()).toBe(BUNDLED);
     expect(voices.get('casa.onces')).toBe(bundled);
     expect(voices.get('llamada.andres.deParte')).toBe(bundled);
     expect(voices.get('radioactiva.introFlorecita')).toBe(bundled);
@@ -111,7 +121,7 @@ describe('included voices', () => {
     }
     await Promise.all([includedLoad, savedLoad]);
     expect(voices.get('casa.onces')).toBe(uploaded);
-    expect(voices.count()).toBe(188);
+    expect(voices.count()).toBe(BUNDLED);
   });
 
   it('restores the included take after clearing uploads', async () => {
@@ -121,7 +131,7 @@ describe('included voices', () => {
     expect(voices.get('casa.onces')).toBe(uploaded);
     await voices.clear();
     expect(voices.get('casa.onces')).toBe(bundled);
-    expect(voices.count()).toBe(188);
+    expect(voices.count()).toBe(BUNDLED);
     expect(saved.size).toBe(0);
   });
 
@@ -130,7 +140,7 @@ describe('included voices', () => {
     const { voices, ctx } = await setup();
     await Promise.all([voices.loadSaved(ctx), voices.loadBundled(ctx)]);
     expect(voices.get('casa.onces')).toBe(bundled);
-    expect(voices.count()).toBe(188);
+    expect(voices.count()).toBe(BUNDLED);
   });
 
   it.each(['missing', 'unreadable', 'offline'])('keeps other recordings and subtitle fallback when one clip is %s', async (failure) => {
@@ -143,6 +153,6 @@ describe('included voices', () => {
     await voices.loadBundled(ctx);
     expect(voices.has('casa.onces')).toBe(false);
     expect(voices.has('llamada.andres.deParte')).toBe(true);
-    expect(voices.count()).toBe(187);
+    expect(voices.count()).toBe(BUNDLED - 1);
   });
 });

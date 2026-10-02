@@ -159,6 +159,21 @@ export const sfx = {
     });
   },
 
+  /** Coins dropping into a monedero's box: a few clinks, then the thunk of the box. */
+  coins(ctx: BaseAudioContext) {
+    return rendered(ctx, 'coins', 0.7, (d, sr) => {
+      [0, 0.05, 0.11, 0.2].forEach((at, k) => {
+        const start = Math.floor(at * sr);
+        const strike = (i: number) => (i >= start && i < start + 12 ? (Math.random() * 2 - 1) * (1 - (i - start) / 12) : 0);
+        resonate(d, sr, 2350 + k * 310, 0.05, 0.6 - k * 0.1, strike);
+        resonate(d, sr, 3150 - k * 140, 0.03, 0.35, strike);
+      });
+      const thunk = Math.floor(0.28 * sr);
+      resonate(d, sr, 170, 0.06, 1.2, (i) => (i >= thunk && i < thunk + 40 ? 1 - (i - thunk) / 40 : 0));
+      normalize(d, 0.7);
+    });
+  },
+
   /** A short, hollow wooden knock (drawers, the desk). */
   knock(ctx: BaseAudioContext) {
     return rendered(ctx, 'knock', 0.25, (d, sr) => {
