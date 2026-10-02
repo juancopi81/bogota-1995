@@ -38,6 +38,7 @@ export class WindowView {
   private readonly rng = mulberry32(28);
   private open = false;
   private paneX = 0;
+  private sliding = false;
   private roomPane: SVGElement | null = null;
   private roomCurtain: SVGElement | null = null;
   private readonly sprite: HTMLCanvasElement;
@@ -99,16 +100,32 @@ export class WindowView {
 
   private composeFog(): void {
     const c = this.fogCtx;
-    c.clearRect(0, 0, this.fog.width, this.fog.height);
-    const g = c.createLinearGradient(0, 0, 0, this.fog.height);
+    const { width: w, height: h } = this.fog;
+    c.clearRect(0, 0, w, h);
+    const g = c.createLinearGradient(0, 0, 0, h);
     g.addColorStop(0, 'rgba(226,231,233,0.3)');
     g.addColorStop(1, 'rgba(226,231,233,0.62)');
     c.fillStyle = g;
-    c.fillRect(0, 0, this.fog.width, this.fog.height);
+    c.fillRect(0, 0, w, h);
     c.save();
     c.globalCompositeOperation = 'destination-out';
     c.drawImage(this.wiped, 0, 0);
     c.restore();
+    // where the pane has slid away there's no glass to fog up
+    const clearX = this.glassFreeFrom();
+    if (clearX < w) c.clearRect(clearX, TRANSOM / 2, w - clearX, h);
+  }
+
+  /** Where the open window begins, in glass-canvas units (the full width when it's shut). */
+  private glassFreeFrom(): number {
+    if (!this.open && this.paneX > -5) return this.fog.width;
+    const openFrom = MID - OPEN.x + this.paneX;
+    return (openFrom + OPEN.w / 2 - 20) / 2;
+  }
+
+  /** Whether a point on the glass canvas has glass in front of it. */
+  private onGlass(x: number, y: number): boolean {
+    return y < TRANSOM / 2 || x < this.glassFreeFrom();
   }
 
   private newDrop(anywhere: boolean): Drop {
@@ -135,6 +152,8 @@ export class WindowView {
       for (let i = 1; i <= steps; i++) {
         const px = from.x + ((x - from.x) * i) / steps;
         const py = from.y + ((y - from.y) * i) / steps;
+        // nothing to wipe where the window is open
+        if (!this.onGlass(px, py)) continue;
         const g = c.createRadialGradient(px, py, 4, px, py, 22);
         g.addColorStop(0, 'rgba(0,0,0,0.9)');
         g.addColorStop(1, 'rgba(0,0,0,0)');
@@ -155,7 +174,12 @@ export class WindowView {
       this.el.setPointerCapture(e.pointerId);
       wipe(e);
     });
-    this.el.addEventListener('pointermove', (e) => wiping && wipe(e));
+    this.el.addEventListener('pointermove', (e) => {
+      if (wiping) wipe(e);
+      // the hand that wipes only shows over the glass
+      const p = stage.toLocal(e.clientX, e.clientY);
+      toggleClass(this.el, 'no-glass', !this.onGlass((p.x - OPEN.x) / 2, (p.y - OPEN.y) / 2));
+    });
     this.el.addEventListener('pointerup', () => {
       wiping = false;
       last = null;
@@ -182,6 +206,7 @@ export class WindowView {
 
     // the pane slides (in the close-up and in the room)
     const target = this.open ? -(OPEN.w / 2 - 20) : 0;
+    this.sliding = Math.abs(target - this.paneX) > 0.5;
     this.paneX += (target - this.paneX) * Math.min(1, dt * 5);
     setAttr(this.pane, 'transform', `translate(${this.paneX.toFixed(1)} 0)`);
     const roomShift = (this.paneX / (OPEN.w / 2 - 20)) * 210;
@@ -195,8 +220,7 @@ export class WindowView {
   private drawGlass(dt: number): void {
     const w = this.drops.width;
     const h = this.drops.height;
-    const openFrom = MID - OPEN.x + this.paneX; // glass-free area on the right when open
-    const clearX = this.open || this.paneX < -5 ? (openFrom + OPEN.w / 2 - 20) / 2 : w;
+    const clearX = this.glassFreeFrom();
 
     // fog creeps back slowly as the wiped patches fade (not where the window is open)
     if (++this.frame % 8 === 0) {
@@ -207,7 +231,9 @@ export class WindowView {
       wc.fillRect(0, 0, w, h);
       wc.restore();
       this.composeFog();
-      if (clearX < w) this.fogCtx.clearRect(clearX, TRANSOM / 2, w - clearX, h);
+    } else if (this.sliding) {
+      // the open part follows the pane as it slides
+      this.composeFog();
     }
 
     // drops: most sit still; the big ones slide down and leave a trail

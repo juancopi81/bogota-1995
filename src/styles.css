@@ -1047,6 +1047,10 @@ body.study #backstage-toggle {
   cursor: grab;
 }
 
+#cu-window.no-glass {
+  cursor: default;
+}
+
 .room-svg .curtain-right.breeze,
 #cu-window.opened .w-curtain-r {
   animation: breeze 3.2s ease-in-out infinite;
