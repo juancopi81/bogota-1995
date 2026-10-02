@@ -9,6 +9,7 @@ import { allLines, SPEAKERS, type Line, type Speaker } from '../src/content/line
 import '../src/content/stations';
 import '../src/content/phonebook';
 import '../src/content/tv';
+import '../src/content/calle';
 import '../src/objects/house';
 
 const ORDER: Speaker[] = [
@@ -31,6 +32,7 @@ const ORDER: Speaker[] = [
   'tvNovela',
   'tvPresentador',
   'tvNarrador',
+  'reciclador',
 ];
 
 const byWho = new Map<Speaker, Line[]>();

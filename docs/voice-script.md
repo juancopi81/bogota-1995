@@ -1,6 +1,6 @@
 # Voice recording script
 
-Every line spoken in the room (186 lines), grouped by voice. The critical cast comes
+Every line spoken in the room (188 lines), grouped by voice. The critical cast comes
 included; other characters still use subtitles. A recording named after a
 line's id adds or replaces its voice (the subtitle stays).
 
@@ -205,7 +205,7 @@ _Assorted strangers: a señora, a señor._
 | `llamada.equivocado.noVive` | No, aquí no vive nadie con ese nombre. Número equivocado. |
 | `llamada.equivocado.aloSenor` | ¿Aló? ¿Sí? |
 | `llamada.equivocado.aloAlo` | ¿Aló? ¿Aló? No se oye nada... |
-| `llamada.equivocado.panaderia` | ¿Aló? ¿Hablo con la panadería La Florida? |
+| `llamada.equivocado.panaderia` | ¿Aló? ¿Hablo con la panadería La Espiga? |
 | `llamada.equivocado.quePena` | Ay, qué pena. Perdone. |
 | `llamada.equivocado.roscones` | ¡Ay, qué bueno! ¿Me separa dos roscones y una mantecada? Ya paso por ellos. |
 | `llamada.equivocado.gracias` | Muchas gracias, muy amable. |
@@ -343,4 +343,13 @@ _Calm documentary narrator._
 | `tv.canal3.p2` | El frailejón crece apenas un centímetro al año. Uno de un metro de alto puede tener cien años. |
 | `tv.canal3.p3` | De páramos como Chingaza, a pocos kilómetros de Bogotá, viene el agua que llega a las casas de la ciudad. |
 | `tv.canal3.p4` | Cuando baja la niebla, el páramo parece otro mundo. Aquí la lluvia se guarda, gota a gota. |
+
+## Reciclador
+
+_A man in his fifties pushing a cart of cardboard and bottles down the street in the rain, calling out in a long, worn sing-song, heard from three floors up._
+
+| id | line |
+|---|---|
+| `calle.botella` | ¡Botella, papel! |
+| `calle.botellaLarga` | ¡Botellaaa... papel! |
 

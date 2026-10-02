@@ -280,7 +280,8 @@ body {
   font-style: italic;
 }
 
-.sub-house .sub-text {
+.sub-house .sub-text,
+.sub-street .sub-text {
   font-style: italic;
   color: #e9dcc0;
 }

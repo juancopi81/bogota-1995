@@ -28,6 +28,9 @@ export class WindowView {
   private readonly city: CityView;
   private readonly fog: HTMLCanvasElement;
   private readonly fogCtx: CanvasRenderingContext2D;
+  /** Where your hand has wiped the glass (the fog creeps back as this fades). */
+  private readonly wiped: HTMLCanvasElement;
+  private readonly wipedCtx: CanvasRenderingContext2D;
   private readonly drops: HTMLCanvasElement;
   private readonly dropsCtx: CanvasRenderingContext2D;
   private readonly pane: SVGGElement;
@@ -62,6 +65,10 @@ export class WindowView {
     this.fog.width = OPEN.w / 2;
     this.fog.height = OPEN.h / 2;
     this.fogCtx = this.fog.getContext('2d')!;
+    this.wiped = document.createElement('canvas');
+    this.wiped.width = this.fog.width;
+    this.wiped.height = this.fog.height;
+    this.wipedCtx = this.wiped.getContext('2d')!;
     for (const c of [this.drops, this.fog]) {
       Object.assign(c.style, { left: `${OPEN.x}px`, top: `${OPEN.y}px`, width: `${OPEN.w}px`, height: `${OPEN.h}px` });
       this.el.appendChild(c);
@@ -85,13 +92,23 @@ export class WindowView {
     this.roomCurtain = roomWall.querySelector('.curtain-right');
   }
 
+  /** The fog the glass settles back to: light at the top, heavier at the bottom, never hiding the street. */
   private initFog(): void {
+    this.composeFog();
+  }
+
+  private composeFog(): void {
     const c = this.fogCtx;
+    c.clearRect(0, 0, this.fog.width, this.fog.height);
     const g = c.createLinearGradient(0, 0, 0, this.fog.height);
-    g.addColorStop(0, 'rgba(226,231,233,0.35)');
-    g.addColorStop(1, 'rgba(226,231,233,0.95)');
+    g.addColorStop(0, 'rgba(226,231,233,0.3)');
+    g.addColorStop(1, 'rgba(226,231,233,0.62)');
     c.fillStyle = g;
     c.fillRect(0, 0, this.fog.width, this.fog.height);
+    c.save();
+    c.globalCompositeOperation = 'destination-out';
+    c.drawImage(this.wiped, 0, 0);
+    c.restore();
   }
 
   private newDrop(anywhere: boolean): Drop {
@@ -111,11 +128,10 @@ export class WindowView {
       const p = stage.toLocal(e.clientX, e.clientY);
       const x = (p.x - OPEN.x) / 2;
       const y = (p.y - OPEN.y) / 2;
-      const c = this.fogCtx;
+      const c = this.wipedCtx;
       const from = last ?? { x, y };
       const steps = Math.max(1, Math.ceil(Math.hypot(x - from.x, y - from.y) / 6));
       c.save();
-      c.globalCompositeOperation = 'destination-out';
       for (let i = 1; i <= steps; i++) {
         const px = from.x + ((x - from.x) * i) / steps;
         const py = from.y + ((y - from.y) * i) / steps;
@@ -126,6 +142,7 @@ export class WindowView {
         c.fillRect(px - 22, py - 22, 44, 44);
       }
       c.restore();
+      this.composeFog();
       last = { x, y };
     };
     this.el.addEventListener('pointerdown', (e) => {
@@ -181,12 +198,16 @@ export class WindowView {
     const openFrom = MID - OPEN.x + this.paneX; // glass-free area on the right when open
     const clearX = this.open || this.paneX < -5 ? (openFrom + OPEN.w / 2 - 20) / 2 : w;
 
-    // fog creeps back slowly (not where the window is open)
+    // fog creeps back slowly as the wiped patches fade (not where the window is open)
     if (++this.frame % 8 === 0) {
-      const c = this.fogCtx;
-      c.fillStyle = 'rgba(226,231,233,0.04)';
-      c.fillRect(0, 0, Math.min(w, clearX), h);
-      if (clearX < w) c.clearRect(clearX, TRANSOM / 2, w - clearX, h);
+      const wc = this.wipedCtx;
+      wc.save();
+      wc.globalCompositeOperation = 'destination-out';
+      wc.fillStyle = 'rgba(0,0,0,0.04)';
+      wc.fillRect(0, 0, w, h);
+      wc.restore();
+      this.composeFog();
+      if (clearX < w) this.fogCtx.clearRect(clearX, TRANSOM / 2, w - clearX, h);
     }
 
     // drops: most sit still; the big ones slide down and leave a trail
