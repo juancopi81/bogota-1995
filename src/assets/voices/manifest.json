@@ -1030,6 +1030,1726 @@
       "spoken_text": "Esa ya se la pusimos, ¿no la oyó? Llame más tarde y pide otra.",
       "input_text": "[busy, matter-of-fact, brisk] Esa ya se la pusimos, ¿no la oyó? Llame más tarde y pide otra.",
       "sha256": "337d74dfd56bfbabba24fd7e26dbdcda3ec7aa29b6d7fcf2fe5beb93b12a6dca"
+    },
+    {
+      "id": "llamada.abuelita.alo",
+      "voice_id": "mvUcswqyALvhz2mIGROO",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Aló? ¿Aló? ¿Quién habla?",
+      "input_text": "[elderly, warm, conversational] ¿Aló? ¿Aló? ¿Quién habla?",
+      "sha256": "0f176998d42df8a215c6f4ebb9f72b539b3324c48bab52636e09b7d73f147ffe",
+      "duration_seconds": 2.56,
+      "credit_cost": 6,
+      "speaker": "abuelita",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.abuelita.miAmor",
+      "voice_id": "mvUcswqyALvhz2mIGROO",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Ay, mi amor! ¡Qué milagro! ¿Cómo está?",
+      "input_text": "[elderly, warm, conversational] ¡Ay, mi amor! ¡Qué milagro! ¿Cómo está?",
+      "sha256": "f2b621561ebdfcd373b0ed58ac2aa0d2e242bb6b48954fdf35dbc30a1d690757",
+      "duration_seconds": 4.16,
+      "credit_cost": 8,
+      "speaker": "abuelita",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.abuelita.comio",
+      "voice_id": "mvUcswqyALvhz2mIGROO",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Ya comió? ¿Sí se está abrigando? Mire que con este frío uno se enferma.",
+      "input_text": "[elderly, warm, conversational] ¿Ya comió? ¿Sí se está abrigando? Mire que con este frío uno se enferma.",
+      "sha256": "f42f1893a2ab8a35a879ffb40939125b81a01e25c5761bd1345a0cb9bb9aac1f",
+      "duration_seconds": 5.04,
+      "credit_cost": 11,
+      "speaker": "abuelita",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.abuelita.noticias",
+      "voice_id": "mvUcswqyALvhz2mIGROO",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Usted vio las noticias? Eso con el presidente es un escándalo... ¡en qué país vivimos, Dios mío!",
+      "input_text": "[elderly, warm, conversational] ¿Usted vio las noticias? Eso con el presidente es un escándalo... ¡en qué país vivimos, Dios mío!",
+      "sha256": "a73ec31d67b326cc5e9c3d35dd4bdf05dad37d13b96d8c87fa3fa25bc42f5092",
+      "duration_seconds": 7.04,
+      "credit_cost": 14,
+      "speaker": "abuelita",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.abuelita.rodillas",
+      "voice_id": "mvUcswqyALvhz2mIGROO",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Aquí, con esta lluvia me duelen las rodillas. Pero bueno, Dios es muy grande.",
+      "input_text": "[elderly, warm, conversational] Aquí, con esta lluvia me duelen las rodillas. Pero bueno, Dios es muy grande.",
+      "sha256": "783dee272d2b3a7fd4314f0585d7239469a5a8731d3232fc9a3da65f6343164d",
+      "duration_seconds": 6.16,
+      "credit_cost": 12,
+      "speaker": "abuelita",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.abuelita.mama",
+      "voice_id": "mvUcswqyALvhz2mIGROO",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Y su mamá cómo está? Dígale que me llame, que hace días no sé nada de ella.",
+      "input_text": "[elderly, warm, conversational] ¿Y su mamá cómo está? Dígale que me llame, que hace días no sé nada de ella.",
+      "sha256": "3f0b221f9b92ec09e327f15a498df08e2a9bae1a96739de773df879803d83896",
+      "duration_seconds": 5.2,
+      "credit_cost": 12,
+      "speaker": "abuelita",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.abuelita.cuidese",
+      "voice_id": "mvUcswqyALvhz2mIGROO",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Bueno, mi amor, cuídese mucho.",
+      "input_text": "[elderly, warm, conversational] Bueno, mi amor, cuídese mucho.",
+      "sha256": "97dce05c93de03ba05c7e0352ab4de0122b3433b003d538bfdc50e22e244cdb9",
+      "duration_seconds": 2.64,
+      "credit_cost": 7,
+      "speaker": "abuelita",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.abuelita.otraCosa",
+      "voice_id": "mvUcswqyALvhz2mIGROO",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Ah, y otra cosa...",
+      "input_text": "[elderly, warm, conversational] Ah, y otra cosa...",
+      "sha256": "88305f71ec8bd1ef6349971f5fd90a06ce9b6a88b21daadf1f8b1339662c0ad5",
+      "duration_seconds": 2,
+      "credit_cost": 6,
+      "speaker": "abuelita",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.abuelita.domingo",
+      "voice_id": "mvUcswqyALvhz2mIGROO",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Van a venir el domingo? Le tengo guardado un pedazo de ponqué.",
+      "input_text": "[elderly, warm, conversational] ¿Van a venir el domingo? Le tengo guardado un pedazo de ponqué.",
+      "sha256": "4c5d3f29f249919246f52b0cb4e6bb1bce9558f1e09f7341bea0805b2801c1b8",
+      "duration_seconds": 4.24,
+      "credit_cost": 10,
+      "speaker": "abuelita",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.abuelita.chao",
+      "voice_id": "mvUcswqyALvhz2mIGROO",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Bueno, chao, mi vida. Que mi Dios me lo bendiga.",
+      "input_text": "[elderly, warm, conversational] Bueno, chao, mi vida. Que mi Dios me lo bendiga.",
+      "sha256": "866805e673469fec2f03135cdf016fe28e8f9d44a22773600c48aac333f1031d",
+      "duration_seconds": 3.76,
+      "credit_cost": 9,
+      "speaker": "abuelita",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.abuelita.chaoChao",
+      "voice_id": "mvUcswqyALvhz2mIGROO",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Chao, chao... Salúdeme a todos. Chao.",
+      "input_text": "[elderly, warm, conversational] Chao, chao... Salúdeme a todos. Chao.",
+      "sha256": "c2d1949d1736b53fffd5394cad0b4a0892d5a7b2461e812e2926d8d940ea4eac",
+      "duration_seconds": 3.68,
+      "credit_cost": 8,
+      "speaker": "abuelita",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.alo",
+      "voice_id": "GMEpD7vcmVahuyz6NuZA",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Aló?",
+      "input_text": "[formal, reserved, conversational] ¿Aló?",
+      "sha256": "81f56f4b44159ab5601adc1d4a43b47d1e81eef488891d1a0bb75a9df2619ff4",
+      "duration_seconds": 0.8,
+      "credit_cost": 4,
+      "speaker": "papaAngie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.conQuien",
+      "voice_id": "GMEpD7vcmVahuyz6NuZA",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Con quién desea hablar?",
+      "input_text": "[formal, reserved, conversational] ¿Con quién desea hablar?",
+      "sha256": "19648a61e17cdc8ca023bf72d857473130773190903009f0eab6327e3aea4b94",
+      "duration_seconds": 1.52,
+      "credit_cost": 6,
+      "speaker": "papaAngie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.deParte",
+      "voice_id": "GMEpD7vcmVahuyz6NuZA",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Y de parte de quién?",
+      "input_text": "[formal, reserved, conversational] ¿Y de parte de quién?",
+      "sha256": "58297fd5a35838c113ec984757ee1f7678f7f70df929cb2e4874c0ee4f1c0c30",
+      "duration_seconds": 1.6,
+      "credit_cost": 6,
+      "speaker": "papaAngie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.tareas",
+      "voice_id": "GMEpD7vcmVahuyz6NuZA",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Angie está haciendo tareas. ¿Es algo del colegio?",
+      "input_text": "[formal, reserved, conversational] Angie está haciendo tareas. ¿Es algo del colegio?",
+      "sha256": "684f6f160edb08aaf7eaaa090394ab6965c17ea293e0becdad7eb07032f66771",
+      "duration_seconds": 3.36,
+      "credit_cost": 9,
+      "speaker": "papaAngie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.unMomento",
+      "voice_id": "GMEpD7vcmVahuyz6NuZA",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Un momento.",
+      "input_text": "[formal, reserved, conversational] Un momento.",
+      "sha256": "f399287ccaa827c88f1faa232eae575b122cc7a1fa2048707f162f42c9a57d93",
+      "duration_seconds": 1.12,
+      "credit_cost": 5,
+      "speaker": "papaAngie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.grita",
+      "voice_id": "GMEpD7vcmVahuyz6NuZA",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Angie! ¡Al teléfono! ¡Que es para una tarea!",
+      "input_text": "[calling out firmly] ¡Angie! ¡Al teléfono! ¡Que es para una tarea!",
+      "sha256": "2a103c9412d638a280b10fb3e9cd8a39fe0ca464af204569ce0ab77acfdcf5a5",
+      "duration_seconds": 3.12,
+      "credit_cost": 7,
+      "speaker": "papaAngie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.noPuede",
+      "voice_id": "GMEpD7vcmVahuyz6NuZA",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Ella ahora no puede pasar. Llame otro día.",
+      "input_text": "[formal, reserved, conversational] Ella ahora no puede pasar. Llame otro día.",
+      "sha256": "faf6ba6e1a4ecc65eab781515f40a096f1258c82f741b655eea1b8c043ea0b1a",
+      "duration_seconds": 3.2,
+      "credit_cost": 8,
+      "speaker": "papaAngie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.hola",
+      "voice_id": "tTQzD8U9VSnJgfwC6HbY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Aló? Ah... hola. ¿Qué más?",
+      "input_text": "[youthful, friendly, slightly shy, conversational] ¿Aló? Ah... hola. ¿Qué más?",
+      "sha256": "d15d3e519e47f37c86b56025c619ee23c4dbc23f1a21787e4d6e60727afdf8d6",
+      "duration_seconds": 3.04,
+      "credit_cost": 9,
+      "speaker": "angie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.tarea",
+      "voice_id": "tTQzD8U9VSnJgfwC6HbY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿La tarea de sociales? Es para el martes, ¿no? Yo todavía no he empezado.",
+      "input_text": "[youthful, friendly, slightly shy, conversational] ¿La tarea de sociales? Es para el martes, ¿no? Yo todavía no he empezado.",
+      "sha256": "0d15aa0b7bccc03e90fb4c75dcd38f1357a730f49b46527ffb079da9e00ec3d8",
+      "duration_seconds": 4.96,
+      "credit_cost": 14,
+      "speaker": "angie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.dedicatoria",
+      "voice_id": "tTQzD8U9VSnJgfwC6HbY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Oye... lo de la dedicatoria en Radioactiva, ¿fuiste tú?",
+      "input_text": "[youthful, friendly, slightly shy, conversational] Oye... lo de la dedicatoria en Radioactiva, ¿fuiste tú?",
+      "sha256": "5d9d368a61e96c56464517637190160ecd433fac6632a5e84f76355bfdf43163",
+      "duration_seconds": 4.16,
+      "credit_cost": 12,
+      "speaker": "angie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.pena",
+      "voice_id": "tTQzD8U9VSnJgfwC6HbY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Jajaja! Me dio mucha pena... pero me gustó.",
+      "input_text": "[youthful, friendly, slightly shy, conversational] ¡Jajaja! Me dio mucha pena... pero me gustó.",
+      "sha256": "4a3321b81fbcf0b278752db4a6c8f231bd943c95b273a27be147c2ce46894ca8",
+      "duration_seconds": 4.24,
+      "credit_cost": 10,
+      "speaker": "angie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.radio",
+      "voice_id": "tTQzD8U9VSnJgfwC6HbY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Sí, estoy oyendo Radioactiva mientras hago las tareas. Pusieron lo nuevo de los Aterciopelados.",
+      "input_text": "[youthful, friendly, slightly shy, conversational] Sí, estoy oyendo Radioactiva mientras hago las tareas. Pusieron lo nuevo de los Aterciopelados.",
+      "sha256": "fb5c9deff8f0e4cb6f47c83e233f2901a38e7cf0a51c30abeef9e3055cd04534",
+      "duration_seconds": 5.92,
+      "credit_cost": 16,
+      "speaker": "angie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.angie.papa",
+      "voice_id": "tTQzD8U9VSnJgfwC6HbY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Bueno, me tengo que ir, que mi papá necesita el teléfono. Chao.",
+      "input_text": "[youthful, friendly, slightly shy, conversational] Bueno, me tengo que ir, que mi papá necesita el teléfono. Chao.",
+      "sha256": "5c872fd159457de907414537d33a6cee0f60354695a416ee7266977b371d6861",
+      "duration_seconds": 4.56,
+      "credit_cost": 13,
+      "speaker": "angie",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.negocios.drogueria",
+      "voice_id": "UxEeTOXgTgyv54iyYaa5",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Droguería La Sexta, buenas tardes. ¿A la orden?",
+      "input_text": "[helpful, matter-of-fact, conversational] Droguería La Sexta, buenas tardes. ¿A la orden?",
+      "sha256": "9f1658071f17f480585a4cbf06e89c2ccfcca1beeecdf3989c19a01e32f6d931",
+      "duration_seconds": 3.2,
+      "credit_cost": 10,
+      "speaker": "negocio",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.negocios.mejoral",
+      "voice_id": "UxEeTOXgTgyv54iyYaa5",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Sí, claro. ¿Se lo mandamos? Hacemos domicilios hasta las ocho.",
+      "input_text": "[helpful, matter-of-fact, conversational] Sí, claro. ¿Se lo mandamos? Hacemos domicilios hasta las ocho.",
+      "sha256": "32c8d8005164067497a1156bbd08d0a47cd0a83cea556f1811c43db3370dadc0",
+      "duration_seconds": 5.12,
+      "credit_cost": 11,
+      "speaker": "negocio",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.negocios.aLaOrden",
+      "voice_id": "UxEeTOXgTgyv54iyYaa5",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Bueno. A la orden.",
+      "input_text": "[helpful, matter-of-fact, conversational] Bueno. A la orden.",
+      "sha256": "e35914e8e2c7b38a197161ab4abc45e9f17daf8a33c31e7528850bfc14912691",
+      "duration_seconds": 1.92,
+      "credit_cost": 7,
+      "speaker": "negocio",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.negocios.pizzeria",
+      "voice_id": "UxEeTOXgTgyv54iyYaa5",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Pizzería La Toscana, buenas tardes. ¿Qué desea?",
+      "input_text": "[helpful, matter-of-fact, conversational] Pizzería La Toscana, buenas tardes. ¿Qué desea?",
+      "sha256": "579704a92e27911230e49baca3c0d3e3723532a0de59871b55c4679ad7f3797f",
+      "duration_seconds": 3.12,
+      "credit_cost": 10,
+      "speaker": "negocio",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.negocios.direccion",
+      "voice_id": "UxEeTOXgTgyv54iyYaa5",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿A qué dirección se la mandamos?",
+      "input_text": "[helpful, matter-of-fact, conversational] ¿A qué dirección se la mandamos?",
+      "sha256": "8c7246fd20873f8122e567875ad0dda1dd27f684f8547a717874b9eb07674c0a",
+      "duration_seconds": 1.84,
+      "credit_cost": 8,
+      "speaker": "negocio",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.negocios.pagar",
+      "voice_id": "UxEeTOXgTgyv54iyYaa5",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Y con cuánto va a pagar, para mandarle las vueltas?",
+      "input_text": "[helpful, matter-of-fact, conversational] ¿Y con cuánto va a pagar, para mandarle las vueltas?",
+      "sha256": "c3201aa6eae9287544c7037d91bb4580c13afa09435b6df0e0e102a9f5883786",
+      "duration_seconds": 3.2,
+      "credit_cost": 10,
+      "speaker": "negocio",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.negocios.bueno",
+      "voice_id": "UxEeTOXgTgyv54iyYaa5",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Ah, bueno... A la orden.",
+      "input_text": "[helpful, matter-of-fact, conversational] Ah, bueno... A la orden.",
+      "sha256": "5f2f61394286e32bdaca53c031924f813bba60f5f11cb030ab342d82fa62ca89",
+      "duration_seconds": 2.56,
+      "credit_cost": 7,
+      "speaker": "negocio",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.equivocado.aloSenora",
+      "voice_id": "UNIruiz09F4kWYjRpOvy",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Aló?",
+      "input_text": "[conversational, matter-of-fact] ¿Aló?",
+      "sha256": "9bfc4f75095966bb1ca222dc6b099970e75ab31247da3339c31d5bb6429b7cbc",
+      "duration_seconds": 0.8,
+      "credit_cost": 4,
+      "speaker": "equivocado",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.equivocado.conQuien",
+      "voice_id": "UNIruiz09F4kWYjRpOvy",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Con quién desea hablar?",
+      "input_text": "[conversational, matter-of-fact] ¿Con quién desea hablar?",
+      "sha256": "fe6873da65528a5f8bd5b773d7e0acc871cfda2594130698ff918d598f28f10d",
+      "duration_seconds": 1.52,
+      "credit_cost": 6,
+      "speaker": "equivocado",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.equivocado.noVive",
+      "voice_id": "UNIruiz09F4kWYjRpOvy",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "No, aquí no vive nadie con ese nombre. Número equivocado.",
+      "input_text": "[conversational, matter-of-fact] No, aquí no vive nadie con ese nombre. Número equivocado.",
+      "sha256": "190c55de952e940a44613b79a88f414a777a2feba0e897114fd1a5eb27e35aaa",
+      "duration_seconds": 4.32,
+      "credit_cost": 10,
+      "speaker": "equivocado",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.equivocado.aloSenor",
+      "voice_id": "QtuQlibCvdX2iBrV4laj",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Aló? ¿Sí?",
+      "input_text": "[conversational, matter-of-fact] ¿Aló? ¿Sí?",
+      "sha256": "ab934f327f7616a19cebbebe024be12ef92c01ef8826a8cb1a607bdb24235f08",
+      "duration_seconds": 1.36,
+      "credit_cost": 5,
+      "speaker": "equivocado",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.equivocado.aloAlo",
+      "voice_id": "UNIruiz09F4kWYjRpOvy",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Aló? ¿Aló? No se oye nada...",
+      "input_text": "[conversational, matter-of-fact] ¿Aló? ¿Aló? No se oye nada...",
+      "sha256": "72844626fa1dd03d592fb360ea03517ca3525ac9e04502b53383b96f6c5acf17",
+      "duration_seconds": 2.96,
+      "credit_cost": 7,
+      "speaker": "equivocado",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.equivocado.panaderia",
+      "voice_id": "UNIruiz09F4kWYjRpOvy",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Aló? ¿Hablo con la panadería La Florida?",
+      "input_text": "[conversational, matter-of-fact] ¿Aló? ¿Hablo con la panadería La Florida?",
+      "sha256": "b9ad52a8e8012cb010a097ed4d0342a3a8072d2df7b344ed9d2b16f83e45d026",
+      "duration_seconds": 2.96,
+      "credit_cost": 8,
+      "speaker": "equivocado",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.equivocado.quePena",
+      "voice_id": "UNIruiz09F4kWYjRpOvy",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Ay, qué pena. Perdone.",
+      "input_text": "[conversational, matter-of-fact] Ay, qué pena. Perdone.",
+      "sha256": "a18514ecabf180c145d7433ac3177f98aee24fbd032d5c81d998f216c5326d42",
+      "duration_seconds": 2.48,
+      "credit_cost": 6,
+      "speaker": "equivocado",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.equivocado.roscones",
+      "voice_id": "UNIruiz09F4kWYjRpOvy",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Ay, qué bueno! ¿Me separa dos roscones y una mantecada? Ya paso por ellos.",
+      "input_text": "[conversational, matter-of-fact] ¡Ay, qué bueno! ¿Me separa dos roscones y una mantecada? Ya paso por ellos.",
+      "sha256": "4d541cf321e3ea97673d6a33e8cb7c0ba710635bbc39a2794d9f5a83d2b9cf61",
+      "duration_seconds": 4.72,
+      "credit_cost": 12,
+      "speaker": "equivocado",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.equivocado.gracias",
+      "voice_id": "UNIruiz09F4kWYjRpOvy",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Muchas gracias, muy amable.",
+      "input_text": "[conversational, matter-of-fact] Muchas gracias, muy amable.",
+      "sha256": "c0d1619914bf2cb75d8aa94f18561ed1c639aac16999a0eda5cd372b7c381864",
+      "duration_seconds": 2.16,
+      "credit_cost": 7,
+      "speaker": "equivocado",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "extension.t1",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Ay, no! ¿Y ella qué le contestó?",
+      "input_text": "[warm, chatty, conversational] ¡Ay, no! ¿Y ella qué le contestó?",
+      "sha256": "d2aeec18f40b0e2f96798b32beff18edb848d8aeeb01b5ebd4541be38596c959",
+      "duration_seconds": 2.88,
+      "credit_cost": 7,
+      "speaker": "tia",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "extension.t2",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Ay, Dios mío. Esa muchacha...",
+      "input_text": "[warm, chatty, conversational] Ay, Dios mío. Esa muchacha...",
+      "sha256": "afde00d37c5a16a3210e6dbbc2167fb062319665af50d9c70202e173bf816b9a",
+      "duration_seconds": 3.04,
+      "credit_cost": 7,
+      "speaker": "tia",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "extension.t3",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Déjelo, déjelo... ¿En qué íbamos?",
+      "input_text": "[warm, chatty, conversational] Déjelo, déjelo... ¿En qué íbamos?",
+      "sha256": "96430222eedd55219a1e3d32a4e73596c9681befc62aae28d969a4613e3b2e13",
+      "duration_seconds": 3.2,
+      "credit_cost": 7,
+      "speaker": "tia",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.grabacion.noExiste",
+      "voice_id": "kVp3G6YINMUwOL7ROfIF",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "El número que usted marcó no está asignado. Por favor, verifíquelo e intente de nuevo.",
+      "input_text": "[neutral, clear, measured] El número que usted marcó no está asignado. Por favor, verifíquelo e intente de nuevo.",
+      "sha256": "04bab4c55f0e2515480b29c2b4a34513a93bbfb2272ffc9492e43b2f723c6d2d",
+      "duration_seconds": 6,
+      "credit_cost": 12,
+      "speaker": "hora117",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "cunas.tocadiscos",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Ya tiene El Dorado de los Aterciopelados? En Discos El Tocadiscos lo tenemos en casete y en compact disc. Y casetes vírgenes de sesenta minutos, ¡a precio de locura! Discos El Tocadiscos: Carrera Séptima con sesenta.",
+      "input_text": "[bright, persuasive, brisk] ¿Ya tiene El Dorado de los Aterciopelados? En Discos El Tocadiscos lo tenemos en casete y en compact disc. Y casetes vírgenes de sesenta minutos, ¡a precio de locura! Discos El Tocadiscos: Carrera Séptima con sesenta.",
+      "sha256": "c93b3d7e10df630f45c40583964802d48388c88842f67e0506979f5f12812a33",
+      "duration_seconds": 13.52,
+      "credit_cost": 27,
+      "speaker": "cunas",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "cunas.pizzeria",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Llueve y no quiere salir? Pizzería La Toscana le lleva la pizza calientica hasta la puerta de su casa. Domicilios en Chapinero: dos, cuarenta y ocho, veinte, veinte.",
+      "input_text": "[bright, persuasive, brisk] ¿Llueve y no quiere salir? Pizzería La Toscana le lleva la pizza calientica hasta la puerta de su casa. Domicilios en Chapinero: dos, cuarenta y ocho, veinte, veinte.",
+      "sha256": "a3a5f47476ad82804eec7a38ac8752e0340e118dc535aa46cb7e276d851d8a02",
+      "duration_seconds": 9.68,
+      "credit_cost": 21,
+      "speaker": "cunas",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "cunas.cebra",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Bogotanos: el peatón tiene prelación. Respete la cebra. Un mensaje de la Alcaldía Mayor de Santa Fe de Bogotá.",
+      "input_text": "[bright, persuasive, brisk] Bogotanos: el peatón tiene prelación. Respete la cebra. Un mensaje de la Alcaldía Mayor de Santa Fe de Bogotá.",
+      "sha256": "052999ec307576ac36a9ee90bc6b95d8140b005258883dbbc41a9ef8d249af8c",
+      "duration_seconds": 7.52,
+      "credit_cost": 15,
+      "speaker": "cunas",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "cunas.ingles",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Academia de inglés Say Yes: hable inglés en seis meses, o le devolvemos su plata. Calle cincuenta y tres con Caracas.",
+      "input_text": "[bright, persuasive, brisk] Academia de inglés Say Yes: hable inglés en seis meses, o le devolvemos su plata. Calle cincuenta y tres con Caracas.",
+      "sha256": "f8e0bf81acabdc5e8694cb7cb376c1c4bf494e1dc9be75ce275fb79c833eead3",
+      "duration_seconds": 7.28,
+      "credit_cost": 16,
+      "speaker": "cunas",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "cunas.sanandresito",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "En el San Andresito de la Treinta y Ocho: grabadoras, walkman, televisores y videojuegos, ¡a los mejores precios de Bogotá!",
+      "input_text": "[bright, persuasive, brisk] En el San Andresito de la Treinta y Ocho: grabadoras, walkman, televisores y videojuegos, ¡a los mejores precios de Bogotá!",
+      "sha256": "4a3f66cb9104e361b42f5694ea298b9d11f61549c156558785eb9cb5573f6d38",
+      "duration_seconds": 7.6,
+      "credit_cost": 17,
+      "speaker": "cunas",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "cunas.optica",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Óptica Visión Clara, en Unicentro: montura y lentes en una hora. ¡Páguelos en tres cuotas!",
+      "input_text": "[bright, persuasive, brisk] Óptica Visión Clara, en Unicentro: montura y lentes en una hora. ¡Páguelos en tres cuotas!",
+      "sha256": "e3056185fce38f106f563b7acdcd58d1e4b4b4fa311a5f792d5cf80d3203d8fe",
+      "duration_seconds": 6.08,
+      "credit_cost": 13,
+      "speaker": "cunas",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "cunas.ganador",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Almacén El Ganador, en San Victorino: ollas, vajillas, cobijas y todo para el hogar. ¡Baratísimo!",
+      "input_text": "[bright, persuasive, brisk] Almacén El Ganador, en San Victorino: ollas, vajillas, cobijas y todo para el hogar. ¡Baratísimo!",
+      "sha256": "6bb08ea018b91878600e61d11740e0c1c9cd305d11cb886abca82ed6ff66ddc2",
+      "duration_seconds": 6.8,
+      "credit_cost": 14,
+      "speaker": "cunas",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "cunas.salsoteca",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Salsoteca La Rumba Brava, en la calle ochenta y cinco: este sábado, orquesta en vivo. ¡Entrada libre para las damas!",
+      "input_text": "[bright, persuasive, brisk] Salsoteca La Rumba Brava, en la calle ochenta y cinco: este sábado, orquesta en vivo. ¡Entrada libre para las damas!",
+      "sha256": "d8023a5cacd75feee18e129f2d917074485c8d77bda2c5499f724e111b4618b0",
+      "duration_seconds": 7.6,
+      "credit_cost": 16,
+      "speaker": "cunas",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "cunas.dental",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Clínica Dental Sonrisa, calle cuarenta y cinco con Caracas. Tratamientos a crédito, con la tranquilidad de siempre.",
+      "input_text": "[bright, persuasive, brisk] Clínica Dental Sonrisa, calle cuarenta y cinco con Caracas. Tratamientos a crédito, con la tranquilidad de siempre.",
+      "sha256": "b0b30612fd9fbaa20260881f049b943cc6f301be4abe30b8257595780f2ef316",
+      "duration_seconds": 6.88,
+      "credit_cost": 16,
+      "speaker": "cunas",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.hola1",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Súper Estación, ochenta y ocho nueve. La música que a usted le gusta, toda la tarde.",
+      "input_text": "[smooth, upbeat, conversational, brisk] Súper Estación, ochenta y ocho nueve. La música que a usted le gusta, toda la tarde.",
+      "sha256": "8f3622c594f7275fff27dd9baebfe3a2a64ab4d805296d0f351f38602ee4b6e6",
+      "duration_seconds": 5.36,
+      "credit_cost": 14,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.hola2",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Una tarde perfecta para quedarse en la casa con una taza de chocolate y buena música.",
+      "input_text": "[smooth, upbeat, conversational, brisk] Una tarde perfecta para quedarse en la casa con una taza de chocolate y buena música.",
+      "sha256": "537a1564e4333d1aba4efe7c23ff856c89759cd41f32cba3c601777bbc43ddad",
+      "duration_seconds": 5.12,
+      "credit_cost": 14,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.shakira1",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "La barranquillera Shakira acaba de sacar su nuevo disco, «Pies descalzos».",
+      "input_text": "[smooth, upbeat, conversational, brisk] La barranquillera Shakira acaba de sacar su nuevo disco, «Pies descalzos».",
+      "sha256": "6349297ddd44e17e73331292b88e375a129db15e02f913be64085ab0ef82ce3c",
+      "duration_seconds": 4.48,
+      "credit_cost": 13,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.shakira2",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Y «Estoy aquí» está sonando en todas partes. Esa niña va a llegar lejos.",
+      "input_text": "[smooth, upbeat, conversational, brisk] Y «Estoy aquí» está sonando en todas partes. Esa niña va a llegar lejos.",
+      "sha256": "c3417e0d7aabca84a9cad0672d7985c75dd03e30b6162c6047c67ae4c5054b95",
+      "duration_seconds": 4.88,
+      "credit_cost": 12,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.tareas1",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Para los que están haciendo tareas este sábado: descansen un ratico, que el cerebro también necesita música.",
+      "input_text": "[smooth, upbeat, conversational, brisk] Para los que están haciendo tareas este sábado: descansen un ratico, que el cerebro también necesita música.",
+      "sha256": "8d76116341851073edcdcc382d3c56ff5d67b4e70caddf46e8255d6dcf3d0f86",
+      "duration_seconds": 6.16,
+      "credit_cost": 16,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.id1",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Súper Estación... ochenta y ocho nueve.",
+      "input_text": "[smooth, upbeat, conversational, brisk] Súper Estación... ochenta y ocho nueve.",
+      "sha256": "06679ae0e9dbac8ef16669fbc278b71a4c9a3dbda682c2fcacc7bd06e098b3fc",
+      "duration_seconds": 2.72,
+      "credit_cost": 9,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.introShakira",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Número uno en la Súper Estación: Shakira, «Estoy aquí».",
+      "input_text": "[smooth, upbeat, conversational, brisk] Número uno en la Súper Estación: Shakira, «Estoy aquí».",
+      "sha256": "8fad564fed0dbf8a02ae03dc26289144a04c5c638de538800760040814a0225a",
+      "duration_seconds": 4.24,
+      "credit_cost": 10,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.introIngrata",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Desde México, Café Tacvba: «La ingrata».",
+      "input_text": "[smooth, upbeat, conversational, brisk] Desde México, Café Tacvba: «La ingrata».",
+      "sha256": "949e614ebdbc758c222737a74c4891bd75793f2cd4f0c0122f986fe46ad0a3ab",
+      "duration_seconds": 3.2,
+      "credit_cost": 9,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.introMiGeneracion",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Hecha aquí en Bogotá: Poligamia, «Mi generación».",
+      "input_text": "[smooth, upbeat, conversational, brisk] Hecha aquí en Bogotá: Poligamia, «Mi generación».",
+      "sha256": "8049f155c42fcd90fd4a96cf1226f89c46265cf9fd68993512e3b050b930c830",
+      "duration_seconds": 3.36,
+      "credit_cost": 10,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.introDesvanecer",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Poligamia, «Desvanecer». Para los que andan con el corazón partío.",
+      "input_text": "[smooth, upbeat, conversational, brisk] Poligamia, «Desvanecer». Para los que andan con el corazón partío.",
+      "sha256": "a0a3845b00465849f09c4d107e0cd8633b6744815e370f79156fa510c2c2655a",
+      "duration_seconds": 4.48,
+      "credit_cost": 12,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.introSeal",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Para los enamorados: Seal, «Kiss from a Rose».",
+      "input_text": "[smooth, upbeat, conversational, brisk] Para los enamorados: Seal, «Kiss from a Rose».",
+      "sha256": "7f7cf29ad0d54bcdab19913aa3dbf8c7c9a5da55e72b11099d2e8bb81095cb54",
+      "duration_seconds": 3.44,
+      "credit_cost": 9,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.introCoolio",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "La que todos están pidiendo: Coolio, «Gangsta's Paradise».",
+      "input_text": "[smooth, upbeat, conversational, brisk] La que todos están pidiendo: Coolio, «Gangsta's Paradise».",
+      "sha256": "8a7a49068802057bf601d3d5d4451e2d6b02e144ea6686d7068c70d388945d60",
+      "duration_seconds": 4.24,
+      "credit_cost": 11,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "superestacion.generico1",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Seguimos en la Súper Estación.",
+      "input_text": "[smooth, upbeat, conversational, brisk] Seguimos en la Súper Estación.",
+      "sha256": "0d0d1ec65d2e4b37819b041284ea8defe9846af7f7d251287dec97be76e528a1",
+      "duration_seconds": 2.24,
+      "credit_cost": 8,
+      "speaker": "locutorSuper",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tropicana.hola1",
+      "voice_id": "6z7DGa6EoROi3cODJ0IF",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Tropicana Estéreo, ciento dos nueve! ¡Pa' que baile Bogotá, así esté lloviendo!",
+      "input_text": "[lively, exuberant, brisk] ¡Tropicana Estéreo, ciento dos nueve! ¡Pa' que baile Bogotá, así esté lloviendo!",
+      "sha256": "880dba6c185719a60b479601996196ef546713a3517e4a7de11e40ed78185c36",
+      "duration_seconds": 5.2,
+      "credit_cost": 12,
+      "speaker": "locutorTropicana",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tropicana.hola2",
+      "voice_id": "6z7DGa6EoROi3cODJ0IF",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Saludos a las señoras que están preparando las onces, y a los que les tocó trabajar este sábado.",
+      "input_text": "[lively, exuberant, brisk] Saludos a las señoras que están preparando las onces, y a los que les tocó trabajar este sábado.",
+      "sha256": "ab46a499d7d42b1c43d25c8710873e0dec7293f9e28253524ed6d8240a0a7e1b",
+      "duration_seconds": 5.36,
+      "credit_cost": 14,
+      "speaker": "locutorTropicana",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tropicana.rumba1",
+      "voice_id": "6z7DGa6EoROi3cODJ0IF",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Y ya saben: esta noche rumba, pero con juicio, que a la una se acaba la fiesta en Bogotá.",
+      "input_text": "[lively, exuberant, brisk] Y ya saben: esta noche rumba, pero con juicio, que a la una se acaba la fiesta en Bogotá.",
+      "sha256": "7223218f5d9a51e5deddc91d26127ff8e2699d41694e786367bc45276581ed79",
+      "duration_seconds": 6.08,
+      "credit_cost": 13,
+      "speaker": "locutorTropicana",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tropicana.id1",
+      "voice_id": "6z7DGa6EoROi3cODJ0IF",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Tropicana! ¡Ciento dos nueve!",
+      "input_text": "[lively, exuberant, brisk] ¡Tropicana! ¡Ciento dos nueve!",
+      "sha256": "7e43623888bdf0e755970a973fb23392b522c7119770575bccd5a011087b140a",
+      "duration_seconds": 2.48,
+      "credit_cost": 6,
+      "speaker": "locutorTropicana",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tropicana.introTierra",
+      "voice_id": "6z7DGa6EoROi3cODJ0IF",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡El samario Carlos Vives, con «La tierra del olvido»! ¡Qué disco, señores!",
+      "input_text": "[lively, exuberant, brisk] ¡El samario Carlos Vives, con «La tierra del olvido»! ¡Qué disco, señores!",
+      "sha256": "cfae3f06e9ac57939f52d2a60484337bdd444ed05466585980342c7f67349a4a",
+      "duration_seconds": 5.2,
+      "credit_cost": 11,
+      "speaker": "locutorTropicana",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tropicana.introGota",
+      "voice_id": "6z7DGa6EoROi3cODJ0IF",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Uepa! Carlos Vives: «La gota fría».",
+      "input_text": "[lively, exuberant, brisk] ¡Uepa! Carlos Vives: «La gota fría».",
+      "sha256": "7f20a59d1d62640490991529c62e77066207e283210ef93ea54f1fd0656c2824",
+      "duration_seconds": 3.36,
+      "credit_cost": 7,
+      "speaker": "locutorTropicana",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tropicana.introCali",
+      "voice_id": "6z7DGa6EoROi3cODJ0IF",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Salsa caleña! Grupo Niche, «Cali pachanguero».",
+      "input_text": "[lively, exuberant, brisk] ¡Salsa caleña! Grupo Niche, «Cali pachanguero».",
+      "sha256": "29010baa319540deb350456311926a7efb23e01b2b3f40d182662a21b2230a14",
+      "duration_seconds": 3.92,
+      "credit_cost": 8,
+      "speaker": "locutorTropicana",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tropicana.introAventura",
+      "voice_id": "6z7DGa6EoROi3cODJ0IF",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Grupo Niche, «Una aventura». ¡Pa' bailar pegadito!",
+      "input_text": "[lively, exuberant, brisk] Grupo Niche, «Una aventura». ¡Pa' bailar pegadito!",
+      "sha256": "c7d0e0e431163f7599fde18d7575358aa72e703c9243644e90f267eeadaf4cc5",
+      "duration_seconds": 3.84,
+      "credit_cost": 8,
+      "speaker": "locutorTropicana",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tropicana.introRebelion",
+      "voice_id": "6z7DGa6EoROi3cODJ0IF",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡El Joe! Joe Arroyo, «Rebelión».",
+      "input_text": "[lively, exuberant, brisk] ¡El Joe! Joe Arroyo, «Rebelión».",
+      "sha256": "c33b7268f62c822e73d8585b04edc5f1139220fa171eb4a9f61c3afada14cd54",
+      "duration_seconds": 3.2,
+      "credit_cost": 6,
+      "speaker": "locutorTropicana",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tropicana.introBurbujas",
+      "voice_id": "6z7DGa6EoROi3cODJ0IF",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Juan Luis Guerra y los 4.40: «Burbujas de amor». ¡Pa' la pareja que está bailando en la sala!",
+      "input_text": "[lively, exuberant, brisk] Juan Luis Guerra y los 4.40: «Burbujas de amor». ¡Pa' la pareja que está bailando en la sala!",
+      "sha256": "d066b3550d3691ce7bfcee39931f55f25902e628bd0dd0538d42d3ef2270e4e2",
+      "duration_seconds": 6.4,
+      "credit_cost": 13,
+      "speaker": "locutorTropicana",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tropicana.generico1",
+      "voice_id": "6z7DGa6EoROi3cODJ0IF",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Sabroso! Seguimos en Tropicana.",
+      "input_text": "[lively, exuberant, brisk] ¡Sabroso! Seguimos en Tropicana.",
+      "sha256": "d56895254ad6447d29019e183d54b96fc07966a42f644f2465031ad12e62a913",
+      "duration_seconds": 2.96,
+      "credit_cost": 6,
+      "speaker": "locutorTropicana",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "rcn.id1",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "RCN Radio. Siete setenta en su dial.",
+      "input_text": "[formal, clear, authoritative] RCN Radio. Siete setenta en su dial.",
+      "sha256": "dfb7eabf2c3b4452e4fa88c868d53ff0b399e455d1faa5608d2c31d6c95166ee",
+      "duration_seconds": 3.52,
+      "credit_cost": 7,
+      "speaker": "locutorRCN",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "rcn.titulares",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Noticias RCN. Estos son los titulares de esta tarde.",
+      "input_text": "[formal, clear, authoritative] Noticias RCN. Estos son los titulares de esta tarde.",
+      "sha256": "4e2eae4e556d3c9cc08635957f31d697d156f1f9cf5e86e9ae5a751e72d97fa7",
+      "duration_seconds": 4.72,
+      "credit_cost": 9,
+      "speaker": "locutorRCN",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "rcn.ochomil",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Continúa en la Comisión de Acusación de la Cámara la investigación al presidente Ernesto Samper por el ingreso de dineros del narcotráfico a su campaña: el llamado proceso ocho mil.",
+      "input_text": "[formal, clear, authoritative] Continúa en la Comisión de Acusación de la Cámara la investigación al presidente Ernesto Samper por el ingreso de dineros del narcotráfico a su campaña: el llamado proceso ocho mil.",
+      "sha256": "a8ebb692a61bf6db6a1da620214fdc42b184b07fbdf9ad5c7beb34d4d8639845",
+      "duration_seconds": 10.24,
+      "credit_cost": 23,
+      "speaker": "locutorRCN",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "rcn.mockus",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "En Bogotá, el alcalde Antanas Mockus defendió la llamada hora zanahoria, que obliga a bares y discotecas a cerrar a la una de la mañana.",
+      "input_text": "[formal, clear, authoritative] En Bogotá, el alcalde Antanas Mockus defendió la llamada hora zanahoria, que obliga a bares y discotecas a cerrar a la una de la mañana.",
+      "sha256": "9ffadefeeafc9ae71d56c6cb59836df11ca7b39fa97463605b30977123df09d5",
+      "duration_seconds": 8.56,
+      "credit_cost": 18,
+      "speaker": "locutorRCN",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "rcn.himno",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Y hoy se cumplen setenta y cinco años de la adopción oficial del Himno Nacional, por la Ley treinta y tres de mil novecientos veinte.",
+      "input_text": "[formal, clear, authoritative] Y hoy se cumplen setenta y cinco años de la adopción oficial del Himno Nacional, por la Ley treinta y tres de mil novecientos veinte.",
+      "sha256": "368559b2d02f456f8d501b84a8b309e976b23f6d8b2772b60737aa4def0158e0",
+      "duration_seconds": 7.52,
+      "credit_cost": 18,
+      "speaker": "locutorRCN",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "rcn.clima",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Las lluvias continuarán durante el fin de semana en la Sabana de Bogotá. Las autoridades recomiendan precaución a los conductores.",
+      "input_text": "[formal, clear, authoritative] Las lluvias continuarán durante el fin de semana en la Sabana de Bogotá. Las autoridades recomiendan precaución a los conductores.",
+      "sha256": "db25b31fdd5d5c3dc37871af52394dea038c0328e1a5f0d1a4bdbe95a722fe3b",
+      "duration_seconds": 7.36,
+      "credit_cost": 18,
+      "speaker": "locutorRCN",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "rcn.shakira",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "En el mundo del espectáculo: la barranquillera Shakira presentó «Pies descalzos», su nuevo trabajo discográfico.",
+      "input_text": "[formal, clear, authoritative] En el mundo del espectáculo: la barranquillera Shakira presentó «Pies descalzos», su nuevo trabajo discográfico.",
+      "sha256": "909dec035df62d5ec262a197d11b8fd8ef6c018830f77916ca44e3cc1363be50",
+      "duration_seconds": 6.88,
+      "credit_cost": 16,
+      "speaker": "locutorRCN",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "rcn.aterciopelados",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Y el grupo bogotano Aterciopelados lanzó esta semana «El Dorado», su segundo álbum.",
+      "input_text": "[formal, clear, authoritative] Y el grupo bogotano Aterciopelados lanzó esta semana «El Dorado», su segundo álbum.",
+      "sha256": "dbaafff5f7be1e2ffd71467572f20321b2b662fd90af6fe8aa88c807f81da55e",
+      "duration_seconds": 5.76,
+      "credit_cost": 13,
+      "speaker": "locutorRCN",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "rcn.comentario1",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Comentario de la tarde: la ciudad amaneció con huecos nuevos en la Avenida Boyacá. Los conductores piden a la administración distrital una pronta solución.",
+      "input_text": "[formal, clear, authoritative] Comentario de la tarde: la ciudad amaneció con huecos nuevos en la Avenida Boyacá. Los conductores piden a la administración distrital una pronta solución.",
+      "sha256": "0450fe55c482639841ef8add0c3f9e421391d947d634b3900f964d22f72b33fa",
+      "duration_seconds": 9.2,
+      "credit_cost": 20,
+      "speaker": "locutorRCN",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "rcn.comentario2",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Y a los oyentes que nos llaman preguntando: sí, el aguacero va para largo. Paraguas y paciencia.",
+      "input_text": "[formal, clear, authoritative] Y a los oyentes que nos llaman preguntando: sí, el aguacero va para largo. Paraguas y paciencia.",
+      "sha256": "61daad19c99b5482ac1f0c9a13dc49616daf752876b28040f0581fe2f19f5247",
+      "duration_seconds": 6.48,
+      "credit_cost": 14,
+      "speaker": "locutorRCN",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.novela.n1",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "—Usted me mintió, Rodrigo. Todo este tiempo me mintió.",
+      "input_text": "[dramatic, emotional, conversational] —Usted me mintió, Rodrigo. Todo este tiempo me mintió.",
+      "sha256": "605c33436aeba0915240a05b6f4ba1c7bc908b14bc7a85d2619658c179d756b8",
+      "duration_seconds": 4.72,
+      "credit_cost": 10,
+      "speaker": "tvNovela",
+      "generated_on": "2026-10-02",
+      "tv_actor": "Maritza"
+    },
+    {
+      "id": "tv.novela.n2",
+      "voice_id": "GMEpD7vcmVahuyz6NuZA",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "—Déjeme explicarle, Maritza. No es lo que usted cree.",
+      "input_text": "[dramatic, earnest, conversational] —Déjeme explicarle, Maritza. No es lo que usted cree.",
+      "sha256": "8c6783603e274a17a20ece3276219cbfec252b94d843e6c7649920aad3e2c0bc",
+      "duration_seconds": 3.76,
+      "credit_cost": 10,
+      "speaker": "tvNovela",
+      "generated_on": "2026-10-02",
+      "tv_actor": "Rodrigo"
+    },
+    {
+      "id": "tv.novela.n3",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "—¿Y qué es lo que yo creo? ¡Que usted se va a casar con ella por la plata de la hacienda!",
+      "input_text": "[dramatic, emotional, conversational] —¿Y qué es lo que yo creo? ¡Que usted se va a casar con ella por la plata de la hacienda!",
+      "sha256": "7611700e0cfa98c60727086ccaeffdd7403d7991a2238b7d240717cc1aef6577",
+      "duration_seconds": 5.12,
+      "credit_cost": 14,
+      "speaker": "tvNovela",
+      "generated_on": "2026-10-02",
+      "tv_actor": "Maritza"
+    },
+    {
+      "id": "tv.novela.n4",
+      "voice_id": "GMEpD7vcmVahuyz6NuZA",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "—¡Yo a usted la quiero! ¡Siempre la he querido!",
+      "input_text": "[dramatic, earnest, conversational] —¡Yo a usted la quiero! ¡Siempre la he querido!",
+      "sha256": "d55afdf4633ee8957589d3374598fd9cdf10b3f91ba790ffdbd5069886e67274",
+      "duration_seconds": 3.6,
+      "credit_cost": 9,
+      "speaker": "tvNovela",
+      "generated_on": "2026-10-02",
+      "tv_actor": "Rodrigo"
+    },
+    {
+      "id": "tv.novela.n5",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "—Pues demuéstrelo. Esta misma noche, delante de su mamá.",
+      "input_text": "[dramatic, emotional, conversational] —Pues demuéstrelo. Esta misma noche, delante de su mamá.",
+      "sha256": "869991e8e554bbf02ebeca890bb5621f4cf640993107edd9e7689273fe301224",
+      "duration_seconds": 4.16,
+      "credit_cost": 10,
+      "speaker": "tvNovela",
+      "generated_on": "2026-10-02",
+      "tv_actor": "Maritza"
+    },
+    {
+      "id": "tv.novela.n6",
+      "voice_id": "GMEpD7vcmVahuyz6NuZA",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "—Maritza... si hago eso, mi mamá me deshereda.",
+      "input_text": "[dramatic, earnest, conversational] —Maritza... si hago eso, mi mamá me deshereda.",
+      "sha256": "cdc103a4cd0fb4a5b3ed6a5436931f01982e21121a3ccd7569d299e0dc8adacb",
+      "duration_seconds": 4,
+      "credit_cost": 9,
+      "speaker": "tvNovela",
+      "generated_on": "2026-10-02",
+      "tv_actor": "Rodrigo"
+    },
+    {
+      "id": "tv.novela.n7",
+      "voice_id": "1aJyZpkt0vxhGPBnPyrs",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "—Entonces quédese con su plata, Rodrigo. Y olvídese de mí.",
+      "input_text": "[dramatic, emotional, conversational] —Entonces quédese con su plata, Rodrigo. Y olvídese de mí.",
+      "sha256": "1a9fcba5095e0ad13236dadda18c7b34d9b0246b609655c081c5d82f31e4f774",
+      "duration_seconds": 4.32,
+      "credit_cost": 11,
+      "speaker": "tvNovela",
+      "generated_on": "2026-10-02",
+      "tv_actor": "Maritza"
+    },
+    {
+      "id": "tv.novela.sigue",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "«Corazón de lluvia» continúa... después de estos mensajes.",
+      "input_text": "[upbeat, welcoming, clear] «Corazón de lluvia» continúa... después de estos mensajes.",
+      "sha256": "04aed92fbc5b4192569a8deb19c08e8a9fd6875656682ad3648bf2ed46a2e8d4",
+      "duration_seconds": 3.92,
+      "credit_cost": 9,
+      "speaker": "tvPresentador",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.novela.presenta",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Producciones Andinas presenta: «Corazón de lluvia».",
+      "input_text": "[upbeat, welcoming, clear] Producciones Andinas presenta: «Corazón de lluvia».",
+      "sha256": "8f364ae93dd0abf0383b42b82ca8b2771cea7181c987739b285b6d5254cd9470",
+      "duration_seconds": 3.92,
+      "credit_cost": 9,
+      "speaker": "tvPresentador",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.cunas.chocolate",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Chocolate La Sabana. El chocolate de las onces bogotanas... ¡con queso, mejor!",
+      "input_text": "[bright, persuasive, brisk] Chocolate La Sabana. El chocolate de las onces bogotanas... ¡con queso, mejor!",
+      "sha256": "0bc01511f49037b292361330bd26d4244bc412f43e2289defd0b3af1cce91da7",
+      "duration_seconds": 5.28,
+      "credit_cost": 12,
+      "speaker": "cunas",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.cunas.blancor",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿La camisa del colegio quedó gris? Detergente Blancor: ¡blanquita, como nueva!",
+      "input_text": "[bright, persuasive, brisk] ¿La camisa del colegio quedó gris? Detergente Blancor: ¡blanquita, como nueva!",
+      "sha256": "4e3c5c9f73523be6655f5108deac64143db694811f77c72872f5ccda019f5ad9",
+      "duration_seconds": 5.28,
+      "credit_cost": 12,
+      "speaker": "cunas",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.cunas.casablanca",
+      "voice_id": "wutgczPT1RZgTX0H3qRJ",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Almacenes Casablanca: llegó la temporada de fin de año. ¡Estrene!",
+      "input_text": "[bright, persuasive, brisk] Almacenes Casablanca: llegó la temporada de fin de año. ¡Estrene!",
+      "sha256": "df98ef922e0822d8acf4b30b86f6505b89583eb8aa95819fb317d25e3e80df46",
+      "duration_seconds": 4.72,
+      "credit_cost": 10,
+      "speaker": "cunas",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.canal3.id",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Canal 3. Televisión educativa y cultural.",
+      "input_text": "[calm, descriptive, clear] Canal 3. Televisión educativa y cultural.",
+      "sha256": "cb7baba7c0a4a18912cafa15d1570f8330981cabece14994a45efaf1598e066c",
+      "duration_seconds": 3.6,
+      "credit_cost": 7,
+      "speaker": "tvNarrador",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.canal3.p1",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "El páramo: un ecosistema que solo existe en unos pocos lugares del mundo. Colombia tiene la mayor parte.",
+      "input_text": "[calm, descriptive, clear] El páramo: un ecosistema que solo existe en unos pocos lugares del mundo. Colombia tiene la mayor parte.",
+      "sha256": "9d660fb8123f63a5d9f9dcd09e9682c344b3d478bc8d69d9ba438c290e321d48",
+      "duration_seconds": 7.28,
+      "credit_cost": 14,
+      "speaker": "tvNarrador",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.canal3.p2",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "El frailejón crece apenas un centímetro al año. Uno de un metro de alto puede tener cien años.",
+      "input_text": "[calm, descriptive, clear] El frailejón crece apenas un centímetro al año. Uno de un metro de alto puede tener cien años.",
+      "sha256": "133c3fca8a73c1bfb21da4fdd585da9b3697312f99841e7c0d92bc7c4431beb1",
+      "duration_seconds": 6.4,
+      "credit_cost": 13,
+      "speaker": "tvNarrador",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.canal3.p3",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "De páramos como Chingaza, a pocos kilómetros de Bogotá, viene el agua que llega a las casas de la ciudad.",
+      "input_text": "[calm, descriptive, clear] De páramos como Chingaza, a pocos kilómetros de Bogotá, viene el agua que llega a las casas de la ciudad.",
+      "sha256": "3e1b26ec0fadc238c457b6e7dd6dfb52bfc5f6b8392f0e932bf8f277d4dfaf92",
+      "duration_seconds": 6.32,
+      "credit_cost": 15,
+      "speaker": "tvNarrador",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.canal3.p4",
+      "voice_id": "CAYdOeRRe8sLTuBjQ1ht",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Cuando baja la niebla, el páramo parece otro mundo. Aquí la lluvia se guarda, gota a gota.",
+      "input_text": "[calm, descriptive, clear] Cuando baja la niebla, el páramo parece otro mundo. Aquí la lluvia se guarda, gota a gota.",
+      "sha256": "0509af467cde0b0d8e4223c6d5e105f62d3ab7a39e4152b443a0c06bad5ef5ca",
+      "duration_seconds": 7.04,
+      "credit_cost": 13,
+      "speaker": "tvNarrador",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.canala.hola",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Bienvenidos a «Sábado Musical»! Hoy, los videos más pedidos de la semana.",
+      "input_text": "[upbeat, welcoming, clear] ¡Bienvenidos a «Sábado Musical»! Hoy, los videos más pedidos de la semana.",
+      "sha256": "8a45dba1fa9ac0f84ecc9ea3cb37be99b21ef877d8c439d68185f724fb778245",
+      "duration_seconds": 5.36,
+      "credit_cost": 11,
+      "speaker": "tvPresentador",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.canala.sigue",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Y seguimos con otro video que llegó directo de Buenos Aires...",
+      "input_text": "[upbeat, welcoming, clear] Y seguimos con otro video que llegó directo de Buenos Aires...",
+      "sha256": "cbaac64738e44a63d2a86e6a566b786b33c4207b2f76e4048e93e21cc3c3bb05",
+      "duration_seconds": 3.6,
+      "credit_cost": 10,
+      "speaker": "tvPresentador",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "tv.canala.cierre",
+      "voice_id": "Fn8ZcuyNYI4qImgQ2yuH",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Ya volvemos, después de comerciales. ¡No se vayan!",
+      "input_text": "[upbeat, welcoming, clear] Ya volvemos, después de comerciales. ¡No se vayan!",
+      "sha256": "4c5659847c0b9448185da4ffad3c0e745a088afa07c73984fcf5182c10def4ac",
+      "duration_seconds": 3.6,
+      "credit_cost": 8,
+      "speaker": "tvPresentador",
+      "generated_on": "2026-10-02"
     }
-  ]
+  ],
+  "updated_on": "2026-10-02"
 }

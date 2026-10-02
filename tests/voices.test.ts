@@ -45,35 +45,43 @@ function deferred<T>() {
 }
 
 describe('included voices', () => {
-  it('ships the complete critical cast with unchanged dialogue and verified audio', async () => {
+  it('ships every fixed line with unchanged dialogue and verified audio', async () => {
     const { allLines } = await import('../src/content/lines');
     await import('../src/content/stations');
     await import('../src/content/phonebook');
+    await import('../src/content/tv');
     await import('../src/objects/house');
-    const speakers = new Set(['mama', 'mamaAndres', 'andres', 'locutorRadioactiva', 'cabinaRadioactiva']);
-    const critical = allLines().filter((line) => speakers.has(line.who));
+    const fixed = allLines();
     const dir = join(process.cwd(), 'src/assets/voices');
     const manifest = JSON.parse(readFileSync(join(dir, 'manifest.json'), 'utf8')) as {
-      clips: { id: string; speaker: string; spoken_text: string; sha256: string }[];
+      clips: { id: string; speaker: string; spoken_text: string; sha256: string; voice_id: string }[];
     };
-    expect(manifest.clips.map((line) => line.id).sort()).toEqual(critical.map((line) => line.id).sort());
-    expect(readdirSync(dir).filter((file) => file.endsWith('.mp3')).sort()).toEqual(critical.map((line) => `${line.id}.mp3`).sort());
-    for (const line of critical) {
+    expect(fixed).toHaveLength(186);
+    expect(manifest.clips.map((line) => line.id).sort()).toEqual(fixed.map((line) => line.id).sort());
+    expect(readdirSync(dir).filter((file) => file.endsWith('.mp3')).sort()).toEqual(fixed.map((line) => `${line.id}.mp3`).sort());
+    for (const line of fixed) {
       const clip = manifest.clips.find((clip) => clip.id === line.id)!;
       expect([clip.speaker, clip.spoken_text]).toEqual([line.who, line.text]);
       expect(createHash('sha256').update(readFileSync(join(dir, `${line.id}.mp3`))).digest('hex')).toBe(clip.sha256);
     }
+    const actor = (id: string) => manifest.clips.find(clip => clip.id === id)!.voice_id;
+    expect(actor('tv.novela.n1')).not.toBe(actor('tv.novela.n2'));
+    expect(['n1', 'n3', 'n5', 'n7'].map(id => actor(`tv.novela.${id}`))).toEqual(Array(4).fill(actor('tv.novela.n1')));
+    expect(['n2', 'n4', 'n6'].map(id => actor(`tv.novela.${id}`))).toEqual(Array(3).fill(actor('tv.novela.n2')));
   });
 
   it('loads the cast with empty browser storage and preserves the canonical line IDs', async () => {
     const { voices, ctx } = await setup();
     const { lineDuration } = await import('../src/audio/voices');
     await Promise.all([voices.loadBundled(ctx), voices.loadSaved(ctx)]);
-    expect(voices.count()).toBe(79);
+    expect(voices.count()).toBe(186);
     expect(voices.get('casa.onces')).toBe(bundled);
     expect(voices.get('llamada.andres.deParte')).toBe(bundled);
     expect(voices.get('radioactiva.introFlorecita')).toBe(bundled);
-    expect(voices.get('llamada.abuelita.alo')).toBeUndefined();
+    expect(voices.get('llamada.abuelita.alo')).toBe(bundled);
+    expect(voices.get('llamada.angie.hola')).toBe(bundled);
+    expect(voices.get('tv.novela.n1')).toBe(bundled);
+    expect(voices.get('tv.novela.n2')).toBe(bundled);
     expect(voices.get('')).toBeUndefined();
     expect(saved.size).toBe(0);
     expect(lineDuration({ id: 'casa.onces', who: 'mama', text: '¡A tomar onces!' })).toBeCloseTo(3.29);
@@ -100,7 +108,7 @@ describe('included voices', () => {
     }
     await Promise.all([includedLoad, savedLoad]);
     expect(voices.get('casa.onces')).toBe(uploaded);
-    expect(voices.count()).toBe(79);
+    expect(voices.count()).toBe(186);
   });
 
   it('restores the included take after clearing uploads', async () => {
@@ -110,7 +118,7 @@ describe('included voices', () => {
     expect(voices.get('casa.onces')).toBe(uploaded);
     await voices.clear();
     expect(voices.get('casa.onces')).toBe(bundled);
-    expect(voices.count()).toBe(79);
+    expect(voices.count()).toBe(186);
     expect(saved.size).toBe(0);
   });
 
@@ -119,7 +127,7 @@ describe('included voices', () => {
     const { voices, ctx } = await setup();
     await Promise.all([voices.loadSaved(ctx), voices.loadBundled(ctx)]);
     expect(voices.get('casa.onces')).toBe(bundled);
-    expect(voices.count()).toBe(79);
+    expect(voices.count()).toBe(186);
   });
 
   it.each(['missing', 'unreadable', 'offline'])('keeps other recordings and subtitle fallback when one clip is %s', async (failure) => {
@@ -132,6 +140,6 @@ describe('included voices', () => {
     await voices.loadBundled(ctx);
     expect(voices.has('casa.onces')).toBe(false);
     expect(voices.has('llamada.andres.deParte')).toBe(true);
-    expect(voices.count()).toBe(78);
+    expect(voices.count()).toBe(185);
   });
 });
