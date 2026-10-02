@@ -1,9 +1,10 @@
 # Included dialogue voices
 
-All 186 fixed dialogue lines load automatically in the room. They use the
+All 188 fixed dialogue lines load automatically in the room. They use the
 original dialogue in `src/content/` and `src/objects/house.ts`, generated with
 ElevenLabs v4 on a paid Starter plan: 79 clips on 30 September 2026 and the
-remaining 107 on 2 October 2026. The characters and radio announcers are
+remaining 107 on 2 October 2026, followed by two street calls and a bakery
+retake that day. The characters and radio announcers are
 fictional; these are not recordings of the historical station.
 
 Live time announcements on the radio and 117 have no fixed line IDs and
@@ -30,6 +31,7 @@ still use subtitles. Player choices are also text only.
 | TV: Rodrigo | Juan Carlos - Expressive & Friendly | `GMEpD7vcmVahuyz6NuZA` | 3 |
 | TV presenter | Ale Alejandro - Your Friendly Pal | `Fn8ZcuyNYI4qImgQ2yuH` | 5 |
 | TV documentary narrator | Diever Muñoz - Clear, Precise and Warm | `CAYdOeRRe8sLTuBjQ1ht` | 5 |
+| Reciclador | Cesar - Slow, Meditative, Warm | `QtuQlibCvdX2iBrV4laj` | 2 |
 
 `manifest.json` records each line, voice, delivery tags, settings, and file hash.
 The selected B take is preserved for `casa.onces`. API credentials and private
@@ -40,11 +42,16 @@ Grandma uses the user's selected Sandra take 1 delivery:
 map; TV reuses existing cast voices with distinct actors for Maritza and
 Rodrigo. The original 79 recordings are preserved byte for byte.
 
+The reciclador reuses César with a mature, weathered, projected sing-song
+delivery; the longer call draws out "Botellaaa". Distance and window muffling
+come from the room's audio engine. The wrong-number bakery take now says
+"La Espiga", matching the shop across the street.
+
 ## Listening checklist
 
 1. Run `npm run dev` and open `http://localhost:5173/?skip` with headphones.
    Use a fresh browser profile to hear bundled recordings without uploaded
-   takes taking priority. Open the ⚙ backstage and check **186 of 186 lines**.
+   takes taking priority. Open the ⚙ backstage and check **188 of 188 lines**.
 2. Call **Abuelita: 2321745**. Finish the conversation, including her attempt
    to keep you on the phone. Check warmth, age, natural pacing, and the
    blessing at the end.
@@ -62,7 +69,11 @@ Rodrigo. The original 79 recordings are preserved byte for byte.
    plays real video clips when they are available; its fictional host is a
    fallback. The one-file build opened from disk uses fictional programs
    where external video cannot play.
-6. For a retake, send the **line ID** from `docs/voice-script.md`, or its first
+6. Open `http://localhost:5173/?skip&t=255&open=window` shortly before the
+   reciclador passes at 5:34:30. Listen with the pane closed, then open it;
+   both the short and drawn-out calls should come from the street. He passes
+   again at 5:50:20. The wrong-number caller around 5:35 now asks for La Espiga.
+7. For a retake, send the **line ID** from `docs/voice-script.md`, or its first
    words, and a direction such as "faster", "less formal", or "older".
 
 Automated validation checks complete line coverage, original text, file

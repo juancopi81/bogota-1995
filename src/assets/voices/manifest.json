@@ -1615,9 +1615,9 @@
         "stability": 0.5,
         "similarity_boost": 0.75
       },
-      "spoken_text": "¿Aló? ¿Hablo con la panadería La Florida?",
-      "input_text": "[conversational, matter-of-fact] ¿Aló? ¿Hablo con la panadería La Florida?",
-      "sha256": "b9ad52a8e8012cb010a097ed4d0342a3a8072d2df7b344ed9d2b16f83e45d026",
+      "spoken_text": "¿Aló? ¿Hablo con la panadería La Espiga?",
+      "input_text": "[conversational, matter-of-fact] ¿Aló? ¿Hablo con la panadería La Espiga?",
+      "sha256": "74201b8dd4193bc95a58483828aba058fdfe03abd64d27dcc03cbe6a18d68bf9",
       "duration_seconds": 2.96,
       "credit_cost": 8,
       "speaker": "equivocado",
@@ -2748,6 +2748,38 @@
       "duration_seconds": 3.6,
       "credit_cost": 8,
       "speaker": "tvPresentador",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "calle.botella",
+      "voice_id": "QtuQlibCvdX2iBrV4laj",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Botella, papel!",
+      "input_text": "[mature, weathered, projecting, sing-song] ¡Botella, papel!",
+      "sha256": "7cd38300d818048455ec8d8a2fcbe7cc775e50c6d4ad20e0d5c1ad0b924ea95a",
+      "duration_seconds": 2.32,
+      "credit_cost": 6,
+      "speaker": "reciclador",
+      "generated_on": "2026-10-02"
+    },
+    {
+      "id": "calle.botellaLarga",
+      "voice_id": "QtuQlibCvdX2iBrV4laj",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¡Botellaaa... papel!",
+      "input_text": "[mature, weathered, projecting, drawn-out sing-song] ¡Botellaaa... papel!",
+      "sha256": "39a1aa3f229b85ac32060df0e51586d89c3a5fb1d55461f75b84578e491f0cfc",
+      "duration_seconds": 2.96,
+      "credit_cost": 8,
+      "speaker": "reciclador",
       "generated_on": "2026-10-02"
     }
   ],

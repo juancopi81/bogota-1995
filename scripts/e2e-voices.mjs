@@ -19,7 +19,7 @@ try {
     await page.locator('#backstage').waitFor({ state: 'attached' });
     await page.keyboard.press('`');
     await page.waitForFunction(() => [...document.querySelectorAll('#backstage h3')]
-      .some(el => /Voces · 186 de 186 líneas/.test(el.textContent ?? '')), null, { timeout: 45000 });
+      .some(el => /Voces · 188 de 188 líneas/.test(el.textContent ?? '')), null, { timeout: 45000 });
     const heading = await page.locator('#backstage h3').filter({ hasText: 'Voces' }).textContent();
     const incomplete = await page.locator('#backstage .chips .chip:not(.full)').allTextContents();
     assert.deepEqual(incomplete, [], 'Every speaker should have full recording coverage');

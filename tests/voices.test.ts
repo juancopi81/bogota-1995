@@ -50,13 +50,14 @@ describe('included voices', () => {
     await import('../src/content/stations');
     await import('../src/content/phonebook');
     await import('../src/content/tv');
+    await import('../src/content/calle');
     await import('../src/objects/house');
     const fixed = allLines();
     const dir = join(process.cwd(), 'src/assets/voices');
     const manifest = JSON.parse(readFileSync(join(dir, 'manifest.json'), 'utf8')) as {
       clips: { id: string; speaker: string; spoken_text: string; sha256: string; voice_id: string }[];
     };
-    expect(fixed).toHaveLength(186);
+    expect(fixed).toHaveLength(188);
     expect(manifest.clips.map((line) => line.id).sort()).toEqual(fixed.map((line) => line.id).sort());
     expect(readdirSync(dir).filter((file) => file.endsWith('.mp3')).sort()).toEqual(fixed.map((line) => `${line.id}.mp3`).sort());
     for (const line of fixed) {
@@ -74,7 +75,7 @@ describe('included voices', () => {
     const { voices, ctx } = await setup();
     const { lineDuration } = await import('../src/audio/voices');
     await Promise.all([voices.loadBundled(ctx), voices.loadSaved(ctx)]);
-    expect(voices.count()).toBe(186);
+    expect(voices.count()).toBe(188);
     expect(voices.get('casa.onces')).toBe(bundled);
     expect(voices.get('llamada.andres.deParte')).toBe(bundled);
     expect(voices.get('radioactiva.introFlorecita')).toBe(bundled);
@@ -82,6 +83,8 @@ describe('included voices', () => {
     expect(voices.get('llamada.angie.hola')).toBe(bundled);
     expect(voices.get('tv.novela.n1')).toBe(bundled);
     expect(voices.get('tv.novela.n2')).toBe(bundled);
+    expect(voices.get('calle.botella')).toBe(bundled);
+    expect(voices.get('calle.botellaLarga')).toBe(bundled);
     expect(voices.get('')).toBeUndefined();
     expect(saved.size).toBe(0);
     expect(lineDuration({ id: 'casa.onces', who: 'mama', text: '¡A tomar onces!' })).toBeCloseTo(3.29);
@@ -108,7 +111,7 @@ describe('included voices', () => {
     }
     await Promise.all([includedLoad, savedLoad]);
     expect(voices.get('casa.onces')).toBe(uploaded);
-    expect(voices.count()).toBe(186);
+    expect(voices.count()).toBe(188);
   });
 
   it('restores the included take after clearing uploads', async () => {
@@ -118,7 +121,7 @@ describe('included voices', () => {
     expect(voices.get('casa.onces')).toBe(uploaded);
     await voices.clear();
     expect(voices.get('casa.onces')).toBe(bundled);
-    expect(voices.count()).toBe(186);
+    expect(voices.count()).toBe(188);
     expect(saved.size).toBe(0);
   });
 
@@ -127,7 +130,7 @@ describe('included voices', () => {
     const { voices, ctx } = await setup();
     await Promise.all([voices.loadSaved(ctx), voices.loadBundled(ctx)]);
     expect(voices.get('casa.onces')).toBe(bundled);
-    expect(voices.count()).toBe(186);
+    expect(voices.count()).toBe(188);
   });
 
   it.each(['missing', 'unreadable', 'offline'])('keeps other recordings and subtitle fallback when one clip is %s', async (failure) => {
@@ -140,6 +143,6 @@ describe('included voices', () => {
     await voices.loadBundled(ctx);
     expect(voices.has('casa.onces')).toBe(false);
     expect(voices.has('llamada.andres.deParte')).toBe(true);
-    expect(voices.count()).toBe(185);
+    expect(voices.count()).toBe(187);
   });
 });

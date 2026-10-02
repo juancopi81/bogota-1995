@@ -19,8 +19,8 @@ npm run dev
 
 Open http://localhost:5173 with **headphones on**. Laptop first; touch works too.
 
-All 186 fixed dialogue lines come included: the household and phone cast,
-all four radio stations, advertisements, and the fictional TV programs.
+All 188 fixed dialogue lines come included: the household and phone cast,
+all four radio stations, advertisements, fictional TV programs, and the street.
 They play automatically alongside subtitles. Live radio and 117 time
 announcements still use subtitles. No ElevenLabs account, API key, or
 uploads are needed to hear the included cast. Listening and regeneration
