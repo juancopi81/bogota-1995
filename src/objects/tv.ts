@@ -433,6 +433,11 @@ export class Tv {
     });
   }
 
+  /** A real 1995 clip is on the screen. */
+  get playingClip(): boolean {
+    return this.showingVideo;
+  }
+
   setPower(on: boolean): void {
     if (on === this.power) return;
     this.power = on;

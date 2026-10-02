@@ -1,0 +1,55 @@
+# Builds the room and publishes it on GitHub Pages every time main changes.
+#
+# One-time setup (see docs/research-setup.md):
+#   Settings → Pages → Source: GitHub Actions.
+#   For the test: Settings → Secrets and variables → Actions → Variables,
+#   add RESEARCH_URL (the Google Sheet's web app) and, if you like,
+#   RESEARCH_CONTACT (shown on the consent screen).
+name: Publish the room
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # the e2e scripts aren't run here, so no browsers to download
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          VITE_RESEARCH_URL: ${{ vars.RESEARCH_URL }}
+          VITE_RESEARCH_CONTACT: ${{ vars.RESEARCH_CONTACT }}
+          VITE_BUILD: ${{ github.sha }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

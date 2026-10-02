@@ -238,6 +238,7 @@ export class Phone {
     const complete = (this.digits[0] === '1' && this.digits.length === 3) || this.digits.length === 7;
     if (complete) {
       const number = this.digits;
+      bus.emit('phone:dialed', { number });
       this.setState('waiting');
       this.line.relays(3 + Math.floor(Math.random() * 3));
       const token = this.call ?? { cancelled: false };

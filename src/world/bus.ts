@@ -36,6 +36,8 @@ export type WorldEvents = {
   'radio:request-aired': { stationId: string; songId: string; dedication: string | null };
   /** The phone line state changed. */
   'phone:state': { state: string };
+  /** A whole number was dialed. */
+  'phone:dialed': { number: string };
   /** Recording started or stopped on the deck. */
   'tape:recording': { on: boolean };
   /** A song or voice file was loaded in the backstage. */
