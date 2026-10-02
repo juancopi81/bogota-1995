@@ -31,7 +31,7 @@ still use subtitles. Player choices are also text only.
 | TV: Rodrigo | Juan Carlos - Expressive & Friendly | `GMEpD7vcmVahuyz6NuZA` | 3 |
 | TV presenter | Ale Alejandro - Your Friendly Pal | `Fn8ZcuyNYI4qImgQ2yuH` | 5 |
 | TV documentary narrator | Diever Muñoz - Clear, Precise and Warm | `CAYdOeRRe8sLTuBjQ1ht` | 5 |
-| Reciclador | Cesar - Slow, Meditative, Warm | `QtuQlibCvdX2iBrV4laj` | 2 |
+| Reciclador | Charlee - Authentic Voice (Bogotá/Rolo) | `WwBoE3ZND2tj8noa9Obu` | 2 |
 
 `manifest.json` records each line, voice, delivery tags, settings, and file hash.
 The selected B take is preserved for `casa.onces`. API credentials and private
@@ -42,10 +42,11 @@ Grandma uses the user's selected Sandra take 1 delivery:
 map; TV reuses existing cast voices with distinct actors for Maritza and
 Rodrigo. The original 79 recordings are preserved byte for byte.
 
-The reciclador reuses César with a mature, weathered, projected sing-song
-delivery; the longer call draws out "Botellaaa". Distance and window muffling
-come from the room's audio engine. The wrong-number bakery take now says
-"La Espiga", matching the shop across the street.
+The reciclador uses the user's selected Charlee B delivery:
+`[strongly nasal, harsh, forceful, rhythmic street call]`. The longer call
+preserves the approved audition; the short call uses the same voice and settings.
+Distance and window muffling come from the room's audio engine. The wrong-number
+bakery take now says "La Espiga", matching the shop across the street.
 
 ## Listening checklist
 

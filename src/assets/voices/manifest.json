@@ -2752,32 +2752,32 @@
     },
     {
       "id": "calle.botella",
-      "voice_id": "QtuQlibCvdX2iBrV4laj",
+      "voice_id": "WwBoE3ZND2tj8noa9Obu",
       "model_id": "eleven_v4",
       "voice_settings": {
-        "stability": 0.5,
+        "stability": 0,
         "similarity_boost": 0.75
       },
       "spoken_text": "¡Botella, papel!",
-      "input_text": "[mature, weathered, projecting, sing-song] ¡Botella, papel!",
-      "sha256": "7cd38300d818048455ec8d8a2fcbe7cc775e50c6d4ad20e0d5c1ad0b924ea95a",
-      "duration_seconds": 2.32,
-      "credit_cost": 6,
+      "input_text": "[strongly nasal, harsh, forceful, rhythmic street call] ¡Botella, papel!",
+      "sha256": "5e8725849cea00755ec2c249b31adb67040d463d57feaf61d1f32093aba49598",
+      "duration_seconds": 2,
+      "credit_cost": 8,
       "speaker": "reciclador",
       "generated_on": "2026-10-02"
     },
     {
       "id": "calle.botellaLarga",
-      "voice_id": "QtuQlibCvdX2iBrV4laj",
+      "voice_id": "WwBoE3ZND2tj8noa9Obu",
       "model_id": "eleven_v4",
       "voice_settings": {
-        "stability": 0.5,
+        "stability": 0,
         "similarity_boost": 0.75
       },
       "spoken_text": "¡Botellaaa... papel!",
-      "input_text": "[mature, weathered, projecting, drawn-out sing-song] ¡Botellaaa... papel!",
-      "sha256": "39a1aa3f229b85ac32060df0e51586d89c3a5fb1d55461f75b84578e491f0cfc",
-      "duration_seconds": 2.96,
+      "input_text": "[strongly nasal, harsh, forceful, rhythmic street call] ¡Botellaaa... papel!",
+      "sha256": "9683e0b0503816fb34339752351a138f71c21917bb07f83992dc31df1fc385d0",
+      "duration_seconds": 2.56,
       "credit_cost": 8,
       "speaker": "reciclador",
       "generated_on": "2026-10-02"
