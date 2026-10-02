@@ -19,9 +19,10 @@ npm run dev
 
 Open http://localhost:5173 with **headphones on**. Laptop first; touch works too.
 
-All 186 fixed dialogue lines come included: the household and phone cast,
-all four radio stations, advertisements, and the fictional TV programs.
-They play automatically alongside subtitles. Live radio and 117 time
+188 of the 192 fixed dialogue lines come included: the household and phone cast,
+all four radio stations, advertisements, fictional TV programs, and the street.
+They play automatically alongside subtitles; Andrés's four new lines (his call
+from a monedero) are subtitles until their take is in. Live radio and 117 time
 announcements still use subtitles. No ElevenLabs account, API key, or
 uploads are needed to hear the included cast. Listening and regeneration
 instructions are in [`src/assets/voices/README.md`](src/assets/voices/README.md).
@@ -51,7 +52,12 @@ Other ways to open it:
 - **The TV.** A wood-grain set. Push POWER, turn the VHF knob (2 to 13),
   move the rabbit ears when the picture is snow, whack the cabinet. Canal A (9) airs real 1995 clips
   when it can (see [`docs/clips-shortlist.md`](docs/clips-shortlist.md)).
-- **The window.** Wipe the fog, open the pane, listen to the street.
+- **The window.** A Teusaquillo street in the rain: brick houses with clay-tile
+  roofs, the Panadería La Espiga on the corner, the aguacate cart beside it.
+  Busetas pull over for whoever flags them down while the taxis behind them
+  honk, and the reciclador comes by twice calling "¡Botella, papel!". From
+  the room you hear only the rain and the odd horn; look out, wipe the fog,
+  open the pane, and the street comes up.
 - **The alarm clock** on the dresser keeps the afternoon's time; up close it ticks.
 - **The light switch** by the door, for when it gets dark.
 

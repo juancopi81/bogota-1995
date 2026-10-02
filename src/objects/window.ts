@@ -10,17 +10,12 @@ import { P } from '../art/palette';
 import { bus } from '../world/bus';
 import { mulberry32 } from '../util/rng';
 import { setAttr, toggleClass } from '../ui/dom';
+import { daylight } from '../world/clock';
+import { GlassRain, dropSprite } from '../scene/glassrain';
 
 const OPEN = { x: 140, y: 40, w: 1320, h: 720 };
 const TRANSOM = 214; // height of the fixed top band
 const MID = OPEN.x + OPEN.w / 2;
-
-interface Drop {
-  x: number;
-  y: number;
-  r: number;
-  vy: number;
-}
 
 export class WindowView {
   readonly el: HTMLElement;
@@ -28,16 +23,23 @@ export class WindowView {
   private readonly city: CityView;
   private readonly fog: HTMLCanvasElement;
   private readonly fogCtx: CanvasRenderingContext2D;
+  /** Where your hand has wiped the glass (the fog creeps back as this fades). */
+  private readonly wiped: HTMLCanvasElement;
+  private readonly wipedCtx: CanvasRenderingContext2D;
   private readonly drops: HTMLCanvasElement;
   private readonly dropsCtx: CanvasRenderingContext2D;
+  /** The wet trails the running drops leave, fading as the glass dries. */
+  private readonly trails: HTMLCanvasElement;
+  private readonly trailsCtx: CanvasRenderingContext2D;
+  private readonly rain: GlassRain;
   private readonly pane: SVGGElement;
-  private readonly dropList: Drop[] = [];
-  private readonly rng = mulberry32(28);
   private open = false;
   private paneX = 0;
+  private sliding = false;
   private roomPane: SVGElement | null = null;
   private roomCurtain: SVGElement | null = null;
-  private readonly sprite: HTMLCanvasElement;
+  private sprite: HTMLCanvasElement | null = null;
+  private spriteDay = -1;
   private frame = 0;
 
   constructor(private readonly engine: AudioEngine) {
@@ -62,13 +64,20 @@ export class WindowView {
     this.fog.width = OPEN.w / 2;
     this.fog.height = OPEN.h / 2;
     this.fogCtx = this.fog.getContext('2d')!;
+    this.wiped = document.createElement('canvas');
+    this.wiped.width = this.fog.width;
+    this.wiped.height = this.fog.height;
+    this.wipedCtx = this.wiped.getContext('2d')!;
     for (const c of [this.drops, this.fog]) {
       Object.assign(c.style, { left: `${OPEN.x}px`, top: `${OPEN.y}px`, width: `${OPEN.w}px`, height: `${OPEN.h}px` });
       this.el.appendChild(c);
     }
     this.initFog();
-    for (let i = 0; i < 140; i++) this.dropList.push(this.newDrop(true));
-    this.sprite = dropSprite();
+    this.trails = document.createElement('canvas');
+    this.trails.width = this.drops.width;
+    this.trails.height = this.drops.height;
+    this.trailsCtx = this.trails.getContext('2d')!;
+    this.rain = new GlassRain(this.drops.width, this.drops.height, mulberry32(28));
 
     // the frame, curtains and sill drawn over it; the sliding pane is its own layer
     const frame = document.createElement('div');
@@ -85,22 +94,39 @@ export class WindowView {
     this.roomCurtain = roomWall.querySelector('.curtain-right');
   }
 
+  /** The fog the glass settles back to: light at the top, heavier at the bottom, never hiding the street. */
   private initFog(): void {
-    const c = this.fogCtx;
-    const g = c.createLinearGradient(0, 0, 0, this.fog.height);
-    g.addColorStop(0, 'rgba(226,231,233,0.35)');
-    g.addColorStop(1, 'rgba(226,231,233,0.95)');
-    c.fillStyle = g;
-    c.fillRect(0, 0, this.fog.width, this.fog.height);
+    this.composeFog();
   }
 
-  private newDrop(anywhere: boolean): Drop {
-    return {
-      x: this.rng() * this.drops.width,
-      y: anywhere ? this.rng() * this.drops.height : -10,
-      r: 1 + Math.pow(this.rng(), 3) * 4.5,
-      vy: 0,
-    };
+  private composeFog(): void {
+    const c = this.fogCtx;
+    const { width: w, height: h } = this.fog;
+    c.clearRect(0, 0, w, h);
+    const g = c.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, 'rgba(226,231,233,0.3)');
+    g.addColorStop(1, 'rgba(226,231,233,0.62)');
+    c.fillStyle = g;
+    c.fillRect(0, 0, w, h);
+    c.save();
+    c.globalCompositeOperation = 'destination-out';
+    c.drawImage(this.wiped, 0, 0);
+    c.restore();
+    // where the pane has slid away there's no glass to fog up
+    const clearX = this.glassFreeFrom();
+    if (clearX < w) c.clearRect(clearX, TRANSOM / 2, w - clearX, h);
+  }
+
+  /** Where the open window begins, in glass-canvas units (the full width when it's shut). */
+  private glassFreeFrom(): number {
+    if (!this.open && this.paneX > -5) return this.fog.width;
+    const openFrom = MID - OPEN.x + this.paneX;
+    return (openFrom + OPEN.w / 2 - 20) / 2;
+  }
+
+  /** Whether a point on the glass canvas has glass in front of it. */
+  private onGlass(x: number, y: number): boolean {
+    return y < TRANSOM / 2 || x < this.glassFreeFrom();
   }
 
   private wire(frame: HTMLElement): void {
@@ -111,14 +137,15 @@ export class WindowView {
       const p = stage.toLocal(e.clientX, e.clientY);
       const x = (p.x - OPEN.x) / 2;
       const y = (p.y - OPEN.y) / 2;
-      const c = this.fogCtx;
+      const c = this.wipedCtx;
       const from = last ?? { x, y };
       const steps = Math.max(1, Math.ceil(Math.hypot(x - from.x, y - from.y) / 6));
       c.save();
-      c.globalCompositeOperation = 'destination-out';
       for (let i = 1; i <= steps; i++) {
         const px = from.x + ((x - from.x) * i) / steps;
         const py = from.y + ((y - from.y) * i) / steps;
+        // nothing to wipe where the window is open
+        if (!this.onGlass(px, py)) continue;
         const g = c.createRadialGradient(px, py, 4, px, py, 22);
         g.addColorStop(0, 'rgba(0,0,0,0.9)');
         g.addColorStop(1, 'rgba(0,0,0,0)');
@@ -126,6 +153,7 @@ export class WindowView {
         c.fillRect(px - 22, py - 22, 44, 44);
       }
       c.restore();
+      this.composeFog();
       last = { x, y };
     };
     this.el.addEventListener('pointerdown', (e) => {
@@ -138,7 +166,12 @@ export class WindowView {
       this.el.setPointerCapture(e.pointerId);
       wipe(e);
     });
-    this.el.addEventListener('pointermove', (e) => wiping && wipe(e));
+    this.el.addEventListener('pointermove', (e) => {
+      if (wiping) wipe(e);
+      // the hand that wipes only shows over the glass
+      const p = stage.toLocal(e.clientX, e.clientY);
+      toggleClass(this.el, 'no-glass', !this.onGlass((p.x - OPEN.x) / 2, (p.y - OPEN.y) / 2));
+    });
     this.el.addEventListener('pointerup', () => {
       wiping = false;
       last = null;
@@ -165,6 +198,7 @@ export class WindowView {
 
     // the pane slides (in the close-up and in the room)
     const target = this.open ? -(OPEN.w / 2 - 20) : 0;
+    this.sliding = Math.abs(target - this.paneX) > 0.5;
     this.paneX += (target - this.paneX) * Math.min(1, dt * 5);
     setAttr(this.pane, 'transform', `translate(${this.paneX.toFixed(1)} 0)`);
     const roomShift = (this.paneX / (OPEN.w / 2 - 20)) * 210;
@@ -172,65 +206,68 @@ export class WindowView {
     toggleClass(this.roomCurtain, 'breeze', this.open);
 
     if (!visible) return;
-    this.drawGlass(dt);
+    this.drawGlass(dt, t);
   }
 
-  private drawGlass(dt: number): void {
+  private drawGlass(dt: number, t: number): void {
     const w = this.drops.width;
     const h = this.drops.height;
-    const openFrom = MID - OPEN.x + this.paneX; // glass-free area on the right when open
-    const clearX = this.open || this.paneX < -5 ? (openFrom + OPEN.w / 2 - 20) / 2 : w;
+    const clearX = this.glassFreeFrom();
 
-    // fog creeps back slowly (not where the window is open)
+    // fog creeps back slowly as the wiped patches fade (not where the window is open)
     if (++this.frame % 8 === 0) {
-      const c = this.fogCtx;
-      c.fillStyle = 'rgba(226,231,233,0.04)';
-      c.fillRect(0, 0, Math.min(w, clearX), h);
-      if (clearX < w) c.clearRect(clearX, TRANSOM / 2, w - clearX, h);
+      const wc = this.wipedCtx;
+      wc.save();
+      wc.globalCompositeOperation = 'destination-out';
+      wc.fillStyle = 'rgba(0,0,0,0.04)';
+      wc.fillRect(0, 0, w, h);
+      wc.restore();
+      this.composeFog();
+    } else if (this.sliding) {
+      // the open part follows the pane as it slides
+      this.composeFog();
     }
 
-    // drops: most sit still; the big ones slide down and leave a trail
+    // the rain on the outside of the glass: drops sit, merge, and the heavy ones run down
+    const tc = this.trailsCtx;
+    if (this.frame % 8 === 4) {
+      tc.save();
+      tc.globalCompositeOperation = 'destination-out';
+      tc.fillStyle = 'rgba(0,0,0,0.05)';
+      tc.fillRect(0, 0, w, h);
+      tc.restore();
+    }
+    // the wet trails catch the daylight; at dusk they barely show
+    const day = daylight(t);
+    tc.lineCap = 'round';
+    tc.strokeStyle = `rgba(214,224,232,${(0.05 + 0.11 * day).toFixed(3)})`;
+    this.rain.step(Math.min(dt, 0.05), (x, y) => this.onGlass(x, y), (x0, y0, x1, y1, r) => {
+      tc.lineWidth = r * 0.9;
+      tc.beginPath();
+      tc.moveTo(x0, y0);
+      tc.lineTo(x1, y1);
+      tc.stroke();
+    });
+    if (clearX < w) tc.clearRect(clearX, TRANSOM / 2, w - clearX, h);
+
+    // the sky in the drops dims at dusk
+    if (!this.sprite || Math.abs(day - this.spriteDay) > 0.03) {
+      this.sprite = dropSprite(day);
+      this.spriteDay = day;
+    }
+
     const d = this.dropsCtx;
     d.clearRect(0, 0, w, h);
-    // the rain falling outside, then the drops sitting on the glass
+    // the rain falling outside, then the trails and the drops on the glass
     this.city.drawRain(d, dt, w, h);
-    d.strokeStyle = 'rgba(200,210,218,0.25)';
-    for (let i = 0; i < this.dropList.length; i++) {
-      const drop = this.dropList[i];
-      if (drop.r > 3.2) drop.vy = Math.min(40, drop.vy + dt * 30);
-      drop.y += drop.vy * dt;
-      if (drop.y > h + 10 || (drop.x > clearX && drop.y > TRANSOM / 2)) this.dropList[i] = this.newDrop(false);
-      const size = drop.r * 2;
-      d.drawImage(this.sprite, drop.x - drop.r * 0.85, drop.y - drop.r, size * 0.85, size);
-      if (drop.vy > 0) {
-        d.lineWidth = drop.r * 0.6;
-        d.beginPath();
-        d.moveTo(drop.x, drop.y - drop.r);
-        d.lineTo(drop.x, drop.y - drop.r - drop.vy * 0.6);
-        d.stroke();
-      }
+    d.drawImage(this.trails, 0, 0);
+    for (const drop of this.rain.drops) {
+      const stretch = drop.running && drop.caught <= 0 ? 1 + Math.min(0.45, drop.vy / 70) : 1;
+      const dw = drop.r * 2.2;
+      const dh = drop.r * 2.4 * stretch;
+      d.drawImage(this.sprite, drop.x - dw / 2, drop.y - dh * 0.6, dw, dh);
     }
-    if (this.rng() < dt * 2) this.dropList.push(this.newDrop(false));
-    if (this.dropList.length > 180) this.dropList.shift();
   }
-}
-
-/** One raindrop, drawn once and stamped everywhere. */
-function dropSprite(): HTMLCanvasElement {
-  const c = document.createElement('canvas');
-  c.width = 32;
-  c.height = 32;
-  const g = c.getContext('2d')!;
-  const grad = g.createRadialGradient(12, 11, 0.5, 16, 16, 16);
-  grad.addColorStop(0, 'rgba(255,255,255,0.8)');
-  grad.addColorStop(0.5, 'rgba(160,175,185,0.35)');
-  grad.addColorStop(0.95, 'rgba(40,50,60,0.45)');
-  grad.addColorStop(1, 'rgba(40,50,60,0)');
-  g.fillStyle = grad;
-  g.beginPath();
-  g.arc(16, 16, 16, 0, Math.PI * 2);
-  g.fill();
-  return c;
 }
 
 function curtain(x: number, w: number): string {

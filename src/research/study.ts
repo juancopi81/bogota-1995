@@ -9,6 +9,7 @@ import { onTick } from '../world/loop';
 import { ActivityLog, type Snapshot } from './log';
 import { VisitRecord, device, doorFields, exitFields, referral, visitor } from './record';
 import { consent, door, exit, needsComputer, phoneNote, thanks } from './screens';
+import { EXAMPLES, fetchMemories, type SharedMemory } from './memories';
 
 const RESEARCH_URL = import.meta.env.VITE_RESEARCH_URL ?? '';
 /** How often the record goes out while the visitor is in the room (seconds). */
@@ -31,6 +32,8 @@ export class Study {
   private askedAtSix = false;
   private nudged = false;
   private sinceSend = 0;
+  private memories: Promise<SharedMemory[]> | null = null;
+  private shared = false;
 
   constructor(
     private readonly params: URLSearchParams,
@@ -123,12 +126,15 @@ export class Study {
     this.exitsShown++;
     this.duck(true);
     this.flush();
+    // what other visitors left, ready by the time they've answered
+    this.memories ??= RESEARCH_URL ? fetchMemories(RESEARCH_URL) : Promise.resolve(import.meta.env.DEV ? EXAMPLES : []);
     const answers = await exit(this.host, reason);
     if (answers) {
       // the log goes on if they stay, so keep how long they'd been inside when they answered
       this.record.set({ ...exitFields(answers, this.preNostalgia), stage: 'done', exit_reason: reason, t_exit: iso(), min_at_exit: Math.round((this.log.time / 60) * 10) / 10 });
       this.flush();
-      await thanks(this.host);
+      this.shared = !!answers.memory.trim() && answers.shareMemory;
+      await thanks(this.host, this.memories, this.shared);
       this.where = 'done';
     } else {
       this.where = back;
@@ -140,7 +146,7 @@ export class Study {
     this.where = 'asking';
     this.duck(true);
     this.flush();
-    await thanks(this.host);
+    await thanks(this.host, this.memories ?? Promise.resolve([]), this.shared);
     this.where = 'done';
     this.duck(false);
   }
@@ -154,5 +160,6 @@ export class Study {
     bus.on('window:open', ({ open }) => open && this.log.count('window_open'));
     bus.on('light:bulb', () => this.log.count('light'));
     bus.on('tv:power', ({ on }) => on && this.log.count('tv_on'));
+    bus.on('story:andres', ({ step }) => this.log.count(`andres_${step.replace('-', '_')}`));
   }
 }

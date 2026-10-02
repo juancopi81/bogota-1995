@@ -35,6 +35,8 @@ export interface CallApi {
   ambience(kind: Ambience): void;
   /** Somebody else picks up or puts down an extension. */
   click(): void;
+  /** Coins drop into the monedero they're calling from. */
+  coins(): void;
   /** World time now (seconds since 5:30 p.m.). */
   now(): number;
 }

@@ -2,9 +2,9 @@
 
 import { SPEAKERS, shownText, type Line } from '../content/lines';
 
-export type SubSource = 'phone' | 'radio' | 'tv' | 'tape' | 'house';
+export type SubSource = 'phone' | 'radio' | 'tv' | 'tape' | 'house' | 'street';
 
-const ORDER: SubSource[] = ['house', 'tv', 'radio', 'tape', 'phone'];
+const ORDER: SubSource[] = ['street', 'house', 'tv', 'radio', 'tape', 'phone'];
 
 export interface SubContent {
   /** Where it comes from, e.g. "Radio · Radioactiva 97.9". */

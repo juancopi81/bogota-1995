@@ -157,6 +157,11 @@ export class PhoneLine {
     play(this.engine.ctx, sfx.hook(this.engine.ctx), this.bus, { gain: 0.4, rate: 0.8 });
   }
 
+  /** Coins dropping into the monedero at the other end. */
+  coins(): void {
+    play(this.engine.ctx, sfx.coins(this.engine.ctx), this.bus, { gain: 0.45 });
+  }
+
   setAmbience(kind: Ambience): void {
     const now = this.engine.ctx.currentTime;
     const settings: Record<Ambience, [number, number]> = {

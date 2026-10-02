@@ -10,7 +10,12 @@ export const flags = {
   /** When you left a message with Andrés's mother. */
   andresMessageAt: null as number | null,
   andresCalls: 0,
+  /** You've talked to Andrés (from the monedero, or at his house). */
   andresTalked: false,
+  /** He told you about the aguacero in Unicentro. */
+  andresToldRain: false,
+  /** You've talked to him since he got home. */
+  andresTalkedHome: false,
   /** Andrés asked you to tape "Florecita rockera" for him. */
   andresAsked: false,
   angieCalls: 0,
@@ -28,6 +33,8 @@ export function setName(name: string): void {
 
 /** When things happen in the other houses. */
 export const SCHEDULE = {
+  /** Andrés calls from a monedero in Unicentro, stuck there by the rain. */
+  andresEarly: 75,
   /** A señora calls looking for the bakery. */
   wrongNumberRings: 330,
   /** Angie's sister is on the phone until then. */

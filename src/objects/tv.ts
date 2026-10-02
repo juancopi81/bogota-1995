@@ -9,6 +9,7 @@ import { ClipScreen, clipsPlayable, workingClips } from './clipscreen';
 import { AD_BREAKS } from '../content/clips';
 import { dynamicLine } from '../content/lines';
 import { tvSvg, SCREEN, CHANNEL_KNOB, UHF_KNOB, VOLUME_KNOB, ANTENNA, channelAngle } from '../art/tv';
+import { Tube } from '../scene/crt';
 import { drawScene, drawAnthem, TV_W, TV_H } from './tvscenes';
 import type { AudioEngine } from '../audio/engine';
 import { library } from '../audio/library';
@@ -23,7 +24,7 @@ import { kv } from '../world/store';
 import { bus } from '../world/bus';
 import { clamp, mulberry32 } from '../util/rng';
 import { MAMA, mamaSays } from './house';
-import { setAttr } from '../ui/dom';
+import { setAttr, toggleClass } from '../ui/dom';
 import { glide } from '../audio/param';
 
 const ANTHEM_AT = at(18, 0);
@@ -185,6 +186,9 @@ export class Tv {
   readonly el: HTMLElement;
   private readonly svg: SVGSVGElement;
   private readonly screen: HTMLCanvasElement;
+  private tube: Tube | null = null;
+  /** The tube already shows nothing (the TV is off). */
+  private tubeBlank = false;
   private readonly g: CanvasRenderingContext2D;
   private readonly scene: HTMLCanvasElement;
   private readonly sg: CanvasRenderingContext2D;
@@ -274,6 +278,23 @@ export class Tv {
     this.clips = new ClipScreen(this.el, this.screen);
     // a clip that runs out early: the channel moves on to what's next
     this.clips.onEnded = () => this.channels.get(this.channel)?.cutClip();
+    // the picture goes out through the tube's curved, glowing glass (or stays flat without WebGL)
+    this.tube = Tube.create();
+    if (this.tube) {
+      const tube = this.tube.canvas;
+      tube.className = 'tv-screen tv-tube';
+      Object.assign(tube.style, { left: `${SCREEN.x}px`, top: `${SCREEN.y}px`, width: `${SCREEN.w}px`, height: `${SCREEN.h}px` });
+      this.el.appendChild(tube);
+      this.screen.style.visibility = 'hidden';
+      this.tube.onLost = () => {
+        tube.remove();
+        this.tube = null;
+        this.screen.style.visibility = '';
+        this.el.classList.add('flat');
+      };
+    } else {
+      this.el.classList.add('flat');
+    }
     const glass = document.createElement('div');
     glass.className = 'tv-glass';
     Object.assign(glass.style, { left: `${SCREEN.x}px`, top: `${SCREEN.y}px`, width: `${SCREEN.w}px`, height: `${SCREEN.h}px` });
@@ -574,6 +595,10 @@ export class Tv {
       g.clearRect(0, 0, W, H);
       this.mirror(false);
       light.crt = 0;
+      if (!this.tubeBlank && closeups.isOpen('tv')) {
+        this.tube?.render(this.screen);
+        this.tubeBlank = true;
+      }
       return;
     }
     if (!this.power) light.crt = 0;
@@ -658,6 +683,13 @@ export class Tv {
 
     this.mirror(true);
     this.glow(item, q);
+    // a real clip plays under the canvas: the glass gets its scanlines instead
+    toggleClass(this.el, 'video', video);
+    // the tube only shows up close (from across the room, the little screen copies the flat picture)
+    if (closeups.isOpen('tv')) {
+      this.tube?.render(this.screen);
+      this.tubeBlank = false;
+    }
   }
 
   /** The little screen in the room shows the same picture. */

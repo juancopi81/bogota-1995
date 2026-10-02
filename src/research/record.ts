@@ -22,6 +22,8 @@ export interface DoorAnswers {
 export interface ExitAnswers {
   mood: Record<string, number>;
   memory: string;
+  /** They let other visitors read it (once it's been read and approved). */
+  shareMemory: boolean;
   triggers: string[];
   returnIntent: string | null;
   trait: Record<string, number>;
@@ -115,6 +117,7 @@ export function exitFields(a: ExitAnswers, preNostalgia: number | null): Record<
   out.post_nostalgia = post;
   out.change = post !== null && preNostalgia !== null ? Math.round((post - preNostalgia) * 100) / 100 : null;
   out.memory = a.memory.trim();
+  out.memory_share = out.memory ? a.shareMemory : null;
   out.triggers = a.triggers.join(' ');
   out.return_intent = a.returnIntent;
   for (const item of TRAIT) out[`trait_${item.id}`] = a.trait[item.id] ?? null;

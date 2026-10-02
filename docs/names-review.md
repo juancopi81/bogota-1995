@@ -25,6 +25,8 @@ connected with the stations, channels or brands in the room.
 These businesses are invented. Before the ads, make sure none is the name of
 a real business that could feel singled out:
 
+- **Panadería La Espiga**, on the corner across the street, the bakery
+  the wrong-number caller asks for, and the almanaque on the wall
 - **Pizzería La Toscana** (the radio ad and its phone number)
 - **Óptica Visión Clara**, in Unicentro
 - **Chocolate La Sabana**, **Detergente Blancor**, **Almacenes Casablanca** (TV ads)
@@ -40,6 +42,6 @@ cuarto de 1995 en Chapinero. Sábado, 5:30 p.m., está lloviendo."
 
 ## Voices
 
-The 186 included lines were generated with ElevenLabs on a paid plan, which
+The 188 included lines were generated with ElevenLabs on a paid plan, which
 allows publishing. The DJs are fictional and aren't recordings of the real
 stations (see `src/assets/voices/README.md`).

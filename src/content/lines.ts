@@ -26,6 +26,7 @@ export type Speaker =
   | 'tvNovela'
   | 'tvNarrador'
   | 'tvPresentador'
+  | 'reciclador'
   | 'jugador';
 
 export const SPEAKERS: Record<Speaker, { name: string; direction: string }> = {
@@ -48,6 +49,7 @@ export const SPEAKERS: Record<Speaker, { name: string; direction: string }> = {
   tvNovela: { name: 'TV · Telenovela', direction: 'Melodramatic actors.' },
   tvNarrador: { name: 'TV · Narrador', direction: 'Calm documentary narrator.' },
   tvPresentador: { name: 'TV · Presentador', direction: 'Saturday TV host.' },
+  reciclador: { name: 'Reciclador', direction: 'A man in his fifties pushing a cart of cardboard and bottles down the street in the rain, calling out in a long, worn sing-song, heard from three floors up.' },
   jugador: { name: 'Usted', direction: 'What you say (never recorded; shown as your choice).' },
 };
 
