@@ -25,6 +25,9 @@ connected with the stations, channels or brands in the room.
 These businesses are invented. Before the ads, make sure none is the name of
 a real business that could feel singled out:
 
+- **Panadería La Espiga**, on the corner across the street (the wrong-number
+  caller asks for it; it used to be "La Florida", which is a real, famous
+  pastry shop downtown)
 - **Pizzería La Toscana** (the radio ad and its phone number)
 - **Óptica Visión Clara**, in Unicentro
 - **Chocolate La Sabana**, **Detergente Blancor**, **Almacenes Casablanca** (TV ads)
