@@ -390,7 +390,7 @@ const W = lines('llamada.equivocado', {
   noVive: ['equivocado', 'No, aquí no vive nadie con ese nombre. Número equivocado.'],
   aloSenor: ['equivocado', '¿Aló? ¿Sí?'],
   aloAlo: ['equivocado', '¿Aló? ¿Aló? No se oye nada...'],
-  panaderia: ['equivocado', '¿Aló? ¿Hablo con la panadería La Espiga?'],
+  panaderia: ['equivocado', '¿Aló? ¿Hablo con la panadería La Florida?'],
   quePena: ['equivocado', 'Ay, qué pena. Perdone.'],
   roscones: ['equivocado', '¡Ay, qué bueno! ¿Me separa dos roscones y una mantecada? Ya paso por ellos.'],
   gracias: ['equivocado', 'Muchas gracias, muy amable.'],

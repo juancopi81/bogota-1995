@@ -207,7 +207,7 @@ _Assorted strangers: a señora, a señor._
 | `llamada.equivocado.noVive` | No, aquí no vive nadie con ese nombre. Número equivocado. |
 | `llamada.equivocado.aloSenor` | ¿Aló? ¿Sí? |
 | `llamada.equivocado.aloAlo` | ¿Aló? ¿Aló? No se oye nada... |
-| `llamada.equivocado.panaderia` | ¿Aló? ¿Hablo con la panadería La Espiga? |
+| `llamada.equivocado.panaderia` | ¿Aló? ¿Hablo con la panadería La Florida? |
 | `llamada.equivocado.quePena` | Ay, qué pena. Perdone. |
 | `llamada.equivocado.roscones` | ¡Ay, qué bueno! ¿Me separa dos roscones y una mantecada? Ya paso por ellos. |
 | `llamada.equivocado.gracias` | Muchas gracias, muy amable. |
