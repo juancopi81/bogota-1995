@@ -4,13 +4,7 @@
 
 import { P } from './palette';
 import { mulberry32, type Rng } from '../util/rng';
-import { barrio, type Barrio } from './barrio';
-
-/** Round 6 mockups: ?barrio=a|b|c draws one of the three streets to choose from. */
-function mockup(): Barrio | null {
-  const v = typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('barrio');
-  return v === 'a' || v === 'b' || v === 'c' ? v : null;
-}
+import { streetCorner, streetFront } from './barrio';
 
 const W = 1600;
 
@@ -42,67 +36,6 @@ export function windowRect(rng: Rng, win: Win, frame = true): string {
     <rect x="${win.x}" y="${win.y}" width="${win.w}" height="${win.h * 0.35}" fill="#fff" opacity="0.06"/>${bar}`;
 }
 
-function apartmentBlock(rng: Rng, x: number, top: number, w: number, bottom: number, floors: number, cols: number, pattern: string): string {
-  const floorH = (bottom - top - 40) / floors;
-  let s = `<rect x="${x}" y="${top}" width="${w}" height="${bottom - top}" fill="url(#${pattern})"/>`;
-  // parapet and roof clutter: water tanks and antennas, every roof in the city had them
-  s += `<rect x="${x - 4}" y="${top - 8}" width="${w + 8}" height="10" fill="${P.concrete}"/>`;
-  const tanks = 1 + Math.floor(rng() * 2);
-  for (let i = 0; i < tanks; i++) {
-    const tx = x + 20 + rng() * (w - 70);
-    s += `<rect x="${tx}" y="${top - 38}" width="34" height="30" rx="4" fill="${P.eternit}"/>
-      <ellipse cx="${tx + 17}" cy="${top - 38}" rx="17" ry="4" fill="#6f7579"/>`;
-  }
-  const ants = 1 + Math.floor(rng() * 3);
-  for (let i = 0; i < ants; i++) {
-    const ax = x + 10 + rng() * (w - 20);
-    const ah = 30 + rng() * 40;
-    s += `<path d="M${ax} ${top - 8}V${top - 8 - ah}M${ax - 16} ${top - 8 - ah + 6}H${ax + 16}M${ax - 11} ${top - 8 - ah + 16}H${ax + 11}M${ax - 7} ${top - 8 - ah + 25}H${ax + 7}" stroke="#2c3033" stroke-width="2" fill="none"/>`;
-  }
-  const margin = 18;
-  const gap = (w - margin * 2) / cols;
-  for (let f = 0; f < floors; f++) {
-    const wy = top + 22 + f * floorH;
-    // floor slab lines: exposed concrete bands
-    s += `<rect x="${x}" y="${wy + floorH - 12}" width="${w}" height="5" fill="${P.concrete}" opacity="0.55"/>`;
-    for (let c = 0; c < cols; c++) {
-      const wx = x + margin + c * gap + 6;
-      s += windowRect(rng, { x: wx, y: wy, w: gap - 20, h: floorH - 28 });
-    }
-  }
-  return s;
-}
-
-/** A Teusaquillo house: brick, steep tile roof, a bay window, a chimney. */
-function teusaquilloHouse(rng: Rng, x: number, w: number, eave: number, bottom: number, pattern: string): string {
-  const peak = eave - w * 0.42;
-  const cx = x + w / 2;
-  let s = '';
-  // chimney
-  const chx = x + w * (rng() < 0.5 ? 0.22 : 0.7);
-  s += `<rect x="${chx}" y="${peak + 30}" width="22" height="${eave - peak}" fill="${P.brickDark}"/><rect x="${chx - 3}" y="${peak + 26}" width="28" height="7" fill="${P.concrete}"/>`;
-  s += `<rect x="${x}" y="${eave}" width="${w}" height="${bottom - eave}" fill="url(#${pattern})"/>`;
-  // roof with tile rows
-  s += `<path d="M${x - 14} ${eave + 4}L${cx} ${peak}L${x + w + 14} ${eave + 4}Z" fill="${P.tile}"/>`;
-  for (let i = 1; i < 6; i++) {
-    const yy = peak + ((eave - peak) * i) / 6;
-    const half = ((yy - peak) / (eave - peak)) * (w / 2 + 14);
-    s += `<path d="M${cx - half} ${yy}H${cx + half}" stroke="#5f2d20" stroke-width="2" opacity="0.5"/>`;
-  }
-  // gable window
-  s += windowRect(rng, { x: cx - 16, y: eave - 58, w: 32, h: 38 });
-  // bay window on the first floor
-  const bay = { x: x + w * 0.12, y: eave + 40, w: w * 0.36, h: 70 };
-  s += `<rect x="${bay.x - 8}" y="${bay.y - 12}" width="${bay.w + 16}" height="${bay.h + 24}" fill="${P.brickDark}"/>`;
-  s += windowRect(rng, bay);
-  s += windowRect(rng, { x: x + w * 0.6, y: eave + 44, w: w * 0.26, h: 62 });
-  // ground floor: door and a window with bars
-  s += `<rect x="${x + w * 0.62}" y="${bottom - 96}" width="${w * 0.2}" height="96" fill="#3b2a20"/>`;
-  s += windowRect(rng, { x: x + w * 0.14, y: bottom - 90, w: w * 0.3, h: 58 });
-  s += `<path d="${Array.from({ length: 6 }, (_, i) => `M${x + w * 0.14 + (i * w * 0.3) / 5} ${bottom - 90}V${bottom - 32}`).join('')}" stroke="#222" stroke-width="2"/>`;
-  return s;
-}
-
 export interface CityOptions {
   /** Unique prefix for ids (the room and the close-up each draw their own copy). */
   id: string;
@@ -112,8 +45,6 @@ export interface CityOptions {
 
 export function citySvg({ id, simple = false }: CityOptions): string {
   const rng = mulberry32(1995);
-  const which = mockup();
-  const art = which ? barrio(which, mulberry32(1995), { b1: `${id}-b1`, b2: `${id}-b2`, b3: `${id}-b3` }, simple) : null;
   const b1 = `${id}-b1`;
   const b2 = `${id}-b2`;
   const b3 = `${id}-b3`;
@@ -166,11 +97,12 @@ export function citySvg({ id, simple = false }: CityOptions): string {
     <path d="M0 470 C 200 440 420 460 640 440 C 860 420 1080 452 1300 430 C 1450 416 1540 430 1600 426 V660 H0Z" fill="${P.cerroNear}" opacity="0.55"/>
   </g>
   <rect class="mist" x="0" y="300" width="1600" height="260" fill="url(#${id}-haze)" opacity="0.7"/>
-  ${which ? `<g class="neblina" fill="#c9d0d3">
+  <!-- neblina: rain clouds caught on the cerros -->
+  <g class="neblina" fill="#c9d0d3">
     <ellipse cx="300" cy="300" rx="380" ry="26" opacity="0.55"/>
     <ellipse cx="980" cy="262" rx="300" ry="20" opacity="0.5"/>
     <ellipse cx="1420" cy="236" rx="240" ry="18" opacity="0.45"/>
-  </g>` : ''}
+  </g>
   <g class="far-roofs" opacity="0.8">`;
 
   // A band of far rooftops and eucalyptus between the street and the hills
@@ -192,29 +124,8 @@ export function citySvg({ id, simple = false }: CityOptions): string {
   }
   s += `</g><rect x="0" y="400" width="1600" height="100" fill="url(#${id}-haze)" opacity="0.35"/>`;
 
-  // The street-front: apartment blocks and Teusaquillo houses
-  s += `<g class="block">`;
-  if (art) s += art.front;
-  else {
-  s += apartmentBlock(rng, -10, 336, 330, 720, 6, 4, b1);
-  s += teusaquilloHouse(rng, 340, 270, 470, 720, b2);
-  s += teusaquilloHouse(rng, 630, 250, 480, 720, b1);
-  s += apartmentBlock(rng, 900, 372, 280, 720, 5, 3, b3);
-  s += teusaquilloHouse(rng, 1196, 250, 470, 720, b2);
-  s += apartmentBlock(rng, 1460, 350, 170, 720, 6, 2, b1);
-
-  // The corner shop (tienda) on the ground floor of the right-hand house
-  s += `
-    <rect x="1206" y="636" width="160" height="84" fill="#2b2622"/>
-    <rect class="tienda-light" x="1212" y="642" width="148" height="70" fill="#dfeedd" opacity="0.55"/>
-    <rect x="1230" y="660" width="40" height="52" fill="#b33a2e" opacity="0.8"/>
-    <rect x="1284" y="656" width="62" height="12" fill="#7a5a3a"/><rect x="1284" y="676" width="62" height="12" fill="#7a5a3a"/>
-    <rect x="1196" y="606" width="180" height="30" fill="${P.paper}"/>
-    <text x="1286" y="627" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="19" fill="#b03026" letter-spacing="1">TIENDA LA ESPERANZA</text>
-    <rect x="1382" y="640" width="40" height="40" rx="4" fill="#c8302a"/>
-    <text x="1402" y="664" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="9" fill="#fff">GASEOSAS</text>`;
-  }
-  s += `</g>`;
+  // The block across the street: Teusaquillo houses, the panadería on the corner
+  s += `<g class="block">${streetFront(mulberry32(1995), { b1, b2, b3 }, simple)}</g>`;
 
   // Power and telephone lines, sagging from pole to pole
   s += `<g class="cables" stroke="#23272a" stroke-width="2" fill="none" opacity="0.8">
@@ -236,8 +147,7 @@ export function citySvg({ id, simple = false }: CityOptions): string {
     <rect x="1240" y="760" width="140" height="6" class="tienda-reflection" fill="#dfeedd"/>
   </g>
   <path d="M0 824 H 1600" stroke="#d8d2b5" stroke-width="5" stroke-dasharray="46 40" opacity="0.5"/>
-  ${art ? `<g class="street-life">${art.street}</g>` : ''}
-  <g class="traffic"></g>
+  <g class="corner">${streetCorner()}</g>
   <rect x="0" y="872" width="1600" height="28" fill="${P.sidewalk}"/>`;
 
   // Street lamps (sodium) — they come on at dusk

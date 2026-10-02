@@ -1,16 +1,11 @@
-// The street across from the window, drawn three ways to choose from (round 6
-// mockups): A, a quiet Teusaquillo street of brick houses; B, a busy Chapinero
-// street with shops; C, today's mix of houses and apartment blocks, with the
-// fixes both share. What they all fix: roofs that read as clay tile, not
-// brick; facades that aren't all the same brick; trees, people under
-// umbrellas, the aguacate cart on the corner, the reciclador and his cart, and
-// more cars, taxis and busetas.
+// The street across from the window: Teusaquillo brick houses with steep
+// clay-tile roofs and front gardens, two painted houses, urapanes on the
+// sidewalk, the panadería on the corner and the aguacate cart beside it.
+// What moves (traffic, people, the reciclador) lives in sprites.ts.
 
 import { P } from './palette';
 import { windowRect } from './city';
 import type { Rng } from '../util/rng';
-
-export type Barrio = 'a' | 'b' | 'c';
 
 // clay tile, darkened by the rain
 const ROOF = '#5c3226';
@@ -18,7 +13,7 @@ const ROOF_ALT = '#6a3a2b';
 const ROOF_LINE = '#3b1d15';
 const ROOF_EDGE = '#80513f';
 const ETERNIT = '#8d918d';
-const PLASTER = { cream: '#ddd3bc', white: '#e4e1d8', mint: '#9db5a1', ochre: '#c6a463', blue: '#9fb3c0' };
+const PLASTER = { cream: '#ddd3bc', white: '#e4e1d8' };
 const IRON = '#1e2321';
 const FRAME_W = '#e8e3d6';
 const LEAF = ['#33493a', '#3e5644', '#4b664f', '#5a7659'];
@@ -153,62 +148,38 @@ function casaPintada(rng: Rng, x: number, w: number, top: number, color: string)
   return s;
 }
 
-/** A shopfront: a hand-painted sign, an awning, the lit inside, the shutter half up. */
-function shop(x: number, w: number, sign: string, opts: { sign?: string; ink?: string; awning?: [string, string]; h?: number } = {}): string {
-  const h = opts.h ?? 76;
+/** The panadería on the corner: a hand-painted sign, bread on the shelves, the glass counter, warm light. */
+function panaderia(x: number, w: number): string {
+  const h = 80;
   const y = GROUND - h;
-  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#2b2622"/>`;
-  s += `<rect class="tienda-light" x="${x + 5}" y="${y + 14}" width="${w - 10}" height="${h - 14}" fill="#e3ecd6" opacity="0.55"/>`;
-  // shelves and the counter
+  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#2b2420"/>`;
+  s += `<rect class="tienda-light" x="${x + 5}" y="${y + 14}" width="${w - 10}" height="${h - 14}" fill="#f1dfb4" opacity="0.6"/>`;
+  // on the shelves: loaves, almojábanas, roscones
   for (let i = 0; i < 2; i++) {
-    const sy = y + 26 + i * 18;
+    const sy = y + 32 + i * 16;
     s += `<rect x="${x + 10}" y="${sy}" width="${w - 20}" height="3" fill="#7a5a3a"/>`;
-    for (let bx = x + 14; bx < x + w - 14; bx += 7) s += `<rect x="${bx}" y="${sy - 9}" width="4" height="9" fill="${['#b33a2e', '#3d6e8c', '#d9a531', '#e8e4da', '#4b7a43'][(bx + i) % 5]}" opacity="0.8"/>`;
-  }
-  s += `<rect x="${x + w * 0.1}" y="${GROUND - 26}" width="${w * 0.8}" height="26" fill="#6b4a2e"/>`;
-  // the metal shutter, rolled half up
-  s += `<rect x="${x}" y="${y}" width="${w}" height="14" fill="#8a8c88"/><path d="M${x} ${y + 5}H${x + w}M${x} ${y + 10}H${x + w}" stroke="#6d706b" stroke-width="1.5"/>`;
-  // awning
-  if (opts.awning) {
-    const [a, b] = opts.awning;
-    const n = Math.max(4, Math.round(w / 18));
-    let stripes = '';
-    for (let i = 0; i < n; i++) stripes += `<path d="M${x - 8 + ((w + 16) * i) / n} ${y - 2}h${(w + 16) / n}l-3 22h-${(w + 16) / n}z" fill="${i % 2 ? b : a}"/>`;
-    s += stripes;
-  }
-  // the sign, painted by hand
-  s += `<rect x="${x - 6}" y="${y - 34}" width="${w + 12}" height="28" fill="${opts.sign ?? P.paper}"/>`;
-  const size = Math.min(19, ((w + 4) / Math.max(1, sign.length)) * 1.75);
-  s += `<text x="${x + w / 2}" y="${y - 13}" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="${size.toFixed(1)}" fill="${opts.ink ?? '#b03026'}" letter-spacing="0.5">${sign}</text>`;
-  return s;
-}
-
-/** A three- or four-storey brick building with iron balconies, shops downstairs. */
-function edificio(rng: Rng, x: number, w: number, top: number, wall: string, shops: string): string {
-  let s = `<rect x="${x}" y="${top}" width="${w}" height="${GROUND - top}" fill="${wall}"/>`;
-  s += `<rect x="${x - 5}" y="${top - 9}" width="${w + 10}" height="11" fill="${P.concrete}"/>`;
-  s += `<rect x="${x + w - 60}" y="${top - 40}" width="34" height="31" rx="4" fill="${P.eternit}"/>`;
-  s += `<path d="M${x + 30} ${top - 9}V${top - 62}M${x + 16} ${top - 54}H${x + 44}M${x + 20} ${top - 44}H${x + 40}" stroke="#2c3033" stroke-width="2" fill="none"/>`;
-  const floors = Math.floor((GROUND - 96 - top) / 82);
-  const cols = Math.max(2, Math.round(w / 92));
-  const gap = w / cols;
-  for (let f = 0; f < floors; f++) {
-    const y = top + 22 + f * 82;
-    for (let c = 0; c < cols; c++) {
-      const wx = x + c * gap + gap * 0.18;
-      const ww = gap * 0.64;
-      s += windowRect(rng, { x: wx, y, w: ww, h: 54 });
-      // a balcony on some windows: slab and iron railing
-      if ((f + c) % 2 === 0) {
-        s += `<rect x="${wx - 8}" y="${y + 54}" width="${ww + 16}" height="6" fill="${P.concrete}"/>`;
-        s += rejas(wx - 6, y + 30, ww + 12, 24);
-      } else {
-        s += `<rect x="${wx - 4}" y="${y + 56}" width="${ww + 8}" height="4" fill="${P.concrete}" opacity="0.7"/>`;
-      }
+    for (let bx = x + 17, k = i; bx < x + w - 14; bx += 11, k++) {
+      s +=
+        k % 3 === 0
+          ? `<ellipse cx="${bx}" cy="${sy - 4}" rx="5" ry="3.6" fill="#c98b45"/>`
+          : k % 3 === 1
+            ? `<circle cx="${bx}" cy="${sy - 4}" r="3.6" fill="#e0b46a"/>`
+            : `<circle cx="${bx}" cy="${sy - 4.5}" r="3.8" fill="none" stroke="#b9773a" stroke-width="2.4"/>`;
     }
-    s += `<rect x="${x}" y="${y + 66}" width="${w}" height="4" fill="${P.concrete}" opacity="0.45"/>`;
   }
-  return s + shops;
+  // the glass counter, with what's fresh
+  s += `<rect x="${x + w * 0.1}" y="${GROUND - 30}" width="${w * 0.8}" height="30" fill="#6b4a2e"/>`;
+  s += `<rect x="${x + w * 0.12}" y="${GROUND - 28}" width="${w * 0.76}" height="14" fill="#f6ead0" opacity="0.7"/>`;
+  for (let bx = x + w * 0.17; bx < x + w * 0.85; bx += 9) s += `<ellipse cx="${bx.toFixed(1)}" cy="${GROUND - 19}" rx="3.5" ry="2.5" fill="#d79a52"/>`;
+  // a cardboard sign in the window
+  s += `<rect x="${x + w - 46}" y="${y + 15}" width="38" height="11" fill="#e8dcc0"/><text x="${x + w - 27}" y="${y + 23}" text-anchor="middle" font-family="'Special Elite', monospace" font-size="6" fill="#7a2b1e">PAN CALIENTE</text>`;
+  // the shutter rolled up, the awning, the sign painted by hand
+  s += `<rect x="${x}" y="${y}" width="${w}" height="13" fill="#8a8c88"/><path d="M${x} ${y + 5}H${x + w}M${x} ${y + 9}H${x + w}" stroke="#6d706b" stroke-width="1.5"/>`;
+  const n = Math.max(4, Math.round(w / 18));
+  for (let i = 0; i < n; i++) s += `<path d="M${(x - 8 + ((w + 16) * i) / n).toFixed(1)} ${y - 2}h${((w + 16) / n).toFixed(1)}l-3 22h-${((w + 16) / n).toFixed(1)}z" fill="${i % 2 ? '#efe6cf' : '#b5652f'}"/>`;
+  s += `<rect x="${x - 10}" y="${y - 36}" width="${w + 20}" height="30" fill="${P.paper}"/>`;
+  s += `<text x="${x + w / 2}" y="${y - 15}" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="16" fill="#8a3a22" letter-spacing="0.5">PANADERÍA LA ESPIGA</text>`;
+  return s;
 }
 
 /** An urapán on the sidewalk: a dark, heavy crown, the kind that lines Teusaquillo. */
@@ -224,37 +195,6 @@ function tree(rng: Rng, x: number, h: number, r: number): string {
     s += `<circle cx="${(x + Math.cos(a) * d).toFixed(1)}" cy="${(cy + Math.sin(a) * d * 0.7).toFixed(1)}" r="${cr.toFixed(1)}" fill="${LEAF[shade]}"/>`;
   }
   return s;
-}
-
-// ---------- people ----------
-
-interface Walker {
-  x: number;
-  /** Feet. */
-  y?: number;
-  coat: string;
-  umbrella?: string | null;
-  dir?: 1 | -1;
-  /** Holding a newspaper over the head instead. */
-  paper?: boolean;
-}
-
-function person(p: Walker): string {
-  const y = p.y ?? SIDEWALK;
-  const d = p.dir ?? 1;
-  const f = (n: number) => (p.x + n * d).toFixed(1);
-  let s = `<g class="person">`;
-  s += `<path d="M${f(-5)} ${y}L${f(-3)} ${y - 20}M${f(5)} ${y}L${f(3)} ${y - 20}" stroke="#23252a" stroke-width="5" stroke-linecap="round"/>`;
-  s += `<path d="M${f(-9)} ${y - 18}Q${f(-10)} ${y - 40} ${f(0)} ${y - 42}Q${f(10)} ${y - 40} ${f(9)} ${y - 18}Z" fill="${p.coat}"/>`;
-  s += `<circle cx="${f(1)}" cy="${y - 47}" r="6" fill="#8a5d43"/>`;
-  if (p.paper) {
-    s += `<path d="M${f(-12)} ${y - 54}L${f(14)} ${y - 58}L${f(13)} ${y - 52}L${f(-11)} ${y - 48}Z" fill="#e8e4da"/><path d="M${f(-8)} ${y - 52}H${f(9)}" stroke="#8a8a84" stroke-width="1"/>`;
-    s += `<path d="M${f(-7)} ${y - 36}L${f(-10)} ${y - 50}M${f(7)} ${y - 36}L${f(11)} ${y - 54}" stroke="${p.coat}" stroke-width="4"/>`;
-  } else if (p.umbrella) {
-    s += `<path d="M${f(6)} ${y - 30}L${f(6)} ${y - 64}" stroke="#222" stroke-width="2"/>`;
-    s += `<path d="M${f(-16)} ${y - 60}Q${f(6)} ${y - 86} ${f(28)} ${y - 60}Q${f(22)} ${y - 63} ${f(17)} ${y - 60}Q${f(11)} ${y - 63} ${f(6)} ${y - 60}Q${f(0)} ${y - 63} ${f(-5)} ${y - 60}Q${f(-11)} ${y - 63} ${f(-16)} ${y - 60}Z" fill="${p.umbrella}"/>`;
-  }
-  return s + `</g>`;
 }
 
 /** The aguacate cart on the corner: a wheelbarrow of avocados under a sheet of plastic. */
@@ -280,176 +220,25 @@ function aguacates(x: number): string {
   return s + `</g>`;
 }
 
-/** The reciclador pushing his cart: flattened cardboard and a sack of bottles. */
-function reciclador(x: number, dir: 1 | -1 = -1): string {
-  const y = SIDEWALK;
-  const f = (n: number) => (x + n * dir).toFixed(1);
-  let s = `<g class="reciclador">`;
-  // the cart, ahead of him
-  s += `<circle cx="${f(-58)}" cy="${y - 9}" r="9" fill="#26282b"/><circle cx="${f(-58)}" cy="${y - 9}" r="3" fill="#7b7f83"/>`;
-  s += `<path d="M${f(-104)} ${y - 18}H${f(-14)}" stroke="#6b5136" stroke-width="6"/>`;
-  s += `<path d="M${f(-14)} ${y - 18}L${f(4)} ${y - 32}" stroke="#6b5136" stroke-width="4"/>`;
-  s += `<path d="M${f(-102)} ${y - 21}V${y - 44}M${f(-18)} ${y - 21}V${y - 44}" stroke="#6b5136" stroke-width="3"/>`;
-  // cardboard, folded flat and tied
-  s += `<rect x="${Math.min(+f(-100), +f(-56))}" y="${y - 50}" width="44" height="29" fill="#b48a5a"/>`;
-  s += `<path d="M${f(-100)} ${y - 40}H${f(-56)}M${f(-100)} ${y - 31}H${f(-56)}" stroke="#94704a" stroke-width="2"/>`;
-  // the sack of bottles
-  s += `<path d="M${f(-58)} ${y - 21}Q${f(-62)} ${y - 58} ${f(-40)} ${y - 62}Q${f(-18)} ${y - 58} ${f(-20)} ${y - 21}Z" fill="#e2ddd0"/>`;
-  s += `<path d="M${f(-46)} ${y - 62}l2 -10M${f(-38)} ${y - 62}l-1 -12M${f(-31)} ${y - 60}l3 -8" stroke="#5d8a6a" stroke-width="4" stroke-linecap="round"/>`;
-  // him, leaning into the handles
-  s += `<path d="M${f(14)} ${y}L${f(12)} ${y - 22}M${f(24)} ${y}L${f(18)} ${y - 22}" stroke="#2e2a26" stroke-width="5" stroke-linecap="round"/>`;
-  s += `<path d="M${f(6)} ${y - 20}Q${f(4)} ${y - 42} ${f(14)} ${y - 46}Q${f(26)} ${y - 44} ${f(24)} ${y - 20}Z" fill="#5a4a3c"/>`;
-  s += `<path d="M${f(8)} ${y - 36}L${f(2)} ${y - 32}" stroke="#5a4a3c" stroke-width="5" stroke-linecap="round"/>`;
-  s += `<circle cx="${f(10)}" cy="${y - 50}" r="6" fill="#6e4a35"/><path d="M${f(4)} ${y - 53}Q${f(10)} ${y - 60} ${f(16)} ${y - 53}" fill="#2f3a4a" stroke="#2f3a4a" stroke-width="2"/>`;
-  return s + `</g>`;
-}
+// ---------- the street ----------
 
-/** A chaza: the little kiosk of sweets and cigarettes on the sidewalk. */
-function chaza(x: number): string {
-  const y = SIDEWALK;
-  return `<g class="chaza">
-    <rect x="${x}" y="${y - 44}" width="40" height="44" fill="#d9a531"/>
-    <rect x="${x + 3}" y="${y - 40}" width="34" height="18" fill="#efe6cf" opacity="0.8"/>
-    ${[0, 1, 2, 3].map((i) => `<rect x="${x + 6 + i * 8}" y="${y - 36}" width="5" height="10" fill="${['#b33a2e', '#3d6e8c', '#e8e4da', '#4b7a43'][i]}"/>`).join('')}
-    <path d="M${x - 6} ${y - 48}H${x + 46}L${x + 40} ${y - 58}H${x}Z" fill="#c8302a"/>
-    <path d="M${x + 4} ${y}V${y - 6}M${x + 36} ${y}V${y - 6}" stroke="#26282b" stroke-width="3"/>
-  </g>`;
-}
-
-// ---------- vehicles, parked or stopped ----------
-
-function wheel(cx: number, cy: number, r: number): string {
-  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#1d1f21"/><circle cx="${cx}" cy="${cy}" r="${r * 0.42}" fill="#8a8e92"/>`;
-}
-
-/** A Renault 4: the box with a hatch that half the country drove. */
-function renault4(x: number, y: number, color: string, dir: 1 | -1 = 1): string {
-  const t = dir === 1 ? `translate(${x} ${y})` : `translate(${x + 124} ${y}) scale(-1 1)`;
-  return `<g class="car r4" transform="${t}">
-    <path d="M4 -14V-36Q4 -42 10 -43L16 -44L28 -64Q30 -67 36 -67H92Q98 -67 100 -62L106 -46L118 -44Q124 -43 124 -36V-14Z" fill="${color}"/>
-    <path d="M32 -60L22 -46H56V-60Z M62 -60V-46H98L93 -60Z" fill="#39434a"/>
-    <path d="M6 -30H122" stroke="#000" stroke-opacity="0.15" stroke-width="2"/>
-    <rect x="118" y="-30" width="6" height="5" fill="#ffd27a"/><rect x="2" y="-30" width="5" height="6" fill="#b3261e"/>
-    ${wheel(28, -12, 11)}${wheel(100, -12, 11)}
-  </g>`;
-}
-
-function sprint(x: number, y: number, color: string, dir: 1 | -1 = 1): string {
-  const t = dir === 1 ? `translate(${x} ${y})` : `translate(${x + 114} ${y}) scale(-1 1)`;
-  return `<g class="car sprint" transform="${t}">
-    <path d="M4 -14Q2 -38 16 -42L34 -60Q38 -63 46 -63H74Q84 -63 90 -54L98 -42Q112 -40 112 -28V-14Z" fill="${color}"/>
-    <path d="M38 -57L26 -43H58V-57Z M64 -57V-43H92L84 -57Z" fill="#39434a"/>
-    <rect x="106" y="-30" width="6" height="5" fill="#ffd27a"/><rect x="3" y="-30" width="5" height="6" fill="#b3261e"/>
-    ${wheel(26, -12, 10)}${wheel(90, -12, 10)}
-  </g>`;
-}
-
-function taxi(x: number, y: number, dir: 1 | -1 = 1): string {
-  const t = dir === 1 ? `translate(${x} ${y})` : `translate(${x + 130} ${y}) scale(-1 1)`;
-  return `<g class="car taxi" transform="${t}">
-    <path d="M6 -14Q4 -34 22 -36L40 -54Q46 -60 58 -60H88Q98 -60 104 -52L116 -36Q126 -34 126 -14Z" fill="#e9c21c"/>
-    <path d="M46 -52H64V-38H34Z M70 -52H92L104 -38H70Z" fill="#39434a"/>
-    <rect x="58" y="-66" width="20" height="7" fill="#f4e7a1"/>
-    <path d="M8 -26H124" stroke="#222" stroke-width="3" stroke-dasharray="6 6"/>
-    <rect x="120" y="-28" width="5" height="5" fill="#ffd27a"/>
-    ${wheel(32, -12, 11)}${wheel(100, -12, 11)}
-  </g>`;
-}
-
-/** A buseta pulled over with its door open, someone climbing in. */
-function busetaStopped(x: number, y: number, route: [string, string], dir: 1 | -1 = 1): string {
-  const t = dir === 1 ? `translate(${x} ${y})` : `translate(${x + 230} ${y}) scale(-1 1)`;
-  const unflip = dir === 1 ? '' : ` transform="translate(409 0) scale(-1 1)"`;
-  return `<g class="buseta" transform="${t}">
-    <rect x="4" y="-78" width="222" height="70" rx="10" fill="#f0ece1"/>
-    <path d="M196 -44H216Q226 -44 226 -34V-14Q226 -8 220 -8H196Z" fill="#d4552b"/>
-    <rect x="4" y="-42" width="200" height="13" fill="#c9982f"/>
-    <rect x="4" y="-27" width="222" height="2.5" fill="#b3321f"/>
-    ${[20, 62, 104].map((wx) => `<rect x="${wx}" y="-70" width="34" height="24" rx="3" fill="#39434a"/>`).join('')}
-    <rect x="148" y="-70" width="34" height="62" fill="#22282c"/>
-    <path d="M188 -70H214Q222 -70 222 -58V-46H188Z" fill="#48545c"/>
-    <rect x="189" y="-68" width="31" height="13" fill="#f3efe2"/>
-    <g${unflip}><text x="204.5" y="-62.4" font-size="4.4" text-anchor="middle" font-family="Anton, sans-serif" fill="#b3261e">${route[0]}</text>
-    <text x="204.5" y="-57" font-size="3.8" text-anchor="middle" font-family="Anton, sans-serif" fill="#1f3f7a">${route[1]}</text></g>
-    <rect x="200" y="-10" width="30" height="6" fill="#2a2a2a"/>
-    ${wheel(46, -8, 14)}${wheel(182, -8, 14)}
-    <rect x="224" y="-22" width="6" height="6" fill="#ffd27a"/>
-  </g>`;
-}
-
-// ---------- the three streets ----------
-
-export interface BarrioArt {
-  /** The buildings across the street, drawn over the far roofs. */
-  front: string;
-  /** People, vendors and stopped vehicles, drawn over the street. */
-  street: string;
-}
-
-export function barrio(which: Barrio, rng: Rng, brick: { b1: string; b2: string; b3: string }, simple: boolean): BarrioArt {
+/** The block across the street, drawn over the far roofs. */
+export function streetFront(rng: Rng, brick: { b1: string; b2: string; b3: string }, simple: boolean): string {
   const u = (p: string) => `url(#${p})`;
-  if (which === 'a') {
-    // a quiet Teusaquillo street: brick houses with front gardens, one painted, a big urapán
-    const front =
-      casaInglesa(rng, { x: -30, w: 300, eave: 470, wall: u(brick.b1), gable: 'right', garden: true }, simple) +
-      casaPintada(rng, 288, 230, 452, PLASTER.cream) +
-      casaInglesa(rng, { x: 540, w: 290, eave: 476, wall: u(brick.b2), gable: 'left', garden: true, roof: ROOF_ALT }, simple) +
-      casaInglesa(rng, { x: 850, w: 270, eave: 466, wall: u(brick.b3), gable: 'right', garden: true }, simple) +
-      casaInglesa(rng, { x: 1140, w: 300, eave: 480, wall: u(brick.b1), gable: 'left' }, simple) +
-      shop(1176, 128, 'TIENDA LA ESPERANZA', { awning: ['#2f6d4f', '#e8e4da'] }) +
-      casaPintada(rng, 1456, 190, 470, PLASTER.white) +
-      tree(rng, 470, 250, 92) +
-      tree(rng, 1010, 210, 72);
-    const street =
-      renault4(330, 768, '#d7d3c4', -1) +
-      person({ x: 690, coat: '#3a4d6b', umbrella: '#1d1e21', dir: -1 }) +
-      reciclador(1040, -1) +
-      person({ x: 1250, coat: '#7a2b2b', umbrella: '#a8322a', dir: 1 }) +
-      aguacates(1380) +
-      taxi(860, 842, 1);
-    return { front, street };
-  }
-  if (which === 'b') {
-    // a busy Chapinero street: walk-ups with shops, a buseta picking people up, traffic behind it
-    const front =
-      edificio(rng, -20, 300, 360, u(brick.b3), shop(-4, 130, 'DROGUERÍA EL SOL', { sign: '#2f6d4f', ink: '#f2ede0' }) + shop(142, 130, 'CIGARRERÍA', { awning: ['#c8302a', '#efe6cf'] })) +
-      edificio(rng, 296, 260, 410, PLASTER.cream, shop(312, 230, 'PANADERÍA LA ESPIGA', { awning: ['#d9a531', '#efe6cf'], ink: '#7a3d2c' })) +
-      casaInglesa(rng, { x: 580, w: 260, eave: 480, wall: u(brick.b1), gable: 'right' }, simple) +
-      edificio(rng, 860, 300, 340, u(brick.b2), shop(876, 128, 'MISCELÁNEA', { sign: '#3d6e8c', ink: '#f2ede0' }) + shop(1020, 124, 'TIENDA', { awning: ['#2f6d4f', '#e8e4da'] })) +
-      edificio(rng, 1180, 240, 400, PLASTER.ochre, shop(1196, 208, 'FRUTERÍA', { awning: ['#4b7a43', '#efe6cf'] })) +
-      edificio(rng, 1440, 200, 330, u(brick.b1), shop(1452, 170, 'ALMACÉN', { sign: '#7a2b2b', ink: '#f2ede0' })) +
-      tree(rng, 560, 200, 66);
-    const street =
-      chaza(560) +
-      person({ x: 318, coat: '#2f3a4a', umbrella: '#1d1e21' }) +
-      person({ x: 352, coat: '#6b4a5a', umbrella: '#3d6e8c', dir: -1 }) +
-      person({ x: 700, coat: '#4a4a4a', paper: true, dir: -1 }) +
-      reciclador(1000, 1) +
-      person({ x: 1150, coat: '#7a2b2b', umbrella: '#a8322a', dir: -1 }) +
-      aguacates(1300) +
-      busetaStopped(260, 796, ['CHAPINERO', 'CL 72'], -1) +
-      taxi(500, 796, -1) +
-      renault4(646, 796, '#9fb3c0', -1) +
-      sprint(880, 842, '#7d2b2b', 1) +
-      taxi(1180, 842, 1);
-    return { front, street };
-  }
-  // c: today's mix, with what A and B fix
-  const front =
-    edificio(rng, -20, 330, 336, u(brick.b1), shop(-4, 160, 'CIGARRERÍA', { awning: ['#c8302a', '#efe6cf'] })) +
-    casaInglesa(rng, { x: 340, w: 270, eave: 470, wall: u(brick.b2), gable: 'left', garden: true }, simple) +
-    casaPintada(rng, 628, 240, 452, PLASTER.cream) +
-    edificio(rng, 890, 290, 372, u(brick.b3), '') +
-    casaInglesa(rng, { x: 1196, w: 250, eave: 470, wall: u(brick.b2), gable: 'right' }, simple) +
-    shop(1206, 160, 'TIENDA LA ESPERANZA', { awning: ['#2f6d4f', '#e8e4da'] }) +
-    edificio(rng, 1460, 180, 350, u(brick.b1), '') +
-    tree(rng, 610, 230, 80);
-  const street =
-    person({ x: 300, coat: '#3a4d6b', umbrella: '#1d1e21', dir: 1 }) +
-    reciclador(560, -1) +
-    person({ x: 1180, coat: '#7a2b2b', umbrella: '#a8322a', dir: 1 }) +
-    aguacates(1396) +
-    busetaStopped(960, 796, ['UNICENTRO', 'CRA 15'], -1) +
-    renault4(300, 842, '#d7d3c4', 1);
-  return { front, street };
+  return (
+    casaInglesa(rng, { x: -30, w: 300, eave: 470, wall: u(brick.b1), gable: 'right', garden: true }, simple) +
+    casaPintada(rng, 288, 230, 452, PLASTER.cream) +
+    casaInglesa(rng, { x: 540, w: 290, eave: 476, wall: u(brick.b2), gable: 'left', garden: true, roof: ROOF_ALT }, simple) +
+    casaInglesa(rng, { x: 850, w: 270, eave: 466, wall: u(brick.b3), gable: 'right', garden: true }, simple) +
+    casaInglesa(rng, { x: 1140, w: 300, eave: 480, wall: u(brick.b1), gable: 'left' }, simple) +
+    panaderia(1176, 128) +
+    casaPintada(rng, 1456, 190, 470, PLASTER.white) +
+    tree(rng, 470, 250, 92) +
+    tree(rng, 1010, 210, 72)
+  );
+}
+
+/** What stays on the far sidewalk all afternoon: the aguacate cart on the corner. */
+export function streetCorner(): string {
+  return aguacates(1384);
 }
