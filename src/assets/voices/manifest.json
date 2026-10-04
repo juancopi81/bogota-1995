@@ -2781,7 +2781,71 @@
       "credit_cost": 8,
       "speaker": "reciclador",
       "generated_on": "2026-10-02"
+    },
+    {
+      "id": "llamada.andres.monedero",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Aló? ¿Quiubo, parce? Habla Andrés. Lo estoy llamando de un monedero, rapidito.",
+      "input_text": "[casual, youthful, brisk] ¿Aló? ¿Quiubo, parce? Habla Andrés. Lo estoy llamando de un monedero, rapidito.",
+      "sha256": "5b6c455fded81b45e61b40fd64c5d09df3e4f4a41e1eea24356be66d8278727a",
+      "duration_seconds": 4.48,
+      "credit_cost": 12,
+      "generated_on": "2026-10-04"
+    },
+    {
+      "id": "llamada.andres.monedas",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "Uy, se me están acabando las monedas. Lo llamo cuando llegue a la casa. ¡Chao!",
+      "input_text": "[casual, youthful, brisk] Uy, se me están acabando las monedas. Lo llamo cuando llegue a la casa. ¡Chao!",
+      "sha256": "75c1c12de153479f938c10824322a28df569386240796c4470b7e472aa98e8ff",
+      "duration_seconds": 4.32,
+      "credit_cost": 11,
+      "generated_on": "2026-10-04"
+    },
+    {
+      "id": "llamada.andres.yaLlegue",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Quiubo, parce? Ya llegué a la casa, todo ensopado.",
+      "input_text": "[casual, youthful, brisk] ¿Quiubo, parce? Ya llegué a la casa, todo ensopado.",
+      "sha256": "b4621d11fef6fff2d5d154a514e9b746fd6771baf6985bc5117abcce9e496b17",
+      "duration_seconds": 3.2,
+      "credit_cost": 8,
+      "generated_on": "2026-10-04"
+    },
+    {
+      "id": "llamada.andres.laGrabo",
+      "speaker": "andres",
+      "voice_id": "PltXjU3hWkDRqpu9TowY",
+      "model_id": "eleven_v4",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      },
+      "spoken_text": "¿Y qué? ¿Sí me grabó «Florecita rockera»?",
+      "input_text": "[casual, youthful, brisk] ¿Y qué? ¿Sí me grabó «Florecita rockera»?",
+      "sha256": "bf69c882b54d4ef5db60ed2934a3d0f9241f423fde5102623801d816e07143fb",
+      "duration_seconds": 2.8,
+      "credit_cost": 7,
+      "generated_on": "2026-10-04"
     }
   ],
-  "updated_on": "2026-10-02"
+  "updated_on": "2026-10-04"
 }

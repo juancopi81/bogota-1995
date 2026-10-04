@@ -1,14 +1,13 @@
 # Included dialogue voices
 
-188 of the 192 fixed dialogue lines load automatically in the room; the four
-lines of Andrés's call from the monedero wait for a take and are subtitles
-until then (listed at the top of `docs/voice-script.md`; once they're in,
-empty `AWAITING_TAKES` in `tests/voices.test.ts`). The included takes use the
+All 192 fixed dialogue lines load automatically in the room, including
+Andrés's call from the monedero and his callback. The included takes use the
 original dialogue in `src/content/` and `src/objects/house.ts`, generated with
 ElevenLabs v4 on a paid Starter plan: 79 clips on 30 September 2026 and the
 remaining 107 on 2 October 2026, followed by two street calls and a bakery
-retake that day. The characters and radio announcers are
-fictional; these are not recordings of the historical station.
+retake that day, and four new Andrés lines on 4 October 2026. The characters
+and radio announcers are fictional; these are not recordings of the historical
+station.
 
 Live time announcements on the radio and 117 have no fixed line IDs and
 still use subtitles. Player choices are also text only.
@@ -17,7 +16,7 @@ still use subtitles. Player choices are also text only.
 |---|---|---|---|
 | Your mother | Fernanda Sanmiguel - Neutral and Serious | `1aJyZpkt0vxhGPBnPyrs` | 10 |
 | Andrés's mother | Milena - Silky, Sweet and Neutral | `oWSxI36XAKnfMWmzmQok` | 11 |
-| Andrés | Daniel - Clear, Calm and Explanatory | `PltXjU3hWkDRqpu9TowY` | 11 |
+| Andrés | Daniel - Clear, Calm and Explanatory | `PltXjU3hWkDRqpu9TowY` | 15 |
 | Radioactiva DJ and request desk | Yorman Andrés - Cheerful, Expressive | `J2Jb9yZNvpXUNAL3a2bw` | 47 |
 | Grandma | Sandra - Executive, Soft, Bogotá, Colombia | `mvUcswqyALvhz2mIGROO` | 11 |
 | Angie's father | Juan Carlos - Expressive & Friendly | `GMEpD7vcmVahuyz6NuZA` | 7 |
@@ -55,8 +54,7 @@ bakery take now says "La Espiga", matching the shop across the street.
 
 1. Run `npm run dev` and open `http://localhost:5173/?skip` with headphones.
    Use a fresh browser profile to hear bundled recordings without uploaded
-   takes taking priority. Open the ⚙ backstage and check **188 of 192 lines**
-   (192 of 192 once Andrés's four new lines are recorded).
+   takes taking priority. Open the ⚙ backstage and check **192 of 192 lines**.
 2. Call **Abuelita: 2321745**. Finish the conversation, including her attempt
    to keep you on the phone. Check warmth, age, natural pacing, and the
    blessing at the end.

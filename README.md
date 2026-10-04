@@ -19,10 +19,10 @@ npm run dev
 
 Open http://localhost:5173 with **headphones on**. Laptop first; touch works too.
 
-188 of the 192 fixed dialogue lines come included: the household and phone cast,
+All 192 fixed dialogue lines come included: the household and phone cast,
 all four radio stations, advertisements, fictional TV programs, and the street.
-They play automatically alongside subtitles; Andrés's four new lines (his call
-from a monedero) are subtitles until their take is in. Live radio and 117 time
+They play automatically alongside subtitles, including Andrés's call
+from a monedero and his callback. Live radio and 117 time
 announcements still use subtitles. No ElevenLabs account, API key, or
 uploads are needed to hear the included cast. Listening and regeneration
 instructions are in [`src/assets/voices/README.md`](src/assets/voices/README.md).

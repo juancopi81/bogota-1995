@@ -42,6 +42,6 @@ cuarto de 1995 en Chapinero. Sábado, 5:30 p.m., está lloviendo."
 
 ## Voices
 
-The 188 included lines were generated with ElevenLabs on a paid plan, which
+The 192 included lines were generated with ElevenLabs on a paid plan, which
 allows publishing. The DJs are fictional and aren't recordings of the real
 stations (see `src/assets/voices/README.md`).

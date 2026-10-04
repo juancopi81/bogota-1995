@@ -15,7 +15,7 @@ vi.mock('../src/world/store', () => ({
 }));
 
 /** Lines written after the last recording session: subtitles until their take is in. Once it is, empty this list. */
-const AWAITING_TAKES = ['llamada.andres.monedero', 'llamada.andres.monedas', 'llamada.andres.yaLlegue', 'llamada.andres.laGrabo'];
+const AWAITING_TAKES: string[] = [];
 const DIR = join(process.cwd(), 'src/assets/voices');
 const MANIFEST = JSON.parse(readFileSync(join(DIR, 'manifest.json'), 'utf8')) as {
   clips: { id: string; speaker: string; spoken_text: string; sha256: string; voice_id: string }[];
@@ -95,6 +95,10 @@ describe('included voices', () => {
     expect(voices.get('tv.novela.n2')).toBe(bundled);
     expect(voices.get('calle.botella')).toBe(bundled);
     expect(voices.get('calle.botellaLarga')).toBe(bundled);
+    expect(voices.get('llamada.andres.monedero')).toBe(bundled);
+    expect(voices.get('llamada.andres.monedas')).toBe(bundled);
+    expect(voices.get('llamada.andres.yaLlegue')).toBe(bundled);
+    expect(voices.get('llamada.andres.laGrabo')).toBe(bundled);
     expect(voices.get('')).toBeUndefined();
     expect(saved.size).toBe(0);
     expect(lineDuration({ id: 'casa.onces', who: 'mama', text: '¡A tomar onces!' })).toBeCloseTo(3.29);
