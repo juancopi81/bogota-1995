@@ -22,7 +22,7 @@ export interface PhoneWorld {
 
 /** The libreta, as written. Numbers are 7 digits, the way Bogotá had them. */
 export const LIBRETA = [
-  { name: 'Abuelita', number: '2321745' },
+  { name: 'Abuelita', number: '2459505' },
   { name: 'Andrés', number: '2483107' },
   { name: 'Angie', number: '2125864', heart: true },
   { name: 'Droguería La Sexta', number: '2176033' },
