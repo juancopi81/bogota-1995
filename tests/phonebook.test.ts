@@ -12,8 +12,8 @@ describe('the libreta', () => {
   it('reaches Abuelita at the number written for her, after her seven slow rings', async () => {
     const { LIBRETA, formatNumber, route } = await import('../src/content/phonebook');
     const entry = LIBRETA.find((e) => e.name === 'Abuelita')!;
-    expect(entry.number).toBe('2459505');
-    expect(formatNumber(entry.number)).toBe('2 45 95 05');
+    expect(entry.number).toBe('2459005');
+    expect(formatNumber(entry.number)).toBe('2 45 90 05');
     expect(route(entry.number, 0, world)).toMatchObject({ kind: 'answer', rings: 7 });
   });
 
