@@ -51,12 +51,16 @@ await page.evaluate(() => {
   window.room1995.closeups.close();
 });
 await page.waitForTimeout(1000);
+// Andrés rings from the monedero at 5:31:15, and the log keeps it
+await page.evaluate(() => { const c = window.room1995.clock; if (c.now() < 76) c.skip(76 - c.now()); });
+await page.waitForFunction(() => !!window.room1995.phone.incoming, null, { timeout: 10000 });
 await shot('room');
 
 await page.click('#leave');
 await page.waitForSelector('#research [data-act="send"]');
 await rate('mood', { tranquilo: 5, nostalgico: 5, aburrido: 1, sentimientos: 6, contento: 6, ahora: 4 });
 await page.fill('#research [data-f="memory"]', 'La grabadora de mi hermano, grabando de Radioactiva.');
+await page.check('#research [data-f="share"]');
 await pick('triggers', 'radio');
 await pick('triggers', 'grabadora');
 await pick('return', 'si');
@@ -64,13 +68,18 @@ await rate('trait', { often: 4, prone: 5 });
 await shot('exit');
 await page.click('#research [data-act="send"]');
 await page.waitForSelector('#research [data-act="back"]');
+// the thanks, with what other visitors left (made-up examples without a sheet)
+await page.waitForSelector('#research .memories:not([hidden]) .note');
+const notes = await page.$$eval('#research .note blockquote', (els) => els.map((e) => e.textContent));
+console.log('notes:', notes.length, '| own memory to be shown once read:', await page.$eval('#research', (el) => el.textContent.includes('Cuando lo leamos')));
+await shot('thanks');
 await page.click('#research [data-act="back"]');
 await page.waitForTimeout(500);
 
 const f = await fields();
 const pickOut = (keys) => Object.fromEntries(keys.map((k) => [k, f[k]]));
-console.log('exit:', JSON.stringify(pickOut(['stage', 'visit_n', 'pre_nostalgia', 'post_nostalgia', 'change', 'memory', 'triggers', 'return_intent', 'trait_often', 'trait_prone', 'exit_reason'])));
-console.log('log:', JSON.stringify(pickOut(['s_total', 's_view_grabadora', 's_view_phone', 's_view_room', 's_phone', 'calls', 'opens', 'min_room', 'min_at_exit', 'exit_shown'])));
+console.log('exit:', JSON.stringify(pickOut(['stage', 'visit_n', 'pre_nostalgia', 'post_nostalgia', 'change', 'memory', 'memory_share', 'triggers', 'return_intent', 'trait_often', 'trait_prone', 'exit_reason'])));
+console.log('log:', JSON.stringify(pickOut(['s_total', 's_view_grabadora', 's_view_phone', 's_view_room', 's_phone', 'calls', 'opens', 'n_andres_rang', 'min_room', 'min_at_exit', 'exit_shown'])));
 console.log('overlay gone:', (await page.$('#research')) === null, '| backstage gear hidden:', await page.$eval('#backstage-toggle', (b) => getComputedStyle(b).display === 'none'));
 if (errors.length) console.log('ERRORS:\n' + [...new Set(errors)].join('\n'));
 await browser.close();

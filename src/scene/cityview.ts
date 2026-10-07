@@ -3,10 +3,16 @@
 // and both are driven by the world clock so they always agree.
 
 import { citySvg } from '../art/city';
+import { recicladorSvg, vehicleSvg, walkerSvg } from '../art/sprites';
 import { daylight } from '../world/clock';
-import { vehiclesAt, vehicleX, type Vehicle } from '../world/street';
+import { VEHICLE_LEN, vehiclesAt, vehicleX } from '../world/street';
+import { walkerFacing, walkerMoving, walkersAt, walkerX } from '../world/life';
 import { mulberry32 } from '../util/rng';
 import { setAttr } from '../ui/dom';
+
+/** The far sidewalk, where people walk (their feet), and the two lanes (the road under the wheels). */
+const SIDEWALK_Y = 739;
+const LANE_Y = { 1: 842, [-1]: 796 } as const;
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -29,8 +35,10 @@ interface Drop {
 export class CityView {
   readonly el: HTMLElement;
   private svg: SVGSVGElement;
-  private trafficLayer: SVGGElement;
+  /** People on the far sidewalk, then the far lane, then the near lane: back to front. */
+  private layers: { life: SVGGElement; far: SVGGElement; near: SVGGElement };
   private shown = new Map<number, SVGGElement>();
+  private people = new Map<number, { g: SVGGElement; facing: SVGGElement; legs: SVGGElement[]; arm: SVGGElement | null; key: string }>();
   private clouds: Cloud[] = [];
   private rain: HTMLCanvasElement;
   private drops: Drop[] = [];
@@ -57,8 +65,8 @@ export class CityView {
     trafficSvg.setAttribute('viewBox', '0 0 1600 900');
     trafficSvg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
     trafficSvg.classList.add('city-traffic');
-    this.trafficLayer = document.createElementNS(SVG_NS, 'g');
-    trafficSvg.appendChild(this.trafficLayer);
+    const layer = () => trafficSvg.appendChild(document.createElementNS(SVG_NS, 'g'));
+    this.layers = { life: layer(), far: layer(), near: layer() };
     this.el.appendChild(trafficSvg);
     this.night = this.svg.querySelector('.night')!;
     this.monsLights = this.svg.querySelector('.mons-lights')!;
@@ -106,6 +114,7 @@ export class CityView {
     this.updateDusk(t);
     this.updateClouds(t);
     this.updateTraffic(t);
+    this.updateLife(t);
     if (this.ownRain) this.updateRain(dt);
   }
 
@@ -174,12 +183,57 @@ export class CityView {
     for (const v of now) {
       let g = this.shown.get(v.id);
       if (!g) {
-        g = vehicleGroup(v, 1 - daylight(t));
-        this.trafficLayer.appendChild(g);
+        g = document.createElementNS(SVG_NS, 'g');
+        g.innerHTML = vehicleSvg(v, VEHICLE_LEN[v.kind], 1 - daylight(t));
+        (v.dir === 1 ? this.layers.near : this.layers.far).appendChild(g);
         this.shown.set(v.id, g);
       }
-      const y = v.dir === 1 ? 842 : 796;
-      setAttr(g, 'transform', `translate(${vehicleX(v, t).toFixed(1)} ${y})`);
+      setAttr(g, 'transform', `translate(${vehicleX(v, t).toFixed(1)} ${LANE_Y[v.dir]})`);
+    }
+  }
+
+  /** People on the far sidewalk: walking (two strides and a bob), standing, flagging a buseta. */
+  private updateLife(t: number): void {
+    const now = walkersAt(t).filter((w) => {
+      const x = walkerX(w, t);
+      return x > -160 && x < 1760;
+    });
+    const keep = new Set(now.map((w) => w.id));
+    for (const [id, p] of this.people) {
+      if (!keep.has(id)) {
+        p.g.remove();
+        this.people.delete(id);
+      }
+    }
+    for (const w of now) {
+      let p = this.people.get(w.id);
+      if (!p) {
+        const g = document.createElementNS(SVG_NS, 'g');
+        g.innerHTML = w.kind === 'reciclador' ? recicladorSvg(1 - daylight(t)) : walkerSvg(w, 1 - daylight(t));
+        this.layers.life.appendChild(g);
+        p = {
+          g,
+          facing: g.querySelector<SVGGElement>('.facing')!,
+          legs: ['.legs-a', '.legs-b', '.legs-stand'].map((sel) => g.querySelector<SVGGElement>(sel)!),
+          arm: g.querySelector<SVGGElement>('.arm-up'),
+          key: '',
+        };
+        this.people.set(w.id, p);
+      }
+      const moving = walkerMoving(w, t);
+      const pace = w.kind === 'runner' ? 5 : w.kind === 'reciclador' ? 2.2 : 3.2;
+      const stride = moving ? Math.floor(t * pace) % 2 : 2;
+      const facing = walkerFacing(w, t);
+      const flag = !!w.flag && t >= w.flag[0] && t <= w.flag[1];
+      const bob = moving ? -Math.abs(Math.sin(t * Math.PI * pace)) * 1.6 : 0;
+      setAttr(p.g, 'transform', `translate(${walkerX(w, t).toFixed(1)} ${(SIDEWALK_Y + bob).toFixed(1)})`);
+      const key = `${stride}|${facing}|${flag}`;
+      if (key !== p.key) {
+        p.key = key;
+        p.legs.forEach((g, i) => (g.style.display = i === stride ? '' : 'none'));
+        setAttr(p.facing, 'transform', facing === 1 ? '' : 'scale(-1 1)');
+        if (p.arm) p.arm.style.display = flag ? '' : 'none';
+      }
     }
   }
 
@@ -210,58 +264,4 @@ export class CityView {
   get size(): { w: number; h: number } {
     return { w: this.width, h: this.height };
   }
-}
-
-/** A buseta, a yellow taxi or a car, in profile, drawn at the origin. */
-function vehicleGroup(v: Vehicle, dark: number): SVGGElement {
-  const g = document.createElementNS(SVG_NS, 'g');
-  // at dusk everything outside goes blue-gray, and the headlights come on
-  const night = (hex: string) => mixNight(hex, dark * 0.7);
-  const flip = v.dir === -1 ? ' transform="scale(-1 1) translate(-230 0)"' : '';
-  if (v.kind === 'buseta') {
-    const [body, band, line, nose] = v.colors.map(night);
-    const [where, way = ''] = (v.route ?? '').split(' · ');
-    // lettering stays readable when the bus drives the other way
-    const unflip = (cx: number) => (flip ? ` transform="translate(${cx * 2} 0) scale(-1 1)"` : '');
-    g.innerHTML = `<g${flip}>
-      <rect x="4" y="-78" width="222" height="70" rx="10" fill="${body}"/>
-      <path d="M196 -44 H 216 Q 226 -44 226 -34 V -14 Q 226 -8 220 -8 H 196Z" fill="${nose}"/>
-      <rect x="4" y="-42" width="200" height="13" fill="${band}"/>
-      <rect x="4" y="-27" width="222" height="2.5" fill="${line}"/>
-      ${[20, 62, 104, 146].map((x) => `<rect x="${x}" y="-70" width="34" height="24" rx="3" fill="#39434a"/>`).join('')}
-      <path d="M188 -70 H214 Q222 -70 222 -58 V-46 H188Z" fill="#48545c"/>
-      <rect x="189" y="-68" width="31" height="13" fill="#f3efe2"/>
-      <g${unflip(204.5)}>
-        <text x="204.5" y="-62.4" font-size="4.4" text-anchor="middle" font-family="Anton, sans-serif" fill="#b3261e">${where}</text>
-        <text x="204.5" y="-57" font-size="3.8" text-anchor="middle" font-family="Anton, sans-serif" fill="#1f3f7a">${way}</text>
-      </g>
-      <rect x="200" y="-10" width="30" height="6" fill="#2a2a2a"/>
-      <circle cx="46" cy="-8" r="14" fill="#1d1f21"/><circle cx="46" cy="-8" r="6" fill="#7b7f83"/>
-      <circle cx="182" cy="-8" r="14" fill="#1d1f21"/><circle cx="182" cy="-8" r="6" fill="#7b7f83"/>
-      <rect x="224" y="-22" width="6" height="6" fill="#ffd27a"/>
-      ${dark > 0.3 ? `<ellipse cx="262" cy="-16" rx="40" ry="9" fill="#ffe2a0" opacity="${(0.25 * dark).toFixed(2)}"/>` : ''}
-    </g>`;
-  } else {
-    const color = night(v.colors[0]);
-    const w = v.kind === 'taxi' ? 130 : 140;
-    g.innerHTML = `<g${flip ? ` transform="scale(-1 1) translate(-${w} 0)"` : ''}>
-      <path d="M6 -14 Q4 -34 22 -36 L 40 -54 Q 46 -60 58 -60 H 88 Q 98 -60 104 -52 L 116 -36 Q ${w - 4} -34 ${w - 4} -14Z" fill="${color}"/>
-      <path d="M46 -52 H 64 V -38 H 34Z M70 -52 H 92 L 104 -38 H 70Z" fill="#39434a"/>
-      ${v.kind === 'taxi' ? `<rect x="58" y="-66" width="20" height="7" fill="#f4e7a1"/><path d="M8 -26 H ${w - 6}" stroke="#222" stroke-width="3" stroke-dasharray="6 6"/>` : ''}
-      <circle cx="32" cy="-12" r="11" fill="#1d1f21"/><circle cx="32" cy="-12" r="4" fill="#8a8e92"/>
-      <circle cx="${w - 30}" cy="-12" r="11" fill="#1d1f21"/><circle cx="${w - 30}" cy="-12" r="4" fill="#8a8e92"/>
-      <rect x="${w - 8}" y="-28" width="5" height="5" fill="#ffd27a"/>
-      ${dark > 0.3 ? `<ellipse cx="${w + 30}" cy="-24" rx="34" ry="8" fill="#ffe2a0" opacity="${(0.25 * dark).toFixed(2)}"/>` : ''}
-    </g>`;
-  }
-  return g;
-}
-
-function mixNight(hex: string, k: number): string {
-  const n = parseInt(hex.slice(1), 16);
-  const mix = (c: number, t: number) => Math.round(c + (t - c) * k);
-  const r = mix((n >> 16) & 255, 20);
-  const g = mix((n >> 8) & 255, 28);
-  const b = mix(n & 255, 48);
-  return `rgb(${r},${g},${b})`;
 }

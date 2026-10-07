@@ -40,7 +40,27 @@ The room is then at https://juancopi81.github.io/bogota-1995/. Without
    answered the exit questions.
 3. Fix what didn't work. Then delete the pilot rows (keep the header row).
 
-## 4. The ads
+## 4. Memories for other visitors (optional)
+
+After the exit questions, the room can show a few memories that earlier
+visitors agreed to share. Nothing shows until you approve it.
+
+1. In the Apps Script editor, replace the code with the current
+   [`research/apps-script.gs`](../research/apps-script.gs), save, and
+   **Manage deployments → Edit → Version: New version → Deploy**. The URL
+   stays the same.
+2. In the `visitas` tab, add two column headers at the end of row 1:
+   `aprobado` and `recuerdo_publico`.
+3. Read the memories. Visitors who ticked "Pueden mostrar mi recuerdo..."
+   have `memory_share` = TRUE. For each one you want to show, write `sí` in
+   `aprobado`. If it has a name or anything personal, write the version to
+   show in `recuerdo_publico`; the visitor's own words stay in `memory`.
+4. Check: open the web app URL with `?recuerdos=1` at the end. It lists what
+   the room will show, a different handful each time (at most 30).
+
+Without this, the thanks screen just says thanks.
+
+## 5. The ads
 
 Add who sent the visitor to the link, so the sheet can tell ads apart:
 
@@ -61,8 +81,9 @@ roughly 10–25 in 1995. See [`test-plan.md`](test-plan.md) for the rest, and
 | `stage` | how far they got: `load`, `gate` (a phone), `declined`, `consent`, `door`, `room`, `done` |
 | `lived_1995`, `age_1995` | the door's two questions |
 | `pre_*`, `post_*`, `change` | the six mood items at the door and the exit; `*_nostalgia` is the mean of the three nostalgia items, `change` the difference |
-| `memory`, `triggers`, `return_intent`, `trait_*`, `feedback` | the rest of the exit |
+| `memory`, `memory_share`, `triggers`, `return_intent`, `trait_*`, `feedback` | the rest of the exit; `memory_share` is TRUE if they let other visitors read their memory |
+| `aprobado`, `recuerdo_publico` | yours, added by hand: which shared memories the room may show, and an edited version to show instead |
 | `s_*` | seconds: `s_total`, per view (`s_view_tv`…), per station (`s_radio_radioactiva`…), `s_tv`, `s_tv_clip`, `s_phone`, `s_tape_play`, `s_tape_rec` |
-| `n_*`, `calls`, `opens`, `tv_channels` | what happened: requests, recordings, numbers dialed, close-ups opened, time per channel |
+| `n_*`, `calls`, `opens`, `tv_channels` | what happened: requests, recordings, numbers dialed, close-ups opened, time per channel; `n_andres_rang`, `_answered`, `_asked`, `_taped`, `_not_taped` follow Andrés's errand |
 | `reached_6pm`, `exit_reason`, `min_at_exit`, `min_room` | whether they stayed until the anthem, how they left, minutes inside when they answered, and in all (some stay after answering) |
 | `dev_*`, `ref_*`, `build`, `t_*` | screen and language, which ad, which version of the site, timestamps |

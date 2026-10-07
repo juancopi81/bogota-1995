@@ -41,6 +41,10 @@ the purpose is less obvious.
    - Two trait-nostalgia items from the Southampton Nostalgia Scale (asked at
      the end so they don't prime the visit).
    - "¿Algo no le sonó a 1995, o no funcionó?" (optional).
+   - Then, as thanks, a few memories earlier visitors left: only those they
+     agreed to share and you approved. It comes after every answer, so it
+     can't sway them; the hint near "Enviar" mentions it, as a reason to
+     finish. Whether to share is a checkbox under the memory, off by default.
 5. **Anonymous log** of what they did: seconds per object, station and
    channel; calls dialed; requests; taping; whether they reached 6 p.m.;
    return visits from the same browser.
@@ -63,6 +67,7 @@ the purpose is less obvious.
 
 - The same six items.
 - ¿El cuarto le trajo algún recuerdo? Si quiere, escríbalo aquí (sin nombres ni datos personales).
+  - ☐ Pueden mostrar mi recuerdo a otros visitantes, sin datos míos.
 - ¿Qué se lo trajo? La radio · La grabadora y el casete · El teléfono · La televisión · La ventana y la calle · Las cosas del cuarto · Las voces · La música · Nada en particular
 - ¿Volvería a entrar a este cuarto? Sí · Tal vez · No
 - En general, ¿qué tan seguido siente nostalgia? 1 (muy rara vez) – 7 (muy seguido)

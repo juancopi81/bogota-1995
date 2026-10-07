@@ -280,7 +280,8 @@ body {
   font-style: italic;
 }
 
-.sub-house .sub-text {
+.sub-house .sub-text,
+.sub-street .sub-text {
   font-style: italic;
   color: #e9dcc0;
 }
@@ -471,6 +472,61 @@ body {
   border: 1px solid rgba(230, 221, 200, 0.3);
   border-radius: 6px;
   resize: vertical;
+}
+
+#research label.share {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 16px;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+#research label.share input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #e6ddc8;
+}
+
+/* the memories other visitors left, as notes torn from a cuaderno */
+#research .notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 10px 0 8px;
+}
+
+#research .note {
+  flex: 1 1 250px;
+  margin: 0;
+  padding: 14px 20px 14px;
+  color: #2b2f3a;
+  background: repeating-linear-gradient(to bottom, #e8dfc8 0 31px, rgba(70, 100, 150, 0.22) 31px 32px);
+  background-position: 0 6px;
+  border-radius: 2px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  transform: rotate(-1.2deg);
+}
+
+#research .note:nth-child(2) {
+  transform: rotate(0.9deg);
+}
+
+#research .note:nth-child(3) {
+  transform: rotate(-0.5deg);
+}
+
+#research .note blockquote {
+  margin: 0 0 10px;
+  font: 25px/32px 'Caveat', cursive;
+}
+
+#research .note figcaption {
+  font: 13px/1.4 'Special Elite', monospace;
+  opacity: 0.65;
 }
 
 /* the buttons stay in view while a long screen scrolls */
@@ -1000,12 +1056,30 @@ body.study #backstage-toggle {
   pointer-events: none;
 }
 
+/* the bulging glass catches the window's light; the tube's own curve and lines come from the picture */
 .tv-glass {
   background:
-    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
-    radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.55) 100%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 30%);
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+    radial-gradient(ellipse 58% 42% at 28% 16%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 72%),
+    radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0) 64%, rgba(0, 0, 0, 0.45) 100%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 30%);
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.6),
+    inset 0 3px 2px rgba(255, 255, 255, 0.05);
+}
+
+/* a flat picture (no WebGL), or a real clip playing beneath: scanlines on the glass */
+.tv-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, rgba(0, 0, 0, 0) 1px 3px);
+  display: none;
+}
+
+#cu-tv.flat .tv-glass::before,
+#cu-tv.video .tv-glass::before {
+  display: block;
 }
 
 #cu-tv.shake .art,
@@ -1044,6 +1118,10 @@ body.study #backstage-toggle {
 
 #cu-window {
   cursor: grab;
+}
+
+#cu-window.no-glass {
+  cursor: default;
 }
 
 .room-svg .curtain-right.breeze,
