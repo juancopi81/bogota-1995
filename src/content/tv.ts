@@ -2,19 +2,20 @@
 // Bogotá on VHF: Cadena Uno (7), Canal A (9) and Canal 3 (11), which becomes
 // Señal Colombia in December. Everything else on the knob is snow.
 //
-// The programs and ads here are invented placeholders. Canal A airs the
-// approved real clips (content/clips.ts) whenever this copy of the room can
-// play them, and falls back to its invented programs when it can't.
+// The programs and ads here are invented placeholders. When this copy of the
+// room can play YouTube, Cadena Uno and Canal A air real 1995 programs in
+// full from 5:30 (content/clips.ts), then real clips and ads; when it can't,
+// they fall back to these.
 
 import { lines, type Line } from './lines';
-import type { Clip } from './clips';
+import { SCHEDULES, onSchedule, type Clip } from './clips';
 import type { Style } from '../audio/music';
 
 export type SceneId = 'novela' | 'novela-close' | 'bumper-uno' | 'presenta' | 'ad-chocolate' | 'ad-blancor' | 'ad-casablanca' | 'paramo' | 'bumper-tres' | 'musical' | 'bumper-a';
 
 export type TvSegment =
   | { kind: 'scene'; scene: SceneId; lines: Line[]; bed?: Style; min?: number }
-  | { kind: 'clip'; clip: Clip }
+  | { kind: 'clip'; clip: Clip; /** Its place in the channel's timetable. */ entry?: number }
   | { kind: 'anthem' };
 
 export interface ChannelDef {
@@ -30,8 +31,35 @@ export interface ChannelDef {
   realClips?: boolean;
   /** Its running order with real ad breaks instead of the invented ads, when they can play. */
   realAds?: (ads: Clip[]) => TvSegment[];
+  /** Real programs in full from 5:30 on, back to back, when they can play (content/clips.ts). */
+  schedule?: Clip[];
   /** The channel's card: what's on screen while a real clip loads or after it ends. */
   card: SceneId;
+}
+
+/**
+ * What a channel's timetable airs from `start` until its next program, when
+ * real programs can play: its card before 5:30, the program (from however far
+ * in it is), or the card for what's left of a program whose video ran out
+ * early. Null where there's no timetable, once it's over, or where YouTube
+ * refused that program, so the usual running order fills in (and the next
+ * program still comes on at its time). The anthem (from `anthemAt`, `anthem`
+ * seconds long) pauses it.
+ */
+export function timetable(
+  def: ChannelDef,
+  start: number,
+  anthemAt: number,
+  anthem: number,
+  usable: (clip: Clip) => boolean,
+  ended: ReadonlySet<number>,
+): TvSegment | null {
+  if (!def.schedule?.length) return null;
+  if (start < 0) return { kind: 'scene', scene: def.card, lines: [], min: -start };
+  const on = onSchedule(def.schedule, start, anthemAt, anthem);
+  if (!on || !usable(on.clip)) return null;
+  if (ended.has(on.index)) return { kind: 'scene', scene: def.card, lines: [], min: on.clip.dur };
+  return { kind: 'clip', clip: on.clip, entry: on.index };
 }
 
 /** Canal A with real clips: its card between each one. */
@@ -99,6 +127,7 @@ export const CHANNELS: ChannelDef[] = [
     ],
     // each round of the telenovela gets a different stretch of the real 1995 ads
     realAds: (ads) => ads.flatMap((clip): TvSegment[] => [...UNO_NOVELA, { kind: 'clip', clip }, UNO_CARD]),
+    schedule: SCHEDULES[7],
   },
   {
     number: 9,
@@ -107,6 +136,7 @@ export const CHANNELS: ChannelDef[] = [
     strength: 0.8,
     card: 'bumper-a',
     realClips: true,
+    schedule: SCHEDULES[9],
     program: [
       { kind: 'scene', scene: 'bumper-a', lines: [], min: 5 },
       { kind: 'scene', scene: 'musical', lines: [CANAL_A.hola], bed: 'rock', min: 60 },

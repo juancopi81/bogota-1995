@@ -4,7 +4,7 @@
 
 import { Timeline } from '../broadcast/timeline';
 import type { Cue, Scheduled } from '../broadcast/types';
-import { CHANNELS, clipProgram, type ChannelDef, type TvSegment } from '../content/tv';
+import { CHANNELS, clipProgram, timetable, type ChannelDef, type TvSegment } from '../content/tv';
 import { ClipScreen, clipsPlayable, workingClips } from './clipscreen';
 import { AD_BREAKS } from '../content/clips';
 import { dynamicLine } from '../content/lines';
@@ -28,6 +28,8 @@ import { setAttr, toggleClass } from '../ui/dom';
 import { glide } from '../audio/param';
 
 const ANTHEM_AT = at(18, 0);
+/** How long the anthem holds the screen, when there's one to play. */
+const anthemSlot = () => (library.anthem()?.duration ?? 60) + 2;
 
 /** The light each kind of picture throws into the room: r, g, b, brightness. */
 const GLOW: Record<string, [number, number, number, number]> = {
@@ -53,6 +55,10 @@ class Channel {
   readonly out: GainNode;
   private playing = new Map<Scheduled<TvSegment>, { gain: GainNode; sources: AudioScheduledSourceNode[] }>();
   private active = false;
+  /** Where the usual running order is up to. */
+  private i: number;
+  /** Programs in the timetable whose video ran out before their slot did. */
+  private readonly ended = new Set<number>();
 
   constructor(
     private readonly ctx: AudioContext,
@@ -60,20 +66,29 @@ class Channel {
   ) {
     this.out = ctx.createGain();
     const rng = mulberry32(def.number * 31);
-    let i = Math.floor(rng() * def.program.length);
+    this.i = Math.floor(rng() * def.program.length);
     this.timeline = new Timeline<TvSegment>({
       from: -60 - rng() * 120,
-      next: () => {
-        const program = this.program();
-        return program[i++ % program.length];
-      },
+      next: (start) => this.scheduled(start) ?? this.usual(),
       measure: (seg) => this.measure(seg),
       hardBreak: { at: ANTHEM_AT, seg: () => (library.anthem() ? { kind: 'anthem' } : null) },
     });
     bus.on('clock:skip', () => this.stopAll());
     bus.on('media:loaded', ({ kind }) => kind === 'anthem' && this.timeline.regenerateAfter(clock.now()));
     // a clip was refused, or none can play here: re-plan what hasn't aired yet
-    if (def.realClips || def.realAds) bus.on('tv:clips', () => this.cutClip());
+    if (def.realClips || def.realAds || def.schedule) bus.on('tv:clips', () => this.replan());
+  }
+
+  /** The next segment of the usual running order. */
+  private usual(): TvSegment {
+    const program = this.program();
+    return program[this.i++ % program.length];
+  }
+
+  /** The timetable from 5:30 on (real programs in full), when they can play here. */
+  private scheduled(start: number): TvSegment | null {
+    if (!clipsPlayable()) return null;
+    return timetable(this.def, start, ANTHEM_AT, library.anthem() ? anthemSlot() : 0, (clip) => workingClips([clip]).length > 0, this.ended);
   }
 
   /** Real clips (or real ads) when they can play here, the invented programs otherwise. */
@@ -86,16 +101,30 @@ class Channel {
     return this.def.program;
   }
 
-  /** A real clip on air gives way now (it ended, or was refused): the card, then what's next. */
+  /** The real clip on air ran out before its slot did: the card, then what's next. */
   cutClip(): void {
     const now = clock.now();
-    if (this.timeline.at(now)?.seg.kind === 'clip') this.timeline.cutAt(now, [{ kind: 'scene', scene: this.def.card, lines: [], min: 4 }]);
-    else this.timeline.regenerateAfter(now);
+    const seg = this.timeline.at(now)?.seg;
+    if (seg?.kind !== 'clip') return void this.timeline.regenerateAfter(now);
+    if (seg.entry !== undefined) this.ended.add(seg.entry);
+    this.timeline.cutAt(now, [{ kind: 'scene', scene: this.def.card, lines: [], min: 4 }]);
+  }
+
+  /**
+   * A clip was refused somewhere, or none can play here: the clip on air gives
+   * way only if it's the one affected, and what's ahead is re-planned.
+   */
+  private replan(): void {
+    const now = clock.now();
+    const seg = this.timeline.at(now)?.seg;
+    if (seg?.kind === 'clip' && (!clipsPlayable() || !workingClips([seg.clip]).length)) {
+      this.timeline.cutAt(now, [{ kind: 'scene', scene: this.def.card, lines: [], min: 4 }]);
+    } else this.timeline.regenerateAfter(now);
   }
 
   private measure(seg: TvSegment): { dur: number; cues: Cue[] } {
     if (seg.kind === 'clip') return { dur: seg.clip.dur, cues: [] };
-    if (seg.kind === 'anthem') return { dur: (library.anthem()?.duration ?? 60) + 2, cues: [] };
+    if (seg.kind === 'anthem') return { dur: anthemSlot(), cues: [] };
     const cues: Cue[] = [];
     let t = 1.2;
     for (const line of seg.lines) {

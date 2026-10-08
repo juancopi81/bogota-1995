@@ -1,41 +1,41 @@
 # TV clips
 
-Canal A (channel 9) airs real 1995 television through YouTube embeds.
-**Nothing goes in without your OK.**
+Cadena Uno (7) and Canal A (9) air real 1995 television through YouTube
+embeds. **Nothing goes in without your OK.**
 
-## On air (approved in the second interview)
+## The timetable from 5:30 (approved in October 2026)
 
-You approved Señal Memoria's own uploads and the 1995 Cadena Uno ad breaks.
-These are in `src/content/clips.ts`, and Canal A loops them with its card in
-between (about 12 minutes):
+Full episodes, starting at 0:00 and playing to their end, then ads and clips.
+The anthem at 6:00 pauses whatever is on; it picks up after the anthem. Tune
+in late and you land mid-episode, like the radio. These are in `SCHEDULES` in
+`src/content/clips.ts`, one line each.
 
-| Slot | Clip | Source |
+| | Cadena Uno (7) | Canal A (9) |
 |---|---|---|
-| Ad break | [«1995 Comerciales. Cadena UNO. Colombia»](https://www.youtube.com/watch?v=J47UMyICIJU), first 2½ min | Fan upload (taped off the air) |
-| Music | [«Rock al parque 1995»](https://www.youtube.com/watch?v=84DTd4OBC9Y), first 4 min | Same title as Señal Memoria's piece |
-| Ad break | The same tape, from 2½ to 5 min | Fan upload |
-| News | [«Guerra de Bosnia en la TV colombiana (1995)»](https://www.youtube.com/watch?v=c991HevT0RE), first 2½ min | *Noticiero de las 7*, from Señal Memoria's archive |
+| 5:30:00 | [«Tentaciones»](https://www.youtube.com/watch?v=92NxNiCDwZs), 23:39 (Caracol Televisión's own upload) | [«Dejémonos de vainas»](https://www.youtube.com/watch?v=E_reJPjY4Fw), 22:31 (fan copy) |
+| 5:52:31 | | Four 1995 commercials: [1](https://www.youtube.com/watch?v=Qv6BF5cz1WI), [2](https://www.youtube.com/watch?v=WpAJ8E8ZnyI), [3](https://www.youtube.com/watch?v=qkIQUUdeXJo), [4](https://www.youtube.com/watch?v=Mwwqc8vHE5A) (19, 14, 26, 19 s; fan copies) |
+| 5:53:39 | 75 s of [«1995 Comerciales. Cadena UNO»](https://www.youtube.com/watch?v=J47UMyICIJU) (fan copy) | |
+| 5:53:49 | | [«Rock al parque 1995»](https://www.youtube.com/watch?v=84DTd4OBC9Y), 4 min |
+| 5:54:54 | [«De pies a cabeza»](https://www.youtube.com/watch?v=zxKV5Lfi1Xk), 34:30 (fan copy) | |
+| 5:57:49 | | The 1995 Cadena Uno ads again, from 2:30, up to six |
+| 6:00:00 | Himno Nacional | Himno Nacional |
+| 6:02:43 | De pies a cabeza picks up where it stopped | [«Guerra de Bosnia en la TV colombiana (1995)»](https://www.youtube.com/watch?v=c991HevT0RE) (*Noticiero de las 7*) |
+| after | the invented telenovela, with the real 1995 ads in its breaks | the clips above in rotation, with the channel's card between them |
 
-**Cadena Uno (channel 7)** also airs that 1995 ad tape, 75 seconds at a time,
-between the scenes of its (invented) telenovela, where the invented ads were.
-
-I still couldn't watch them (YouTube is blocked from the build environment),
-so **please check three things the first time you play:** that the uploaders
-are who we think, that each slot starts somewhere sensible, and that nothing
-in them is from after 1995 (a modern logo or title card). Starts and lengths
-are one line each in `clips.ts`.
-
-**Not airing, and why:**
-
-- *Freddy Rincón, el adiós a un coloso*: the 1995 *Noticiero de las 7*
-  fragment is inside a 2022 obituary piece. A tribute to his death on a 1995 TV
-  would break the moment.
-- *Inmigrantes*, *Historias de la historia*, Power Rangers: I found no YouTube
-  upload, only Señal Memoria's own site, which can't be embedded here.
-- «18 - Tanda de comerciales colombianos - Cadena Uno» (86R_6WAJHMk): the
-  title doesn't give the year, and the rest of that series is 1991–1994.
-- «Rock al Parque 1995 (el público)» (PFwUJIMUx3o): a fan upload, but not an
-  ad break, so outside what you approved.
+- **Where they aired:** *Dejémonos de vainas* (Coestrellas) was on Canal A in
+  1992–1998; *De pies a cabeza* was on Cadena Uno from 1993; *Tentaciones*
+  was Caracol's, about 1994–1998, when Caracol made programs for both public
+  channels.
+- **YouTube's own ads** can play inside these, before or during an episode,
+  and can't be turned off from here (accepted for now). Switching channels
+  reloads the player, so coming back can bring another ad. An ad delays the
+  episode, so its last seconds may be cut when the next item comes on.
+- **If a program is refused** (removed, private, embedding disabled), the
+  channel's usual running order fills its slot, and the next program still
+  comes on at its time. If a video ends before its slot does, the channel's
+  card covers the rest.
+- **The invented programs** (the telenovela «Corazón de lluvia», «Sábado
+  Musical», the ads) are what the channels show when YouTube can't play here.
 
 ## Where clips can play
 
