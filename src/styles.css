@@ -363,7 +363,7 @@ body {
 }
 
 #research .panel {
-  width: 1000px;
+  width: 1040px;
   max-height: 860px;
   overflow-y: auto;
   padding: 36px 52px 0;
@@ -378,6 +378,13 @@ body {
   font-family: 'Special Elite', 'Courier New', monospace;
   font-size: 36px;
   font-weight: normal;
+}
+
+#research h2 .step {
+  margin-left: 12px;
+  font: 15px system-ui, sans-serif;
+  vertical-align: middle;
+  opacity: 0.45;
 }
 
 #research p {
@@ -425,6 +432,23 @@ body {
   padding: 7px 0;
   border-bottom: 1px solid rgba(230, 221, 200, 0.1);
   font-size: 18px;
+}
+
+/* the exit's second step fits on one screen: the short questions sit in rows */
+#research [data-step='2'] h2 {
+  margin-bottom: 12px;
+}
+
+#research [data-step='2'] .q {
+  margin-top: 20px;
+}
+
+#research [data-step='2'] .actions {
+  padding-bottom: 16px;
+}
+
+#research .likert.rows {
+  margin-top: 18px;
 }
 
 #research .scale {

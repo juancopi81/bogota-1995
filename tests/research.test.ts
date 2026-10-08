@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { nostalgiaScore } from '../src/research/questions';
-import { VisitRecord, doorFields, exitFields } from '../src/research/record';
+import { VisitRecord, doorFields, exitFields, exitMoodFields } from '../src/research/record';
 import { ActivityLog, type Snapshot } from '../src/research/log';
 
 const mood = (n1: number, n2: number, n3: number) => ({ tranquilo: 4, nostalgico: n1, aburrido: 2, sentimientos: n2, contento: 5, ahora: n3 });
@@ -28,6 +28,13 @@ describe('the questions', () => {
       door.pre_nostalgia as number,
     );
     expect(exit).toMatchObject({ post_nostalgia: 5, change: 3, memory: 'El casete que me grabó mi hermano.', memory_share: true, triggers: 'radio grabadora', return_intent: 'si', trait_often: 3, trait_prone: null });
+  });
+
+  it('keeps the six phrases at the exit on their own, for visitors who stop after the first step', () => {
+    const fields = exitMoodFields(mood(5, 6, 4), 2);
+    expect(fields).toMatchObject({ post_nostalgico: 5, post_sentimientos: 6, post_ahora: 4, post_tranquilo: 4, post_nostalgia: 5, change: 3 });
+    expect('memory' in fields).toBe(false);
+    expect(exitMoodFields(mood(5, 6, 4), null).change).toBeNull();
   });
 
   it('only records the permission to share when there is a memory to share', () => {

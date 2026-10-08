@@ -110,25 +110,39 @@ export function door(host: HTMLElement): Promise<DoorAnswers> {
   });
 }
 
-/** The exit questions. Null if the visitor goes back into the room instead. */
-export function exit(host: HTMLElement, reason: 'button' | '6pm'): Promise<ExitAnswers | null> {
+/**
+ * The exit questions, in two short steps so nothing hides below the fold: the
+ * six phrases (the measure), then the rest, all optional, on one screen with
+ * "Enviar" at its end. `onMood` gets the six as soon as they're in. Null if the
+ * visitor goes back into the room instead.
+ */
+export function exit(host: HTMLElement, reason: 'button' | '6pm', onMood: (mood: Record<string, number>) => void = () => undefined): Promise<ExitAnswers | null> {
+  const back = '<button type="button" class="quiet" data-act="back">Volver al cuarto</button>';
   const el = overlay(
     host,
-    `<h2>${reason === '6pm' ? 'Ya pasaron las seis. Se acabó la tarde.' : 'Antes de irse'}</h2>
-    <div class="q">Ahora mismo, ¿qué tan de acuerdo está con cada frase?</div>${likert('mood', MOOD)}
-    <div class="q">¿El cuarto le trajo algún recuerdo? Si quiere, escríbalo aquí (sin nombres ni datos personales).</div>
-    <textarea data-f="memory" rows="4" maxlength="2000"></textarea>
-    <label class="share"><input type="checkbox" data-f="share"> Pueden mostrar mi recuerdo a otros visitantes, sin datos míos.</label>
-    <div class="q">¿Qué se lo trajo? Puede marcar varias.</div>${choices('triggers', TRIGGERS, true)}
-    <div class="q">¿Volvería a entrar a este cuarto?</div>${choices('return', RETURN)}
-    ${TRAIT.map((item) => `<div class="q">${item.text}</div>${scale(`trait.${item.id}`, item.ends)}`).join('')}
-    <div class="q">¿Algo no le sonó a 1995, o no funcionó?</div>
-    <textarea data-f="feedback" rows="2" maxlength="1000"></textarea>
-    <div class="actions"><button type="button" class="primary" data-act="send" disabled>Enviar</button><button type="button" class="quiet" data-act="back">Volver al cuarto</button><span class="hint">Solo las seis frases de arriba son obligatorias. Al enviar podrá leer recuerdos que dejaron otros visitantes.</span></div>`,
+    `<section data-step="1">
+      <h2>${reason === '6pm' ? 'Ya pasaron las seis. Se acabó la tarde.' : 'Antes de irse'} <span class="step">1 de 2</span></h2>
+      <div class="q">Ahora mismo, ¿qué tan de acuerdo está con cada frase?</div>${likert('mood', MOOD)}
+      <div class="actions"><button type="button" class="primary" data-act="next" disabled>Siguiente</button>${back}<span class="hint">Responda las seis frases para seguir.</span></div>
+    </section>
+    <section data-step="2" hidden>
+      <h2>Antes de irse <span class="step">2 de 2</span></h2>
+      <div class="q">¿El cuarto le trajo algún recuerdo? Si quiere, escríbalo aquí (sin nombres ni datos personales).</div>
+      <textarea data-f="memory" rows="3" maxlength="2000"></textarea>
+      <label class="share"><input type="checkbox" data-f="share"> Pueden mostrar mi recuerdo a otros visitantes, sin datos míos.</label>
+      <div class="q">¿Qué se lo trajo? Puede marcar varias.</div>${choices('triggers', TRIGGERS, true)}
+      <div class="likert rows">
+        <div class="item"><span>¿Volvería a entrar a este cuarto?</span>${choices('return', RETURN)}</div>
+        ${TRAIT.map((item) => `<div class="item"><span>${item.text}</span>${scale(`trait.${item.id}`, item.ends)}</div>`).join('')}
+      </div>
+      <div class="q">¿Algo no le sonó a 1995, o no funcionó?</div>
+      <textarea data-f="feedback" rows="2" maxlength="1000"></textarea>
+      <div class="actions"><button type="button" class="primary" data-act="send">Enviar</button>${back}<span class="hint">Todo esto es opcional. Al enviar podrá leer recuerdos que dejaron otros visitantes.</span></div>
+    </section>`,
   );
-  const send = el.querySelector<HTMLButtonElement>('[data-act="send"]')!;
+  const next = el.querySelector<HTMLButtonElement>('[data-act="next"]')!;
   const complete = () => MOOD.every((item) => picks.number[`mood.${item.id}`]);
-  const picks = new Picks(el, () => (send.disabled = !complete()));
+  const picks = new Picks(el, () => (next.disabled = !complete()));
   const text = (f: string) => el.querySelector<HTMLTextAreaElement>(`[data-f="${f}"]`)!.value;
   return new Promise((resolve) => {
     el.addEventListener('click', (e) => {
@@ -136,6 +150,11 @@ export function exit(host: HTMLElement, reason: 'button' | '6pm'): Promise<ExitA
       if (act === 'back') {
         el.remove();
         resolve(null);
+      } else if (act === 'next' && complete()) {
+        onMood(picks.scores('mood', MOOD));
+        el.querySelector<HTMLElement>('[data-step="1"]')!.hidden = true;
+        el.querySelector<HTMLElement>('[data-step="2"]')!.hidden = false;
+        el.querySelector('.panel')!.scrollTop = 0;
       } else if (act === 'send' && complete()) {
         el.remove();
         resolve({

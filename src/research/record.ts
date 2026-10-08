@@ -110,12 +110,18 @@ export function doorFields(a: DoorAnswers): Record<string, Value | null> {
   return out;
 }
 
-export function exitFields(a: ExitAnswers, preNostalgia: number | null): Record<string, Value | null> {
+/** The six phrases at the exit, and how nostalgia changed since the door. */
+export function exitMoodFields(mood: Record<string, number>, preNostalgia: number | null): Record<string, Value | null> {
   const out: Record<string, Value | null> = {};
-  for (const item of MOOD) out[`post_${item.id}`] = a.mood[item.id] ?? null;
-  const post = nostalgiaScore(a.mood);
+  for (const item of MOOD) out[`post_${item.id}`] = mood[item.id] ?? null;
+  const post = nostalgiaScore(mood);
   out.post_nostalgia = post;
   out.change = post !== null && preNostalgia !== null ? Math.round((post - preNostalgia) * 100) / 100 : null;
+  return out;
+}
+
+export function exitFields(a: ExitAnswers, preNostalgia: number | null): Record<string, Value | null> {
+  const out = exitMoodFields(a.mood, preNostalgia);
   out.memory = a.memory.trim();
   out.memory_share = out.memory ? a.shareMemory : null;
   out.triggers = a.triggers.join(' ');

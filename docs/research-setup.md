@@ -78,7 +78,7 @@ roughly 10–25 in 1995. See [`test-plan.md`](test-plan.md) for the rest, and
 | Columns | What |
 |---|---|
 | `visit`, `visitor`, `visit_n` | random ids; `visit_n` counts visits from the same browser |
-| `stage` | how far they got: `load`, `gate` (a phone), `declined`, `consent`, `door`, `room`, `done` |
+| `stage` | how far they got: `load`, `gate` (a phone), `declined`, `consent`, `door`, `room`, `exit` (answered the six phrases on the way out, not the rest), `done` |
 | `lived_1995`, `age_1995` | the door's two questions |
 | `pre_*`, `post_*`, `change` | the six mood items at the door and the exit; `*_nostalgia` is the mean of the three nostalgia items, `change` the difference |
 | `memory`, `memory_share`, `triggers`, `return_intent`, `trait_*`, `feedback` | the rest of the exit; `memory_share` is TRUE if they let other visitors read their memory |
