@@ -65,7 +65,7 @@ These are the best fit for "official embeds".
 
 | Piece | Why it fits | Link |
 |---|---|---|
-| Rock al Parque 1995 | The first festival (May 1995); the flyer on the wall | [Señal Memoria page](https://www.senalmemoria.co/piezas/rock-al-parque-1995) · [YouTube](https://www.youtube.com/watch?v=84DTd4OBC9Y) (check the uploader) |
+| Rock al Parque 1995 | The first festival (May 1995); the flyer on the wall | [Señal Memoria page](https://www.senalmemoria.co/piezas/rock-al-parque-1995) · [YouTube](https://www.youtube.com/watch?v=84DTd4OBC9Y) (Señal Memoria’s own upload) |
 | Serie *Inmigrantes* (1995): "Alemanes en el altiplano" | A 1995 public-TV documentary; right for Canal 3 | [Señal Memoria page](https://www.senalmemoria.co/piezas/alemanes-en-el-altiplano-serie-inmigrantes) |
 | *Historias de la historia* (1995), fragment | Educational TV of the year | [Señal Memoria page](https://www.senalmemoria.co/piezas/abadia-presidente-masacre-bananeras) |
 | *Noticiero de las 7* (1995): the war in Bosnia | What the evening news sounded like that year | [Señal Memoria page](https://www.senalmemoria.co/piezas/bosnia-la-guerra) |
