@@ -12,6 +12,8 @@ for what this first version is (and isn't).
 
 ## Run it
 
+Needs Node 22 (see `.nvmrc`; with nvm, `nvm use`).
+
 ```sh
 npm install
 npm run dev
@@ -170,8 +172,9 @@ all be driven from the console.
   Casting and generation details are in
   [`src/assets/voices/README.md`](src/assets/voices/README.md).
 - The fonts are under the OFL; see [`src/assets/fonts/LICENSES.md`](src/assets/fonts/LICENSES.md).
-- Real song titles, stations and brands appear by name. That's fine for a
-  private prototype, but it needs review before anything public.
+- Real song titles, stations and brands appear by name. The site is public,
+  so they've been reviewed: see [`docs/names-review.md`](docs/names-review.md)
+  (the invented businesses still need a check before the ads).
 - The real songs and voices you load stay in your browser.
 - The TV clips are YouTube embeds, played in YouTube's own player.
 - How a public version could have music: [`docs/public-path.md`](docs/public-path.md).

@@ -47,7 +47,7 @@ export const CLIPS: Clip[] = [
     start: 0,
     dur: 240,
     source: 'Señal Memoria',
-    note: '«Rock al parque 1995»: the closing of the first festival, May 1995 (same title as Señal Memoria’s piece; uploader not checked)',
+    note: '«Rock al parque 1995»: the closing of the first festival, May 1995',
   },
   {
     id: 'J47UMyICIJU',
@@ -61,7 +61,7 @@ export const CLIPS: Clip[] = [
     start: 0,
     dur: 150,
     source: 'Señal Memoria',
-    note: '«Guerra de Bosnia en la TV colombiana (1995)»: Noticiero de las 7 on the war in Bosnia (uploader not checked)',
+    note: '«Guerra de Bosnia en la TV colombiana (1995)»: Noticiero de las 7 on the war in Bosnia',
   },
 ];
 
