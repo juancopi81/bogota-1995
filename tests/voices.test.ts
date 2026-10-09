@@ -104,6 +104,53 @@ describe('included voices', () => {
     expect(lineDuration({ id: 'casa.onces', who: 'mama', text: '¡A tomar onces!' })).toBeCloseTo(3.29);
   });
 
+  it('knows how long each take lasts before it downloads', async () => {
+    const { voices } = await setup();
+    const { lineDuration } = await import('../src/audio/voices');
+    expect(voices.length('casa.onces')).toBeCloseTo(3.04, 4);
+    expect(voices.has('casa.onces')).toBe(false);
+    expect(lineDuration({ id: 'casa.onces', who: 'mama', text: '¡A tomar onces!' })).toBeCloseTo(3.29, 4);
+    expect(fetchFile).not.toHaveBeenCalled();
+  });
+
+  it('downloads the takes needed soonest first, and brings forward one that is wanted now', async () => {
+    const { voices, ctx } = await setup();
+    const soon = ['tv.novela.n2', 'calle.botella', 'casa.onces', 'llamada.angie.hola'];
+    const load = voices.loadBundled(ctx, (id) => (soon.includes(id) ? soon.indexOf(id) : 100));
+    const wanted = voices.when('llamada.andres.monedas');
+    await new Promise((r) => setTimeout(r, 0));
+    const first = fetchFile.mock.calls.slice(0, 5).map(([url]) => url.split('/').pop()!.replace(/(-[\w-]+)?\.mp3.*$/, ''));
+    expect(first).toEqual(['llamada.andres.monedas', ...soon]);
+    expect(await wanted).toBe(bundled);
+    await load;
+    expect(voices.count()).toBe(BUNDLED);
+  });
+
+  it('says a line that arrives late from where it has got to, and not at all once it is over', async () => {
+    const arrived = deferred<void>();
+    fetchFile.mockImplementation(async () => {
+      await arrived.promise;
+      return { ok: true, arrayBuffer: async () => data(1) };
+    });
+    const { voices, ctx } = await setup();
+    const { speak } = await import('../src/audio/voices');
+    const clock = ctx as unknown as { currentTime: number };
+    clock.currentTime = 0;
+    void voices.loadBundled(ctx);
+    const started: [string, number][] = [];
+    speak(ctx, 'casa.onces', (buffer, offset) => started.push([buffer === bundled ? 'onces' : '?', offset]));
+    clock.currentTime = 1;
+    speak(ctx, 'calle.botella', (_, offset) => started.push(['botella', offset]));
+    clock.currentTime = 4;
+    arrived.resolve();
+    await voices.when('casa.onces');
+    await voices.when('calle.botella');
+    // asked at 0 and arriving at 4, the onces line (3.04 s) was over; the botella call, asked at 1, joins 3 s in
+    expect(started).toEqual([['botella', 3]]);
+    speak(ctx, 'casa.onces', (buffer, offset) => started.push([buffer === bundled ? 'onces' : '?', offset]));
+    expect(started).toEqual([['botella', 3], ['onces', 0]]);
+  });
+
   it.each(['included', 'uploaded'] as const)('keeps uploaded recordings when %s finishes decoding first', async (first) => {
     saved.set('casa.onces', data(3));
     const includedGate = deferred<AudioBuffer>();

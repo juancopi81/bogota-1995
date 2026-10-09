@@ -31,7 +31,7 @@ export class Station {
       measure: (seg) => this.measure(seg),
       hardBreak: {
         at: ANTHEM_AT,
-        seg: () => (library.anthem() ? { kind: 'anthem' } : null),
+        seg: () => (library.anthemLength() !== undefined ? { kind: 'anthem' } : null),
       },
     });
   }
@@ -125,8 +125,7 @@ export class Station {
         return { dur: end(cues, 1.4), cues };
       }
       case 'anthem': {
-        const anthem = library.anthem();
-        return { dur: (anthem?.duration ?? 60) + 1.5, cues: [] };
+        return { dur: (library.anthemLength() ?? 60) + 1.5, cues: [] };
       }
       case 'silence':
         return { dur: seg.dur, cues: [] };

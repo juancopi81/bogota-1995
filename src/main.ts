@@ -10,6 +10,7 @@ import { clock } from './world/clock';
 import { AudioEngine } from './audio/engine';
 import { library } from './audio/library';
 import { voices } from './audio/voices';
+import { AHEAD, needs } from './audio/needs';
 import { Grabadora } from './objects/grabadora';
 import { Phone } from './objects/phone';
 import { Tv } from './objects/tv';
@@ -122,11 +123,29 @@ const gated = study.gate(() => {
   location.search = params.toString();
 });
 
-// Music and the included cast load before the afternoon starts. Your recordings take priority.
-const house = gated ? Promise.resolve() : library.loadHouse();
+// Your own files load first (they're already in this browser, and they take
+// priority). Then the room's own voices and music download in the order the
+// afternoon needs them, and the room opens once the first half minute's lines
+// are here, or after a few seconds anyway: a line that arrives late joins
+// partway through.
+const OPEN_WITH = 30;
 const ready = gated
   ? Promise.resolve()
-  : Promise.all([library.loadSaved(), voices.loadBundled(engine.ctx), voices.loadSaved(engine.ctx), grabadora.init(), Promise.race([house, new Promise((r) => setTimeout(r, 4000))])]);
+  : Promise.all([library.loadSaved(), voices.loadSaved(engine.ctx), grabadora.init()]).then(() => {
+      const need = needs(grabadora.radio.ahead(AHEAD), tv.ahead(AHEAD));
+      void voices.loadBundled(engine.ctx, need.voice);
+      void library.loadHouse(need.house);
+      return voices.ready(need.linesBefore(OPEN_WITH), 8000);
+    });
+
+/** If the first lines are still on their way, say so, instead of a room that doesn't move. */
+async function waitFor(loading: Promise<unknown>): Promise<void> {
+  const note = Object.assign(document.createElement('div'), { id: 'waiting', textContent: 'Un momento…' });
+  const timer = setTimeout(() => stage.el.appendChild(note), 600);
+  await loading;
+  clearTimeout(timer);
+  note.remove();
+}
 
 /** What the room is doing right now, for the test's log. */
 function snapshot(): Snapshot {
@@ -146,8 +165,9 @@ function snapshot(): Snapshot {
 
 async function enter(): Promise<void> {
   await engine.unlock();
-  await ready;
+  await waitFor(ready);
   clock.start(engine.ctx);
+  performance.mark('room:open');
   const skipTo = Number(params.get('t') ?? 0);
   if (skipTo > 0) clock.skip(skipTo);
   const open = params.get('open');

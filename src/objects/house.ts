@@ -2,7 +2,7 @@
 // kitchen calling out.
 
 import { lines, type Line } from '../content/lines';
-import { voices, lineDuration } from '../audio/voices';
+import { lineDuration, speak } from '../audio/voices';
 import type { AudioEngine } from '../audio/engine';
 import { play } from '../audio/sfx';
 import { subtitles } from '../ui/subtitles';
@@ -26,8 +26,8 @@ export function mountHouse(e: AudioEngine): void {
 /** Your mother says something from the kitchen. */
 export function mamaSays(line: Line): number {
   const dur = lineDuration(line, 13);
-  const buffer = voices.get(line.id);
-  if (buffer && engine) play(engine.ctx, buffer, engine.channel('house').input, { gain: 1.1 });
+  const e = engine;
+  if (e) speak(e.ctx, line.id, (buffer, offset) => play(e.ctx, buffer, e.channel('house').input, { gain: 1.1, offset }));
   subtitles.set('house', { label: 'Desde la cocina', line });
   clearTimeout(clearTimer);
   clearTimer = window.setTimeout(() => subtitles.set('house', null), dur * 1000 + 400);

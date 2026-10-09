@@ -40,8 +40,14 @@ export type WorldEvents = {
   'phone:dialed': { number: string };
   /** Recording started or stopped on the deck. */
   'tape:recording': { on: boolean };
-  /** A song or voice file was loaded in the backstage. */
-  'media:loaded': { kind: 'song' | 'voice' | 'anthem' | 'house'; id: string };
+  /**
+   * A song, voice or the anthem is ready to play: one loaded in the backstage,
+   * or one of the room's own. `planned` if its length was known from the build,
+   * so nothing that's planned around it changes.
+   */
+  'media:loaded': { kind: 'song' | 'voice' | 'anthem' | 'house'; id: string; planned?: boolean };
+  /** One of the room's own files turned out not to load here: plan without it. */
+  'media:missing': { kind: 'anthem' | 'house'; id: string };
   /** The light switch. */
   'light:bulb': { on: boolean };
   /** The TV was switched on or off. */

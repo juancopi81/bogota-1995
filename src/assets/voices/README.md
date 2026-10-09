@@ -87,6 +87,11 @@ Automated validation checks complete line coverage, original text, file
 hashes, MP3 decoding, non-silent audio, and loading into an empty browser.
 Accent, delivery, pronunciation, and emotional fit need listening feedback.
 
+How long each take lasts is read from its file when the page is built (see
+`vite.config.ts`), so the radio can plan around a line before it has
+downloaded. A retake only needs its file replaced; the next build picks up its
+new length.
+
 The browser check can be repeated against a running preview with
 `node scripts/e2e-voices.mjs http://localhost:4173/?skip`. If Playwright's
 Chromium is not installed, `PLAYWRIGHT_CHANNEL=chrome` uses an installed

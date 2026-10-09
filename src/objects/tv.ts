@@ -29,7 +29,7 @@ import { glide } from '../audio/param';
 
 const ANTHEM_AT = at(18, 0);
 /** How long the anthem holds the screen, when there's one to play. */
-const anthemSlot = () => (library.anthem()?.duration ?? 60) + 2;
+const anthemSlot = () => (library.anthemLength() ?? 60) + 2;
 
 /** The light each kind of picture throws into the room: r, g, b, brightness. */
 const GLOW: Record<string, [number, number, number, number]> = {
@@ -71,10 +71,12 @@ class Channel {
       from: -60 - rng() * 120,
       next: (start) => this.scheduled(start) ?? this.usual(),
       measure: (seg) => this.measure(seg),
-      hardBreak: { at: ANTHEM_AT, seg: () => (library.anthem() ? { kind: 'anthem' } : null) },
+      hardBreak: { at: ANTHEM_AT, seg: () => (library.anthemLength() !== undefined ? { kind: 'anthem' } : null) },
     });
     bus.on('clock:skip', () => this.stopAll());
-    bus.on('media:loaded', ({ kind }) => kind === 'anthem' && this.timeline.regenerateAfter(clock.now()));
+    // the anthem's length changed (yours was loaded or removed, or the bundled one won't load here)
+    bus.on('media:loaded', ({ kind, planned }) => kind === 'anthem' && !planned && this.timeline.regenerateAfter(clock.now()));
+    bus.on('media:missing', ({ kind }) => kind === 'anthem' && this.timeline.regenerateAfter(clock.now()));
     // a clip was refused, or none can play here: re-plan what hasn't aired yet
     if (def.realClips || def.realAds || def.schedule) bus.on('tv:clips', () => this.replan());
   }
@@ -88,7 +90,7 @@ class Channel {
   /** The timetable from 5:30 on (real programs in full), when they can play here. */
   private scheduled(start: number): TvSegment | null {
     if (!clipsPlayable()) return null;
-    return timetable(this.def, start, ANTHEM_AT, library.anthem() ? anthemSlot() : 0, (clip) => workingClips([clip]).length > 0, this.ended);
+    return timetable(this.def, start, ANTHEM_AT, library.anthemLength() !== undefined ? anthemSlot() : 0, (clip) => workingClips([clip]).length > 0, this.ended);
   }
 
   /** Real clips (or real ads) when they can play here, the invented programs otherwise. */
@@ -200,13 +202,10 @@ class Channel {
       const style = seg.bed;
       void library.whenBed(`tv${this.def.number}-${style}`, style).then((b) => play(b, start, true, 0.4));
     }
-    if (seg.kind === 'anthem') {
-      const anthem = library.anthem();
-      if (anthem) play(anthem, start + 1, false, 1);
-    }
+    if (seg.kind === 'anthem') void library.whenAnthem().then((anthem) => anthem && play(anthem, start + 1, false, 1));
+    // a line that hasn't downloaded yet joins partway through when it arrives
     for (const cue of item.cues) {
-      const v = voices.get(cue.line.id);
-      if (v) play(v, start + cue.at, false, 1.1, start + cue.at + v.duration + 0.1);
+      void voices.when(cue.line.id).then((v) => v && play(v, start + cue.at, false, 1.1, start + cue.at + v.duration + 0.1));
     }
   }
 }
@@ -486,6 +485,14 @@ export class Tv {
   /** A real 1995 clip is on the screen. */
   get playingClip(): boolean {
     return this.showingVideo;
+  }
+
+  /** What every channel airs until world time `until`, for getting its voices here in time. */
+  ahead(until: number): Scheduled<TvSegment>[] {
+    return [...this.channels.values()].flatMap(({ timeline }) => {
+      timeline.ensure(until);
+      return timeline.items.filter((i) => i.start < until);
+    });
   }
 
   setPower(on: boolean): void {

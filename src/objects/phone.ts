@@ -315,7 +315,9 @@ export class Phone {
     const api: CallApi = {
       say: async (line: Line) => {
         check();
-        const buffer = voices.get(line.id);
+        // a line still on its way gets a moment to arrive, like a pause on the line
+        const buffer = voices.get(line.id) ?? (await Promise.race([voices.when(line.id), sleep(1.5).then(() => undefined)]));
+        check();
         if (buffer) this.line.voice(buffer);
         subtitles.set('phone', { label: 'Teléfono', line });
         await sleep(lineDuration(line, 13) + 0.15);

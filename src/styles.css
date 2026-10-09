@@ -335,6 +335,24 @@ body {
   animation: breathe 3.5s ease-in-out infinite;
 }
 
+/* the first lines are still downloading */
+#waiting {
+  position: absolute;
+  left: 50%;
+  bottom: 9%;
+  transform: translateX(-50%);
+  z-index: 90;
+  padding: 10px 18px;
+  border-radius: 4px;
+  background: rgba(7, 8, 10, 0.72);
+  color: #e6ddc8;
+  font-family: system-ui, sans-serif;
+  font-size: 17px;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  animation: breathe 3.5s ease-in-out infinite;
+}
+
 @keyframes breathe {
   50% {
     opacity: 0.25;
