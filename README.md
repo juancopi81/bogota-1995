@@ -132,7 +132,8 @@ npm run visits         # the test's visits: how long people stayed, which moment
 
 `npm run visits` reads the sheet's `visitas` tab, downloaded as CSV into
 `media/private/visitas.csv` (never committed). Add `-- --skip <visitor id>`
-to leave out your own browser.
+to leave out your own browser, or `-- --campaign <name>` for one stage of the
+test (see [`docs/test-plan.md`](docs/test-plan.md)).
 
 End-to-end scripts in `scripts/` (`e2e-*.mjs`) drive the room in headless
 Chromium against the dev server: the request-line thread, the callback, the

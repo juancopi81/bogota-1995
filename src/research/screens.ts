@@ -73,7 +73,7 @@ export function consent(host: HTMLElement): Promise<boolean> {
   const el = overlay(
     host,
     `<h2>Antes de entrar</h2>
-    <p>Este cuarto es parte de un experimento sobre la nostalgia. Si participa, le haremos unas preguntas cortas en la puerta y al salir, y guardaremos lo que hace adentro: qué toca y por cuánto tiempo.</p>
+    <p>Este cuarto es parte de un experimento sobre la nostalgia. Si participa, le haremos unas preguntas cortas en la puerta y al salir, y guardaremos lo que hace adentro: qué toca y por cuánto tiempo. Si entra sin participar, solo contamos la visita y el enlace por el que llegó.</p>
     <p>Es anónimo: no le pedimos su nombre ni su correo, ni guardamos datos que lo identifiquen. Puede salir cuando quiera. Para participar debe ser mayor de 18 años.</p>
     <p>Al salir puede dejar un recuerdo. Solo si usted lo autoriza, y después de leerlo, podremos mostrarlo a otros visitantes, sin datos suyos.</p>
     <p class="fine">Un proyecto independiente y sin ánimo de lucro, sin relación con las emisoras, los canales ni las marcas que aparecen en el cuarto.${CONTACT ? ` Preguntas: ${escape(CONTACT)}.` : ''}</p>

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { nostalgiaScore } from '../src/research/questions';
-import { VisitRecord, doorFields, exitFields, exitMoodFields } from '../src/research/record';
+import { VisitRecord, arrival, doorFields, exitFields, exitMoodFields } from '../src/research/record';
 import { ActivityLog, type Snapshot } from '../src/research/log';
 
 const mood = (n1: number, n2: number, n3: number) => ({ tranquilo: 4, nostalgico: n1, aburrido: 2, sentimientos: n2, contento: 5, ahora: n3 });
@@ -76,8 +76,23 @@ describe('the visit record', () => {
   });
 });
 
+describe('before the visitor says yes', () => {
+  it('keeps only when, which version and which link: nothing about them or their computer', () => {
+    const fields = arrival(new URLSearchParams('utm_source=facebook&utm_campaign=calibracion&utm_content=lluvia&t=900'), '5390728');
+    expect(Object.keys(fields).sort()).toEqual(['build', 'ref_campaign', 'ref_content', 'ref_source', 'stage', 't_load']);
+    expect(fields).toMatchObject({ stage: 'load', build: '5390728', ref_source: 'facebook', ref_campaign: 'calibracion', ref_content: 'lluvia' });
+  });
+});
+
 describe('the activity log', () => {
   const at = (s: Partial<Snapshot>): Snapshot => ({ view: 'room', radio: null, tv: null, clip: false, phone: false, tape: null, ...s });
+
+  it("keeps the numbers the room gives you, and only counts any other (it could be someone's real number)", () => {
+    const log = new ActivityLog();
+    // Andrés, Abuelita, the cabina, 117, the almanaque's bakery; then two numbers from nowhere in the room
+    for (const number of ['2483107', '2459005', '2859797', '117', '2458713', '3104455', '2459505']) log.dialed(number);
+    expect(log.fields()).toMatchObject({ calls: '2483107 2459005 2859797 117 2458713 otro otro', n_calls: 7 });
+  });
 
   it('adds up time per view, station, channel, phone and tape', () => {
     const log = new ActivityLog();

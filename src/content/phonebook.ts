@@ -34,6 +34,16 @@ export const LIBRETA = [
 export const OWN_NUMBER = '2458712';
 
 export const PIZZERIA = '2482020';
+/** La Espiga's, on the almanaque by the window (src/art/room.ts): one digit off ours. */
+const ESPIGA = '2458713';
+
+/**
+ * Every number the room gives you: the libreta, your own, 117, the radio's
+ * request line, the pizzería from the ad and the bakery on the almanaque. The
+ * test's log keeps these as dialed; any other number could be someone's real
+ * one (a visitor's old home, say), so it's only counted.
+ */
+export const ROOM_NUMBERS = new Set([...LIBRETA.map((e) => e.number), OWN_NUMBER, '117', REQUEST_LINE, PIZZERIA, ESPIGA]);
 
 export function formatNumber(n: string): string {
   return n.length === 7 ? `${n[0]} ${n.slice(1, 3)} ${n.slice(3, 5)} ${n.slice(5)}` : n;
