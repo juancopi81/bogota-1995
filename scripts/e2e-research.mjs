@@ -56,16 +56,26 @@ await page.evaluate(() => { const c = window.room1995.clock; if (c.now() < 76) c
 await page.waitForFunction(() => !!window.room1995.phone.incoming, null, { timeout: 10000 });
 await shot('room');
 
+// the way out, in two steps: the six phrases, then the rest on one screen
 await page.click('#leave');
-await page.waitForSelector('#research [data-act="send"]');
+await page.waitForSelector('#research [data-act="next"]');
+const nextAtFirst = await page.$eval('#research [data-act="next"]', (b) => b.disabled);
 await rate('mood', { tranquilo: 5, nostalgico: 5, aburrido: 1, sentimientos: 6, contento: 6, ahora: 4 });
+await shot('exit1');
+await page.click('#research [data-act="next"]');
+await page.waitForSelector('#research [data-step="2"]:not([hidden]) [data-act="send"]');
+const afterStep1 = await fields();
+// nothing on the second step hides below the fold
+const step2 = await page.$eval('#research .panel', (p) => ({ fits: p.scrollHeight <= p.clientHeight + 2, scrollHeight: p.scrollHeight, clientHeight: p.clientHeight }));
+console.log('exit step 1:', JSON.stringify({ nextAtFirst, stage: afterStep1.stage, post_nostalgia: afterStep1.post_nostalgia, change: afterStep1.change }), '| step 2:', JSON.stringify(step2));
+if (!nextAtFirst || afterStep1.stage !== 'exit' || !step2.fits) throw new Error('the exit steps are off');
 await page.fill('#research [data-f="memory"]', 'La grabadora de mi hermano, grabando de Radioactiva.');
 await page.check('#research [data-f="share"]');
 await pick('triggers', 'radio');
 await pick('triggers', 'grabadora');
 await pick('return', 'si');
 await rate('trait', { often: 4, prone: 5 });
-await shot('exit');
+await shot('exit2');
 await page.click('#research [data-act="send"]');
 await page.waitForSelector('#research [data-act="back"]');
 // the thanks, with what other visitors left (made-up examples without a sheet)

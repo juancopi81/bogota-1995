@@ -7,7 +7,7 @@ import { bus } from '../world/bus';
 import { at, clock } from '../world/clock';
 import { onTick } from '../world/loop';
 import { ActivityLog, type Snapshot } from './log';
-import { VisitRecord, device, doorFields, exitFields, referral, visitor } from './record';
+import { VisitRecord, device, doorFields, exitFields, exitMoodFields, referral, visitor } from './record';
 import { consent, door, exit, needsComputer, phoneNote, thanks } from './screens';
 import { EXAMPLES, fetchMemories, type SharedMemory } from './memories';
 
@@ -128,7 +128,11 @@ export class Study {
     this.flush();
     // what other visitors left, ready by the time they've answered
     this.memories ??= RESEARCH_URL ? fetchMemories(RESEARCH_URL) : Promise.resolve(import.meta.env.DEV ? EXAMPLES : []);
-    const answers = await exit(this.host, reason);
+    const answers = await exit(this.host, reason, (mood) => {
+      // the measure is in: keep it even if they don't finish the second step
+      this.record.set({ ...exitMoodFields(mood, this.preNostalgia), stage: 'exit' });
+      this.flush();
+    });
     if (answers) {
       // the log goes on if they stay, so keep how long they'd been inside when they answered
       this.record.set({ ...exitFields(answers, this.preNostalgia), stage: 'done', exit_reason: reason, t_exit: iso(), min_at_exit: Math.round((this.log.time / 60) * 10) / 10 });

@@ -55,7 +55,7 @@ bakery take now says "La Espiga", matching the shop across the street.
 1. Run `npm run dev` and open `http://localhost:5173/?skip` with headphones.
    Use a fresh browser profile to hear bundled recordings without uploaded
    takes taking priority. Open the ⚙ backstage and check **192 of 192 lines**.
-2. Call **Abuelita: 2459505**. Finish the conversation, including her attempt
+2. Call **Abuelita: 2459005**. Finish the conversation, including her attempt
    to keep you on the phone. Check warmth, age, natural pacing, and the
    blessing at the end.
 3. Open `http://localhost:5173/?skip&t=900&open=phone` to call

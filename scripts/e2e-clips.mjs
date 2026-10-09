@@ -1,4 +1,5 @@
-// End-to-end: Canal A airs the approved real clips.
+// End-to-end: the real 1995 television. From 5:30, Cadena Uno and Canal A air
+// full episodes, ads and clips on a timetable, paused by the anthem at six.
 //
 // YouTube can't be reached from the build environment, so a stand-in player
 // answers for www.youtube-nocookie.com: it speaks the same postMessage
@@ -94,14 +95,21 @@ async function run(label, modeFor) {
   await page.waitForTimeout(300);
   const after = await onAir();
   console.log('after it ended:', JSON.stringify(await frameState()), '→ on air:', after.kind, after.scene ?? after.clip, `(clip cut after ${(after.start - before.start).toFixed(1)} s)`);
-  // Cadena Uno airs the real 1995 ads between the scenes of its telenovela
-  const uno = await ev(() => {
-    const c = window.room1995.clock;
-    const tl = window.room1995.tv.channels.get(7).timeline;
-    tl.ensure(c.now() + 1200);
-    return tl.items.filter((x) => x.start > c.now()).slice(0, 12).map((x) => (x.seg.kind === 'clip' ? `ADS@${x.seg.clip.start}` : x.seg.scene ?? x.seg.kind));
+  // the afternoon's timetable on both channels, 5:30 to after the anthem (decoded last, a few seconds in)
+  await page.waitForFunction(() => !!window.room1995.library.anthem(), null, { timeout: 30000 });
+  const grid = await ev(() => {
+    const clock = (t) => { const s = Math.round(t) + 30 * 60; return `5:${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`.replace(/^5:(6\d)/, (_, m) => `6:${String(m - 60).padStart(2, '0')}`); };
+    return Object.fromEntries([7, 9].map((n) => {
+      const tl = window.room1995.tv.channels.get(n).timeline;
+      tl.ensure(2100);
+      return [n, tl.items.filter((x) => x.end > 0 && x.start < 2100).map((x) => `${clock(x.start)} ${x.seg.kind === 'clip' ? `${x.seg.clip.id}@${Math.round(x.seg.clip.start)}` : x.seg.scene ?? x.seg.kind}`)];
+    }));
   });
-  console.log('channel 7 coming up:', uno.join(', '));
+  console.log('Cadena Uno:', grid[7].join(' | '));
+  console.log('Canal A:', grid[9].join(' | '));
+  const at = (n, prefix) => grid[n].find((x) => x.startsWith(prefix));
+  if (!at(7, '5:30:00 92NxNiCDwZs@0') || !at(7, '6:00:00 anthem') || !grid[7].some((x) => /^6:0\d:\d\d zxKV5Lfi1Xk@306/.test(x))) throw new Error('Cadena Uno is off its timetable');
+  if (!at(9, '6:00:00 anthem') || !grid[9].some((x) => / c991HevT0RE@0$/.test(x))) throw new Error('Canal A is off its timetable');
   if (errors.length) console.log('ERRORS', errors);
   await page.close();
 }

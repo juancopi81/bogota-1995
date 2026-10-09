@@ -14,6 +14,7 @@ connected with the stations, channels or brands in the room.
 | Radioactiva 97.9, Súper Estación 88.9, Tropicana 102.9, RCN 770 AM | the radio | Historical references; the DJs, their lines and the ads are invented, and no logos are used. Renaming them would change what the test measures. |
 | Cadena Uno (7), Canal A (9), Canal 3 (11) | the TV | Same. The telenovela, the bumpers and the ads on 7 are invented. |
 | 1995 clips on 9 and the ad breaks on 7 | the TV | YouTube embeds, played in YouTube's own player. The list was approved in `clips-shortlist.md`. |
+| *Dejémonos de vainas*, *Tentaciones*, *De pies a cabeza*, four 1995 commercials | the TV, from 5:30 | Full episodes and ads embedded the same way. Tentaciones is Caracol's own upload; the rest are fan copies, which can be taken down at any time (the room then skips them). |
 | 20 song titles and artists | the radio, the backstage | Titles and names, not recordings. The DJ names a song only when it actually plays. |
 | René Higuita, Antanas Mockus, Shakira, Carlos Vives | DJ talk, the news | Public facts from 1995, said plainly. |
 | Unicentro, Chapinero, Wembley, Chingaza | lines | Places. |

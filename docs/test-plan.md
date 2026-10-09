@@ -33,14 +33,18 @@ the purpose is less obvious.
 3. **The room**, for as long as they want. A "Salir del cuarto" button is
    always in the corner; at 6:04 p.m., after the anthem, the afternoon ends
    on its own.
-4. **At the exit** (about 2 min):
-   - The same six mood items.
-   - "¿El cuarto le trajo algún recuerdo?" (free text, optional).
-   - What brought it back (pick any).
-   - Would they come back.
-   - Two trait-nostalgia items from the Southampton Nostalgia Scale (asked at
-     the end so they don't prime the visit).
-   - "¿Algo no le sonó a 1995, o no funcionó?" (optional).
+4. **At the exit** (about 2 min), in two short steps so nothing hides below
+   the fold (in the pilot, some people sent the form without scrolling to
+   the rest):
+   - Step 1: the same six mood items. They're saved as soon as they're in
+     (`stage` = `exit`), even if the visitor leaves before step 2.
+   - Step 2, all on one screen, all optional:
+     - "¿El cuarto le trajo algún recuerdo?" (free text).
+     - What brought it back (pick any).
+     - Would they come back.
+     - Two trait-nostalgia items from the Southampton Nostalgia Scale (asked
+       at the end so they don't prime the visit).
+     - "¿Algo no le sonó a 1995, o no funcionó?"
    - Then, as thanks, a few memories earlier visitors left: only those they
      agreed to share and you approved. It comes after every answer, so it
      can't sway them; the hint near "Enviar" mentions it, as a reason to
