@@ -23,7 +23,7 @@ export function play(
   ctx: BaseAudioContext,
   buffer: AudioBuffer,
   destination: AudioNode,
-  opts: { when?: number; gain?: number; rate?: number } = {},
+  opts: { when?: number; gain?: number; rate?: number; offset?: number } = {},
 ): AudioBufferSourceNode {
   const source = ctx.createBufferSource();
   source.buffer = buffer;
@@ -31,7 +31,7 @@ export function play(
   const gain = ctx.createGain();
   gain.gain.value = opts.gain ?? 1;
   source.connect(gain).connect(destination);
-  source.start(opts.when ?? ctx.currentTime);
+  source.start(opts.when ?? ctx.currentTime, opts.offset ?? 0);
   source.onended = () => gain.disconnect();
   return source;
 }

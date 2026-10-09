@@ -6,6 +6,7 @@
 
 import { Station } from '../broadcast/station';
 import { StationPlayer } from '../broadcast/player';
+import type { Scheduled } from '../broadcast/types';
 import { STATIONS } from '../content/stations';
 import { song } from '../content/songs';
 import { dynamicLine, type Line } from '../content/lines';
@@ -93,14 +94,17 @@ export class Radio {
     this.whistle.connect(this.whistleGain).connect(this.powerGain);
     this.whistle.start();
 
-    // a song, a voice or the anthem was loaded: re-plan what hasn't aired yet
-    // (until the room opens nothing has, not even the song on air)
-    bus.on('media:loaded', () => {
+    // a length changed (a song, a voice or the anthem loaded in the backstage,
+    // or one of the room's own files won't load here): re-plan what hasn't
+    // aired yet (until the room opens nothing has, not even the song on air)
+    const replan = () => {
       for (const { station } of this.tuned) {
         if (clock.started) station.timeline.regenerateAfter(clock.now());
         else station.timeline.replanFrom(clock.now());
       }
-    });
+    };
+    bus.on('media:loaded', ({ planned }) => !planned && replan());
+    bus.on('media:missing', replan);
 
     this.tuned = STATIONS.map((def) => {
       const station = new Station(def);
@@ -114,6 +118,14 @@ export class Radio {
 
   get stations(): Station[] {
     return this.tuned.map((t) => t.station);
+  }
+
+  /** What every station airs until world time `until`, for getting its audio here in time. */
+  ahead(until: number): { station: Station; items: Scheduled[] }[] {
+    return this.tuned.map(({ station }) => {
+      station.timeline.ensure(until);
+      return { station, items: station.timeline.items.filter((i) => i.start < until) };
+    });
   }
 
   station(id: string): Station {

@@ -8,7 +8,7 @@
 
 import type { AudioEngine } from '../audio/engine';
 import { rendered, play } from '../audio/sfx';
-import { voices, lineDuration } from '../audio/voices';
+import { lineDuration, speak } from '../audio/voices';
 import { VEHICLE_LEN, VIEW_W, vehicleSpeed, vehicleX, vehiclesNear, type Honk, type Vehicle } from '../world/street';
 import { recicladorCalls } from '../world/life';
 import { at } from '../world/clock';
@@ -268,14 +268,13 @@ export class Street {
   /** "¡Botella, papel!": his voice if it's been recorded, and the words on screen either way. */
   private call(x: number, n: number): void {
     const line = n % 3 === 0 ? CALLE.botellaLarga : CALLE.botella;
-    const buffer = voices.get(line.id);
-    if (buffer) {
-      const ctx = this.engine.ctx;
+    const ctx = this.engine.ctx;
+    speak(ctx, line.id, (buffer, offset) => {
       const pan = ctx.createStereoPanner();
       pan.pan.value = clamp((x - VIEW_W / 2) / 900, -1, 1) * 0.85;
       pan.connect(this.events);
-      play(ctx, buffer, pan, { gain: 1.1 });
-    }
+      play(ctx, buffer, pan, { gain: 1.1, offset });
+    });
     const heard = this.open ? 1 : this.atWindow ? 0.8 : 0.45;
     subtitles.set('street', { label: 'Desde la calle', line, clarity: heard, showWho: true });
     clearTimeout(this.callTimer);

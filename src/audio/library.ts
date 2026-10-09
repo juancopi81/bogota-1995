@@ -6,13 +6,18 @@
 // A full song is big once decoded (four minutes of stereo is ~85 MB), so files
 // stay compressed until they're about to air, are decoded in mono, and only a
 // few decoded songs are kept around.
+//
+// The room's own music is planned from what the build measured (each file's
+// length and tags), so the stations air the same afternoon however fast it
+// downloads; a track that hasn't arrived yet joins partway through.
 
 import MusicWorker from './music.worker.ts?worker&inline';
 import type { MusicJob } from './music.worker';
 import houseFiles from 'virtual:house-music';
 import { songShape, renderSong, renderJingle, renderBed, renderTeletype, type Style } from './music';
 import { matchSong } from './matching';
-import { readTags } from './tags';
+import { readTags, type Tags } from './tags';
+import { downloads } from './downloads';
 import { SONGS, song } from '../content/songs';
 import { HOUSE_ANTHEM, HOUSE_MUSIC, pickStandIn, bedsFor, type HouseTrack } from '../content/housemusic';
 import { idb, kv } from '../world/store';
@@ -36,9 +41,13 @@ export type AudioKey = string | null;
 
 interface House {
   track: HouseTrack;
-  data: ArrayBuffer;
+  file: string;
+  /** The file, once it has downloaded. */
+  data: ArrayBuffer | null;
   duration: number;
 }
+
+const houseUrl = (file: string) => `music/${encodeURIComponent(file)}`;
 
 class Library {
   private ctx!: BaseAudioContext;
@@ -53,7 +62,11 @@ class Library {
   /** Keep your anthem separate so concurrent startup loads cannot replace it. */
   private anthemBuffer: AudioBuffer | undefined;
   private bundledAnthem: AudioBuffer | undefined;
+  /** How long the bundled anthem plays, from the build: known before it downloads. */
+  private bundledAnthemLength: number | undefined;
+  private bundledAnthemJob: Promise<AudioBuffer | undefined> | null = null;
   private house = new Map<string, House>();
+  private houseFetches = new Map<string, Promise<ArrayBuffer | null>>();
   /** How long each house file is, by track and file size: measured once, on the first visit. */
   private houseDurations: Record<string, number> = kv.get(HOUSE_DURATIONS, {});
   /** Decoded real songs, least recently used first. */
@@ -75,6 +88,31 @@ class Library {
     } catch {
       this.worker = null;
     }
+    this.planHouse();
+  }
+
+  /** The room's own music as the build measured it, so the stations can plan with it before it downloads. */
+  private planHouse(): void {
+    // opened from disk, nothing in public/music/ can be fetched
+    if (typeof location !== 'undefined' && location.protocol === 'file:') return;
+    for (const { file, seconds, tags } of houseFiles) {
+      if (!seconds) continue;
+      if (file === HOUSE_ANTHEM.file) this.bundledAnthemLength = seconds;
+      else {
+        const track = houseTrackOf(file, tags);
+        if (track && !this.house.has(track.id)) this.house.set(track.id, { track, file, data: null, duration: seconds });
+      }
+    }
+  }
+
+  private fetchHouse(file: string, due: number): Promise<ArrayBuffer | null> {
+    let job = this.houseFetches.get(file);
+    if (job) downloads.hurry(houseUrl(file), due);
+    else {
+      job = downloads.get(houseUrl(file), due);
+      this.houseFetches.set(file, job);
+    }
+    return job;
   }
 
   /** Your files from earlier visits. Only the anthem is decoded now; songs when they air. */
@@ -97,44 +135,73 @@ class Library {
     }
   }
 
-  /** The room's own music in public/music/ (it can't be fetched when the page is opened from disk). */
-  async loadHouse(): Promise<void> {
-    // Fetch everything at once, but decode one file at a time (a decoded song
-    // takes tens of MB), and put each track on the air as soon as it's ready.
-    // The anthem goes last: it isn't needed until 6:00.
-    const order = [...houseFiles].sort((a, b) => Number(a === HOUSE_ANTHEM.file) - Number(b === HOUSE_ANTHEM.file));
-    const fetched = order.map((file) =>
-      fetch(`music/${encodeURIComponent(file)}`)
-        .then((res) => (res.ok ? res.arrayBuffer() : null))
-        .catch(() => null),
+  /**
+   * Downloads the room's own music in public/music/ (it can't be fetched when
+   * the page is opened from disk), the tracks needed soonest first: `due` says
+   * when, in world seconds, by track id ('anthem' for the anthem). Resolves
+   * once every file has been tried.
+   */
+  async loadHouse(due: (id: string) => number = () => 0): Promise<void> {
+    const planned = [...this.house.values()];
+    await Promise.all(
+      houseFiles.map(async ({ file }) => {
+        if (file === HOUSE_ANTHEM.file) return void (await this.loadAnthem(due('anthem')));
+        const plan = planned.find((h) => h.file === file);
+        const data = await this.fetchHouse(file, plan ? due(plan.track.id) : Infinity);
+        if (plan) {
+          if (data) {
+            plan.data = data;
+            bus.emit('media:loaded', { kind: 'house', id: plan.track.id, planned: true });
+          } else if (this.house.get(plan.track.id) === plan) {
+            // planned with, but it won't load here: the stations re-plan without it
+            this.house.delete(plan.track.id);
+            bus.emit('media:missing', { kind: 'house', id: plan.track.id });
+          }
+          return;
+        }
+        // a file the build couldn't measure: decode it once to learn its length
+        try {
+          if (!data) return;
+          const track = houseTrackOf(file, readTags(data));
+          if (!track || this.house.has(track.id)) return;
+          const key = `${track.id}:${data.byteLength}`;
+          let duration = this.houseDurations[key];
+          if (!duration) {
+            const buffer = await this.decode(data);
+            duration = buffer.duration;
+            this.houseDurations[key] = duration;
+            kv.set(HOUSE_DURATIONS, this.houseDurations);
+            this.remember(`house:${track.id}`, buffer);
+          }
+          this.house.set(track.id, { track, file, data, duration });
+          bus.emit('media:loaded', { kind: 'house', id: track.id });
+        } catch {
+          /* a file that won't load: play without it */
+        }
+      }),
     );
-    for (const [i, file] of order.entries()) {
-      try {
-        const data = await fetched[i];
-        if (!data) continue;
-        if (file === HOUSE_ANTHEM.file) {
-          this.bundledAnthem = await this.decode(data);
-          bus.emit('media:loaded', { kind: 'anthem', id: 'anthem' });
-          continue;
-        }
-        const match = matchSong({ path: file, tags: readTags(data) }, HOUSE_MUSIC);
-        const track = HOUSE_MUSIC.find((t) => match?.target.kind === 'song' && t.id === match.target.id);
-        if (!track || this.house.has(track.id)) continue;
-        const key = `${track.id}:${data.byteLength}`;
-        let duration = this.houseDurations[key];
-        if (!duration) {
-          const buffer = await this.decode(data);
-          duration = buffer.duration;
-          this.houseDurations[key] = duration;
-          kv.set(HOUSE_DURATIONS, this.houseDurations);
-          this.remember(`house:${track.id}`, buffer);
-        }
-        this.house.set(track.id, { track, data, duration });
-        bus.emit('media:loaded', { kind: 'house', id: track.id });
-      } catch {
-        /* a file that won't load: play without it */
-      }
+  }
+
+  private loadAnthem(due: number): Promise<AudioBuffer | undefined> {
+    if (this.bundledAnthemJob) {
+      void this.fetchHouse(HOUSE_ANTHEM.file, due);
+      return this.bundledAnthemJob;
     }
+    this.bundledAnthemJob = (async () => {
+      const data = await this.fetchHouse(HOUSE_ANTHEM.file, due);
+      try {
+        if (!data) throw new Error('no anthem here');
+        this.bundledAnthem = await this.decode(data);
+        bus.emit('media:loaded', { kind: 'anthem', id: 'anthem', planned: this.bundledAnthemLength !== undefined });
+      } catch {
+        if (this.bundledAnthemLength !== undefined) {
+          this.bundledAnthemLength = undefined;
+          if (!this.anthemBuffer) bus.emit('media:missing', { kind: 'anthem', id: 'anthem' });
+        }
+      }
+      return this.bundledAnthem;
+    })();
+    return this.bundledAnthemJob;
   }
 
   // ---------- decoding real songs ----------
@@ -173,7 +240,7 @@ class Library {
       job = (async () => {
         const [kind, id] = [key.slice(0, key.indexOf(':')), key.slice(key.indexOf(':') + 1)];
         try {
-          const data = kind === 'house' ? this.house.get(id)?.data : await idb.get<ArrayBuffer>('songs', id);
+          const data = kind === 'house' ? await this.houseData(id) : await idb.get<ArrayBuffer>('songs', id);
           if (!data) return null;
           const buffer = await this.decode(data);
           if (kind === 'yours' && this.durations[id] !== buffer.duration) {
@@ -191,6 +258,13 @@ class Library {
       this.decoding.set(key, job);
     }
     return job;
+  }
+
+  /** A house track's file: here already, or as soon as it downloads (sooner now that it's wanted). */
+  private async houseData(id: string): Promise<ArrayBuffer | null> {
+    const house = this.house.get(id);
+    if (!house) return null;
+    return house.data ?? (await this.fetchHouse(house.file, -Infinity));
   }
 
   // ---------- placeholders ----------
@@ -297,18 +371,23 @@ class Library {
     return this.render(`jingle:${stationId}`, 'jingle', style, hash(stationId));
   }
 
+  /** The house instrumental under a station's announcers, if it has one. */
+  bedTrack(stationId: string): HouseTrack | undefined {
+    const beds = bedsFor(stationId, [...this.house.values()].map((h) => h.track));
+    return beds.length ? beds[hash(stationId) % beds.length] : undefined;
+  }
+
   /** The bed under the announcers: a house instrumental if the station has one, or a placeholder. */
   bed(stationId: string): AudioBuffer | undefined {
-    const beds = bedsFor(stationId, [...this.house.values()].map((h) => h.track));
-    if (beds.length) return this.cached(`house:${beds[hash(stationId) % beds.length].id}`);
-    return this.rendered.get(`bed:${stationId}`);
+    const track = this.bedTrack(stationId);
+    return track ? this.cached(`house:${track.id}`) : this.rendered.get(`bed:${stationId}`);
   }
 
   whenBed(stationId: string, style: Style): Promise<AudioBuffer> {
-    const beds = bedsFor(stationId, [...this.house.values()].map((h) => h.track));
+    const track = this.bedTrack(stationId);
     const placeholder = () => this.render(`bed:${stationId}`, 'bed', style, hash(`${stationId}-bed`));
-    if (!beds.length) return placeholder();
-    return this.decodeKey(`house:${beds[hash(stationId) % beds.length].id}`).then((b) => b ?? placeholder());
+    if (!track) return placeholder();
+    return this.decodeKey(`house:${track.id}`).then((b) => b ?? placeholder());
   }
 
   whenTeletype(): Promise<AudioBuffer> {
@@ -323,6 +402,18 @@ class Library {
 
   anthem(): AudioBuffer | undefined {
     return this.anthemBuffer ?? this.bundledAnthem;
+  }
+
+  /** How long the anthem plays, known before the bundled recording downloads (undefined if there's none). */
+  anthemLength(): number | undefined {
+    return this.anthemBuffer?.duration ?? this.bundledAnthemLength ?? this.bundledAnthem?.duration;
+  }
+
+  /** The anthem's recording once it's here (undefined if there's none). */
+  whenAnthem(): Promise<AudioBuffer | undefined> {
+    const ready = this.anthem();
+    if (ready || this.bundledAnthemLength === undefined) return Promise.resolve(ready);
+    return this.loadAnthem(-Infinity);
   }
 
   // ---------- your files ----------
@@ -359,12 +450,18 @@ class Library {
 
   /** The house tracks that loaded (for the credits). */
   get houseLoaded(): HouseTrack[] {
-    return [...this.house.values()].map((h) => h.track);
+    return [...this.house.values()].filter((h) => h.data).map((h) => h.track);
   }
 
   get catalog() {
     return SONGS;
   }
+}
+
+/** Which of the room's tracks a file in public/music/ is, from its name and tags. */
+function houseTrackOf(file: string, tags: Tags): HouseTrack | undefined {
+  const match = matchSong({ path: file, tags }, HOUSE_MUSIC);
+  return HOUSE_MUSIC.find((t) => match?.target.kind === 'song' && t.id === match.target.id);
 }
 
 export const library = new Library();

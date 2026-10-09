@@ -129,18 +129,21 @@ export class StationPlayer {
       playing.sources.push(source);
     };
 
+    // a line that hasn't downloaded yet joins partway through when it arrives
     const voicesAt = (cues: Cue[]) => {
       for (const cue of cues) {
+        const at = startCtx + cue.at;
         const buffer = voices.get(cue.line.id);
-        if (buffer) play(buffer, startCtx + cue.at, { until: startCtx + cue.at + buffer.duration + 0.1 });
+        if (buffer) play(buffer, at, { until: at + buffer.duration + 0.1 });
+        else void voices.when(cue.line.id).then((b) => b && play(b, at, { until: at + b.duration + 0.1 }));
       }
     };
 
     const def = this.station.def;
     const seg = item.seg;
-    const withBuffer = (ready: AudioBuffer | undefined, later: () => Promise<AudioBuffer>, use: (b: AudioBuffer) => void) => {
+    const withBuffer = (ready: AudioBuffer | undefined, later: () => Promise<AudioBuffer | undefined>, use: (b: AudioBuffer) => void) => {
       if (ready) use(ready);
-      else void later().then(use);
+      else void later().then((b) => b && use(b));
     };
 
     switch (seg.kind) {
@@ -177,11 +180,9 @@ export class StationPlayer {
         withBuffer(library.peek('teletype'), () => library.whenTeletype(), (b) => play(b, startCtx, { loop: true, level: 0.28 }));
         voicesAt(item.cues);
         break;
-      case 'anthem': {
-        const anthem = library.anthem();
-        if (anthem) play(anthem, startCtx + 0.8);
+      case 'anthem':
+        withBuffer(library.anthem(), () => library.whenAnthem(), (b) => play(b, startCtx + 0.8));
         break;
-      }
       case 'silence':
         break;
     }

@@ -13,7 +13,10 @@ vi.mock('../src/world/store', () => ({
 }));
 vi.mock('../src/audio/music.worker.ts?worker&inline', () => ({ default: class {} }));
 vi.mock('virtual:house-music', () => ({
-  default: ['himno-nacional-de-colombia.mp3', 'los-sundayers-que-paciencia.mp3'],
+  default: [
+    { file: 'himno-nacional-de-colombia.mp3', seconds: 160.914, tags: {} },
+    { file: 'los-sundayers-que-paciencia.mp3', seconds: 173.12, tags: {} },
+  ],
 }));
 
 const data = (id: number) => new Uint8Array([id]).buffer;
@@ -64,7 +67,8 @@ describe('bundled anthem', () => {
     expect(library.isUploaded('anthem')).toBe(false);
     expect(saved.has('anthem')).toBe(false);
     expect(library.houseLoaded.map((track) => track.id)).toEqual(['que-paciencia']);
-    expect(loaded).toHaveBeenCalledWith({ kind: 'anthem', id: 'anthem' });
+    // its length was in the plan from the start
+    expect(loaded).toHaveBeenCalledWith({ kind: 'anthem', id: 'anthem', planned: true });
 
     const { Station } = await import('../src/broadcast/station');
     const { STATIONS } = await import('../src/content/stations');
@@ -120,6 +124,38 @@ describe('bundled anthem', () => {
     await Promise.all([library.loadSaved(), library.loadHouse()]);
     expect(library.anthem()).toBe(bundled);
     expect(library.isUploaded('anthem')).toBe(false);
+  });
+
+  it('plans the afternoon with the room\'s own music before it downloads', async () => {
+    const library = await setup();
+    expect(library.anthemLength()).toBe(160.914);
+    expect(library.anthem()).toBeUndefined();
+    expect(library.audioFor('matador', 'radioactiva')).toBe('house:que-paciencia');
+    expect(library.shape('matador', 'house:que-paciencia').duration).toBe(173.12);
+    expect(library.houseLoaded).toEqual([]);
+    expect(fetchFile).not.toHaveBeenCalled();
+
+    const { Station } = await import('../src/broadcast/station');
+    const { STATIONS } = await import('../src/content/stations');
+    const item = new Station(STATIONS[0]).timeline.at(1800.5)!;
+    expect(item.seg.kind).toBe('anthem');
+    expect(item.end - item.start).toBeCloseTo(160.914 + 1.5);
+
+    // a song wanted on air before its file is here waits for it, then decodes it
+    expect(await library.whenAudio('house:que-paciencia')).toBe(song);
+    expect(await library.whenAnthem()).toBe(bundled);
+  });
+
+  it('re-plans without a track of its own that turns out not to load', async () => {
+    fetchFile.mockImplementation(async (url) => ({ ok: url.endsWith(HOUSE_ANTHEM.file), arrayBuffer: async () => data(1) }));
+    const library = await setup();
+    const { bus } = await import('../src/world/bus');
+    const missing = vi.fn();
+    bus.on('media:missing', missing);
+    await library.loadHouse();
+    expect(missing).toHaveBeenCalledWith({ kind: 'house', id: 'que-paciencia' });
+    expect(library.audioFor('matador', 'radioactiva')).toBeNull();
+    expect(library.anthemLength()).toBe(160.914);
   });
 
   it.each(['missing', 'unreadable'])('still loads songs when the bundled anthem is %s', async (failure) => {
