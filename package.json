@@ -14,6 +14,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "voices": "vite-node scripts/voice-script.ts",
+    "visits": "vite-node scripts/visits.ts",
     "build:single": "tsc --noEmit && vite build --mode single",
     "build:artifact": "tsc --noEmit && vite build --mode artifact && node scripts/artifact.mjs"
   },
