@@ -7,7 +7,7 @@ import { bus } from '../world/bus';
 import { at, clock } from '../world/clock';
 import { onTick } from '../world/loop';
 import { ActivityLog, type Snapshot } from './log';
-import { VisitRecord, device, doorFields, exitFields, exitMoodFields, referral, visitor } from './record';
+import { VisitRecord, arrival, device, doorFields, exitFields, exitMoodFields, visitor } from './record';
 import { consent, door, exit, needsComputer, phoneNote, thanks } from './screens';
 import { EXAMPLES, fetchMemories, type SharedMemory } from './memories';
 
@@ -43,7 +43,7 @@ export class Study {
     this.on = !!RESEARCH_URL || params.has('research');
     if (!this.on) return;
     document.body.classList.add('study');
-    this.record.set({ stage: 'load', t_load: iso(), build: (import.meta.env.VITE_BUILD || 'dev').slice(0, 7), ...device(), ...referral(params) });
+    this.record.set(arrival(params, (import.meta.env.VITE_BUILD || 'dev').slice(0, 7)));
     this.record.send();
     // whatever hasn't gone out goes when the tab is hidden or closed
     addEventListener('visibilitychange', () => document.visibilityState === 'hidden' && this.flush());
@@ -70,7 +70,8 @@ export class Study {
       this.record.send();
       return;
     }
-    this.record.set({ stage: 'consent', t_consent: iso(), ...visitor() });
+    // only now, with their yes: the browser's id (for return visits) and the screen
+    this.record.set({ stage: 'consent', t_consent: iso(), ...visitor(), ...device() });
     this.record.send();
     const fields = doorFields(await door(this.host));
     this.preNostalgia = fields.pre_nostalgia as number | null;

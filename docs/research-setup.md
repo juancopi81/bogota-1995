@@ -35,13 +35,18 @@ The room is then at https://juancopi81.github.io/bogota-1995/. Without
 
 ## 3. The pilot (3–5 people)
 
-1. Send them the link; ask them to use a computer and headphones.
+1. Send them the pilot's link,
+   `https://juancopi81.github.io/bogota-1995/?utm_source=amigos&utm_campaign=piloto`,
+   and ask them to use their own computer and headphones. Give no tips: they
+   should arrive like someone from an ad.
 2. Check the sheet: each visit should reach `stage` = `done` once they've
    answered the exit questions. To see how long they stayed and which moments
    of the afternoon they reached, download the `visitas` tab as CSV (File →
    Download → Comma-separated values) to `media/private/visitas.csv` and run
    `npm run visits` (`-- --skip <visitor id>` leaves out your own test visits).
-3. Fix what didn't work. Then delete the pilot rows (keep the header row).
+3. Fix what didn't work. The pilot's rows carry `ref_campaign` = `piloto`, so
+   they don't need deleting: the analysis leaves them out (see the stages in
+   [`test-plan.md`](test-plan.md)).
 
 ## 4. Memories for other visitors (optional)
 
@@ -68,10 +73,12 @@ Without this, the thanks screen just says thanks.
 Add who sent the visitor to the link, so the sheet can tell ads apart:
 
 ```
-https://juancopi81.github.io/bogota-1995/?utm_source=facebook&utm_campaign=prueba1&utm_content=lluvia
+https://juancopi81.github.io/bogota-1995/?utm_source=facebook&utm_campaign=calibracion&utm_content=lluvia
 ```
 
-They land in the columns `ref_source`, `ref_campaign` and `ref_content`.
+They land in the columns `ref_source`, `ref_campaign` and `ref_content`. Use
+`calibracion` for the first small run and `principal` for the main one, as
+[`test-plan.md`](test-plan.md) lays out.
 Target computers only, adults in Colombia (and Colombians abroad) who were
 roughly 10–25 in 1995. See [`test-plan.md`](test-plan.md) for the rest, and
 [`names-review.md`](names-review.md) before the first ad.
@@ -87,6 +94,6 @@ roughly 10–25 in 1995. See [`test-plan.md`](test-plan.md) for the rest, and
 | `memory`, `memory_share`, `triggers`, `return_intent`, `trait_*`, `feedback` | the rest of the exit; `memory_share` is TRUE if they let other visitors read their memory |
 | `aprobado`, `recuerdo_publico` | yours, added by hand: which shared memories the room may show, and an edited version to show instead |
 | `s_*` | seconds: `s_total`, per view (`s_view_tv`…), per station (`s_radio_radioactiva`…), `s_tv`, `s_tv_clip`, `s_phone`, `s_tape_play`, `s_tape_rec` |
-| `n_*`, `calls`, `opens`, `tv_channels` | what happened: requests, recordings, numbers dialed, close-ups opened, time per channel; `n_andres_rang`, `_answered`, `_asked`, `_taped`, `_not_taped` follow Andrés's errand |
+| `n_*`, `calls`, `opens`, `tv_channels` | what happened: requests, recordings, numbers dialed (the room's as they are, any other as `otro`), close-ups opened, time per channel; `n_andres_rang`, `_answered`, `_asked`, `_taped`, `_not_taped` follow Andrés's errand |
 | `reached_6pm`, `exit_reason`, `min_at_exit`, `min_room` | whether they stayed until the anthem, how they left, minutes inside when they answered, and in all (some stay after answering) |
-| `dev_*`, `ref_*`, `build`, `t_*` | screen and language, which ad, which version of the site, timestamps |
+| `dev_*`, `ref_*`, `build`, `t_*` | screen and language (only for those who agreed), which ad, which version of the site, timestamps |

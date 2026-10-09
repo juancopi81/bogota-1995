@@ -4,6 +4,7 @@
 // so a hidden tab isn't counted.
 
 import type { Value } from './record';
+import { ROOM_NUMBERS } from '../content/phonebook';
 
 /** What the room is doing at one moment, as far as the test cares. */
 export interface Snapshot {
@@ -53,8 +54,9 @@ export class ActivityLog {
     this.opens.set(view, (this.opens.get(view) ?? 0) + 1);
   }
 
+  /** A number dialed: as it is if the room gave it to you, 'otro' if not (it could be someone's real number). */
   dialed(number: string): void {
-    if (this.calls.length < 40) this.calls.push(number);
+    if (this.calls.length < 40) this.calls.push(ROOM_NUMBERS.has(number) ? number : 'otro');
   }
 
   requested(song: string, dedication: string | null): void {

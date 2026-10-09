@@ -98,6 +98,15 @@ export function device(): Record<string, Value> {
   return { dev_w: innerWidth, dev_h: innerHeight, dev_touch: navigator.maxTouchPoints > 0, dev_lang: navigator.language, dev_tz: tz };
 }
 
+/**
+ * All that's kept before the visitor says yes (and all that's kept if they
+ * enter without taking part): when, which version of the room, and which ad
+ * or link brought them. Nothing about them or their computer.
+ */
+export function arrival(params: URLSearchParams, build: string): Record<string, Value> {
+  return { stage: 'load', t_load: new Date().toISOString(), build, ...referral(params) };
+}
+
 /** Which ad (or link) brought the visitor, from the utm_ parameters. */
 export function referral(params: URLSearchParams): Record<string, Value> {
   return { ref_source: params.get('utm_source') ?? '', ref_campaign: params.get('utm_campaign') ?? '', ref_content: params.get('utm_content') ?? '' };

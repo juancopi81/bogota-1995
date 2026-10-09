@@ -5,6 +5,7 @@
 //
 //   npm run visits                                  media/private/visitas.csv
 //   npm run visits -- other.csv --skip edf73d       leave out a browser (your own tests)
+//   npm run visits -- --campaign calibracion        only the visits from one ad campaign (utm_campaign)
 
 import { readFileSync } from 'node:fs';
 import { clockParts } from '../src/world/clock';
@@ -54,12 +55,15 @@ const clock = (t: number) => {
 };
 
 const args = process.argv.slice(2);
-const skip = args.flatMap((a, i) => (args[i - 1] === '--skip' ? [a] : []));
-const path = args.find((a, i) => a !== '--skip' && args[i - 1] !== '--skip') ?? 'media/private/visitas.csv';
+const option = (name: string) => args.flatMap((a, i) => (args[i - 1] === name ? [a] : []));
+const skip = option('--skip');
+const campaigns = option('--campaign');
+const path = args.find((a, i) => !a.startsWith('--') && !args[i - 1]?.startsWith('--')) ?? 'media/private/visitas.csv';
 
 const all = parseCsv(readFileSync(path, 'utf8'));
-const rows = all.filter((r) => !skip.some((id) => r.visitor && r.visitor.startsWith(id)));
-console.log(`${all.length} visits in ${path}${skip.length ? `, ${all.length - rows.length} left out (${skip.join(', ')})` : ''}\n`);
+const rows = all.filter((r) => !skip.some((id) => r.visitor && r.visitor.startsWith(id)) && (!campaigns.length || campaigns.includes(r.ref_campaign)));
+const kept = [skip.length && `leaving out ${skip.join(', ')}`, campaigns.length && `campaign ${campaigns.join(', ')}`].filter(Boolean).join('; ');
+console.log(`${all.length} visits in ${path}${kept ? ` (${kept}): ${rows.length} kept` : ''}\n`);
 
 console.log('How far they got');
 for (const stage of ['load', 'gate', 'declined', 'consent', 'door', 'room', 'exit', 'done']) {

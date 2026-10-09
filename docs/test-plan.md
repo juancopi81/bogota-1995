@@ -24,8 +24,9 @@ door question about nostalgia is hidden among three ordinary mood items, so
 the purpose is less obvious.
 
 1. **Title card**, then **consent**: what we collect, that it's anonymous,
-   that they can leave any time, 18+. "Entrar sin participar" lets anyone in
-   without data.
+   that they can leave any time, 18+. "Entrar sin participar" lets anyone in;
+   for them only the visit is counted (when, which version of the room, which
+   link brought them).
 2. **At the door** (about 40 s):
    - Where they lived in 1995 and how old they were.
    - Six mood items, 1–7: three of them are the state-nostalgia items from
@@ -50,8 +51,10 @@ the purpose is less obvious.
      can't sway them; the hint near "Enviar" mentions it, as a reason to
      finish. Whether to share is a checkbox under the memory, off by default.
 5. **Anonymous log** of what they did: seconds per object, station and
-   channel; calls dialed; requests; taping; whether they reached 6 p.m.;
-   return visits from the same browser.
+   channel; calls dialed (the numbers the room gives you as they are; any
+   other number only counted, since it could be someone's real one);
+   requests; taping; whether they reached 6 p.m.; return visits from the same
+   browser.
 
 ## The questions (as asked, in Spanish)
 
@@ -78,18 +81,81 @@ the purpose is less obvious.
 - ¿Qué tan propenso o propensa es a sentir nostalgia? 1 (nada) – 7 (mucho)
 - ¿Algo no le sonó a 1995, o no funcionó?
 
-## Who
+## Who, and in what order
 
-- **Pilot: 3–5 people**, friends are fine. It tests the procedure (does the
-  flow work, does the data arrive, how long do people stay), not the room.
-  Fix what breaks, then clear the sheet.
-- **Then ads**, computers only, adults in Colombia (and Colombians abroad)
-  who were roughly 10–25 in 1995, so 40–55 today. Start small to learn what
-  one completed visit costs, then aim for **30–40 completed visits**
-  (door and exit both answered).
+Four stages, each with a check before the next. The room doesn't change
+during a stage.
 
-Ad copy, honest and short: "Un cuarto de 1995 en Chapinero. Sábado, 5:30 p.m.,
-está lloviendo. Ábralo en un computador, con audífonos."
+| Stage | Who | What it's for | Before the next |
+|---|---|---|---|
+| 0. Ready | nobody yet | the privacy fixes live; the invented businesses checked ([`names-review.md`](names-review.md)); this plan committed | all three done |
+| 1. Pilot | 3–5 friends who lived in Bogotá in the 90s, on their own computers, with headphones and no tips | the procedure: does the flow work, does the data arrive | nothing broken |
+| 2. Calibration | a small paid run, 3–4 days | what one completed visit costs, and how long strangers stay | the main budget; the request-number rule below |
+| 3. Main run | paid, with the room frozen | 30–40 completed visits | the stopping rule below |
+
+Each stage has its own link, so the sheet tells them apart (`ref_campaign`)
+and nothing needs deleting:
+
+| Stage | Link (after `https://juancopi81.github.io/bogota-1995/`) |
+|---|---|
+| Pilot | `?utm_source=amigos&utm_campaign=piloto` |
+| Calibration | `?utm_source=facebook&utm_campaign=calibracion&utm_content=lluvia` (one `utm_content` per visual) |
+| Main run | `?utm_source=facebook&utm_campaign=principal&utm_content=…` |
+
+### The ads
+
+- **Where:** Facebook and Instagram, with a traffic (landing page views)
+  objective, not a lead form.
+- **Who:** adults in Colombia, and Colombians abroad if the platform still
+  offers that, aged 40–55 (roughly 10–25 in 1995). Broad, without interests
+  like "nostalgia" or "rock en español": those would deepen the
+  self-selection.
+- **Devices:** computers only, if the platform allows it. If that costs too
+  much in calibration, phones are let in and the note asking for a computer
+  becomes part of the funnel (`stage` = `gate`).
+- **When:** evenings and Saturday afternoons, when people are at a computer
+  with half an hour to spare.
+- **Copy**, honest and short, the same for the whole run: "Un cuarto de 1995
+  en Chapinero. Sábado, 5:30 p.m., está lloviendo. Ábralo en un computador,
+  con audífonos." No station names, logos, songs or artists (see
+  [`names-review.md`](names-review.md)).
+- **Visuals:** up to two in calibration (a still of the window in the rain, a
+  short clip of the room), each with its own `utm_content`. The main run keeps
+  the one that brought more completed visits.
+- **Budget:** a small fixed amount for calibration. It gives the cost of one
+  completed visit; the main budget is that cost times the visits still
+  needed, with a cap set before the run starts.
+
+### During the main run
+
+- **The room is frozen:** nothing merges into `main` unless something is
+  broken. If a fix goes in, the `build` column tells the visits before and
+  after it apart.
+- **A daily look for breakage:** `npm run visits -- --campaign principal`.
+  Many visits stuck at `load` means the page isn't loading; many at `gate`,
+  phones.
+- **No peeking at the result:** the nostalgia scores aren't looked at until
+  the run ends.
+
+## Decided before any data
+
+Written on 9 October 2026, before any visit from a stranger. If something
+here changes, the change gets its own dated note.
+
+- **A completed visit** has the door and the exit's six phrases answered
+  (`stage` = `exit` or `done`).
+- **What counts:** visits from the main run (`ref_campaign` = `principal`),
+  and from calibration if the room didn't change in between. Not the pilot,
+  not visits without a campaign, not our own browser
+  (`npm run visits -- --skip <visitor id>`).
+- **When to stop:** at 30–40 completed visits, or when the budget cap is
+  spent, whichever comes first. The count alone decides.
+- **The request number:** Radioactiva first gives its request number at
+  5:38:27, 8½ minutes in, and a request can first air at 5:44
+  (`src/research/moments.ts`). If more than half of the calibration visitors
+  who get into the room leave before 8½ minutes, the first announcement moves
+  earlier before the main run, and then only main-run visits count.
+- **The analysis** is the one below, as written here.
 
 ## Analysis
 
@@ -102,8 +168,9 @@ está lloviendo. Ábralo en un computador, con audífonos."
 - **Triggers:** how often each object was named, next to how long people
   actually spent with it (from the log).
 - **Staying and returning:** minutes in the room, share reaching 6 p.m.,
-  return visits within the test window, and where people dropped off
-  (title, consent, door, room, exit).
+  the share still inside when each of the afternoon's moments comes up
+  (`npm run visits`), return visits within the test window, and where
+  people dropped off (title, consent, door, room, exit).
 - **Context:** split by lived in Bogotá vs. not, and by age in 1995; use the
   trait items to check the change isn't only nostalgia-prone people.
 
@@ -118,11 +185,20 @@ está lloviendo. Ábralo en un computador, con audífonos."
   to it; the trait items let us account for some of that.
 - **Computers only.** Phone visitors see a note asking them to open it on a
   computer; the log counts how many.
+- **Friends are patient.** How long the pilot's visitors stay says little
+  about strangers; calibration is where that's measured.
 
 ## Data
 
 - No names, emails or IP addresses. A random id per visit, and one per
   browser to count returns.
+- Before consent, and for anyone who enters without taking part, only when
+  they came, which version of the room and which link brought them. The
+  browser's id, the screen size, language and time zone come only with a
+  yes.
+- Phone numbers dialed in the room are kept only if the room gave them
+  (the libreta, the radio, the almanaque...). Any other is stored as `otro`:
+  visitors may dial their own old numbers.
 - Answers and the log go to a Google Sheet (see
   [`research-setup.md`](research-setup.md)).
 - The consent screen says what's collected and that it's anonymous.
