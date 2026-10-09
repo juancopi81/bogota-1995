@@ -35,6 +35,8 @@ a real business that could feel singled out:
 
 If one is real, give it another invented name in `src/content/`.
 
+**Checked on 9 October 2026:** all fine, none renamed.
+
 ## In the ads themselves
 
 Don't use station names, logos, song titles or artists' names in the ad
