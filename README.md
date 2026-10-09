@@ -127,7 +127,12 @@ npm run build          # static site in dist/
 npm run build:single   # one self-contained file in dist-single/
 npm run build:artifact # the same, shaped for a claude.ai artifact, in dist-artifact/
 npm run voices         # regenerate docs/voice-script.md from the content
+npm run visits         # the test's visits: how long people stayed, which moments they reached
 ```
+
+`npm run visits` reads the sheet's `visitas` tab, downloaded as CSV into
+`media/private/visitas.csv` (never committed). Add `-- --skip <visitor id>`
+to leave out your own browser.
 
 End-to-end scripts in `scripts/` (`e2e-*.mjs`) drive the room in headless
 Chromium against the dev server: the request-line thread, the callback, the

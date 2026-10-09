@@ -37,7 +37,10 @@ The room is then at https://juancopi81.github.io/bogota-1995/. Without
 
 1. Send them the link; ask them to use a computer and headphones.
 2. Check the sheet: each visit should reach `stage` = `done` once they've
-   answered the exit questions.
+   answered the exit questions. To see how long they stayed and which moments
+   of the afternoon they reached, download the `visitas` tab as CSV (File →
+   Download → Comma-separated values) to `media/private/visitas.csv` and run
+   `npm run visits` (`-- --skip <visitor id>` leaves out your own test visits).
 3. Fix what didn't work. Then delete the pilot rows (keep the header row).
 
 ## 4. Memories for other visitors (optional)
