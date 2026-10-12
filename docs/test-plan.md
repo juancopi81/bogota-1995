@@ -157,6 +157,25 @@ here changes, the change gets its own dated note.
   earlier before the main run, and then only main-run visits count.
 - **The analysis** is the one below, as written here.
 
+**Changed on 12 October 2026**, after the pilot's first visit, before any
+visit from a stranger. Nothing changed in the room or on the site. The thanks
+screen sends visitors back into the room, and the pilot's first visitor
+answered at 6.6 minutes and stayed until 23.9, so:
+
+- **Every send is kept** in the sheet's second tab, `envios`, as it came. The
+  comparison between the objects people name at the exit and the time they
+  spent on each uses the log as it stood when they answered, not the whole
+  visit's.
+- **If the six phrases at the exit are answered more than once** (someone
+  answers them, goes back from the second step, and answers again on a later
+  exit), the last answer counts. The main result is also reported without the
+  visits that opened the exit more than once (`exit_shown` > 1).
+- **Staying after answering** (minutes in the room after `min_at_exit`) is
+  part of "staying and returning".
+- A merge that doesn't touch the room still gives the site a new `build`.
+  Whether the room changed between two builds is in git:
+  `git diff <build> <build> -- src public index.html`.
+
 ## Analysis
 
 - **Main result:** the nostalgia score (mean of N1–N3) at the exit minus at

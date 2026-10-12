@@ -42,8 +42,9 @@ The room is then at https://juancopi81.github.io/bogota-1995/. Without
 2. Check the sheet: each visit should reach `stage` = `done` once they've
    answered the exit questions. To see how long they stayed and which moments
    of the afternoon they reached, download the `visitas` tab as CSV (File →
-   Download → Comma-separated values) to `media/private/visitas.csv` and run
-   `npm run visits` (`-- --skip <visitor id>` leaves out your own test visits).
+   Download → Comma-separated values) to `media/private/visitas.csv`, and the
+   `envios` tab to `media/private/envios.csv`, then run `npm run visits`
+   (`-- --skip <visitor id>` leaves out your own test visits).
 3. Fix what didn't work. The pilot's rows carry `ref_campaign` = `piloto`, so
    they don't need deleting: the analysis leaves them out (see the stages in
    [`test-plan.md`](test-plan.md)).
@@ -82,6 +83,16 @@ They land in the columns `ref_source`, `ref_campaign` and `ref_content`. Use
 Target computers only, adults in Colombia (and Colombians abroad) who were
 roughly 10–25 in 1995. See [`test-plan.md`](test-plan.md) for the rest, and
 [`names-review.md`](names-review.md) before the first ad.
+
+## The history tab
+
+Each send also lands, as it came, in a second tab called `envios`: one row per
+send, with when it arrived, the visit, its stage and all its fields as JSON. It
+keeps the visit as it stood at each moment; the row in `visitas` only keeps the
+latest. That's how we know what a visitor had done when they answered the exit
+questions, since the room stays open after them. The tab appears on its own
+with the first send after the script is updated (step 1 of "Memories for other
+visitors" explains how).
 
 ## What a row holds
 

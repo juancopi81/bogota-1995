@@ -6,8 +6,12 @@
 //   npm run visits                                  media/private/visitas.csv
 //   npm run visits -- other.csv --skip edf73d       leave out a browser (your own tests)
 //   npm run visits -- --campaign calibracion        only the visits from one ad campaign (utm_campaign)
+//
+// With the "envios" tab downloaded too (media/private/envios.csv, or
+// --history <file>), it also shows each visit as it stood when they answered
+// the exit questions: the row in "visitas" keeps counting after.
 
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { clockParts } from '../src/world/clock';
 import { MOMENTS } from '../src/research/moments';
 
@@ -59,6 +63,7 @@ const option = (name: string) => args.flatMap((a, i) => (args[i - 1] === name ? 
 const skip = option('--skip');
 const campaigns = option('--campaign');
 const path = args.find((a, i) => !a.startsWith('--') && !args[i - 1]?.startsWith('--')) ?? 'media/private/visitas.csv';
+const historyPath = option('--history')[0] ?? 'media/private/envios.csv';
 
 const all = parseCsv(readFileSync(path, 'utf8'));
 const rows = all.filter((r) => !skip.some((id) => r.visitor && r.visitor.startsWith(id)) && (!campaigns.length || campaigns.includes(r.ref_campaign)));
@@ -80,6 +85,12 @@ if (mins.length) {
   const q = (p: number) => mins[Math.round(p * (mins.length - 1))];
   console.log(`  median ${q(0.5).toFixed(1)} · middle half ${q(0.25).toFixed(1)}–${q(0.75).toFixed(1)} · longest ${mins.at(-1)!.toFixed(1)}`);
 }
+// the thanks screen sends them back into the room: who stayed on after answering, and for how long
+const answered = inside.filter((r) => r.stage === 'done' && num(r.min_at_exit) !== null);
+const after = answered.map((r) => minutes(r)! - num(r.min_at_exit)!).filter((m) => m >= 0.5).sort((a, b) => a - b);
+if (answered.length) {
+  console.log(`  stayed on after answering: ${after.length}/${answered.length}${after.length ? `, median ${after[Math.floor(after.length / 2)].toFixed(1)} min more` : ''}`);
+}
 
 console.log('\nStill inside when it came up');
 for (const m of MOMENTS) {
@@ -99,25 +110,50 @@ const left: Record<string, number> = {};
 for (const r of inside) left[r.exit_reason || 'closed the tab'] = (left[r.exit_reason || 'closed the tab'] ?? 0) + 1;
 console.log(`  how they left: ${Object.entries(left).map(([how, k]) => `${how} ${k}`).join(' · ')}`);
 
-console.log('\nEach visit');
-console.log('  visitor visit   build    stage   min  6pm  Andrés                     request  radio s  tv s  phone s  dialed');
-for (const r of inside) {
+const COLUMNS = '  visitor visit   build    stage   min  ans   6pm  Andrés                     request  radio s  tv s  phone s  dialed';
+
+/** One visit on one line: from its row, or from a send in the history. */
+function line(r: Row): string {
   const andres = STEPS.filter((s) => count(r[`n_andres_${s}`]) > 0).join('>') || '–';
   const radio = Object.entries(r).filter(([k]) => k.startsWith('s_radio_')).reduce((sum, [, v]) => sum + count(v), 0);
-  console.log(
-    [
-      `  ${(r.visitor ?? '').slice(0, 6).padEnd(7)}`,
-      (r.visit ?? '').slice(0, 6).padEnd(7),
-      (r.build ?? '').slice(0, 7).padEnd(8),
-      r.stage.padEnd(6),
-      minutes(r)!.toFixed(1).padStart(4),
-      (yes(r.reached_6pm) ? 'yes' : '–').padEnd(4),
-      andres.padEnd(26),
-      `${count(r.n_request)}/${count(r.n_request_aired)}`.padEnd(8),
-      String(radio).padStart(7),
-      String(count(r.s_tv)).padStart(5),
-      String(count(r.s_phone)).padStart(8),
-      ` ${r.calls ?? ''}`,
-    ].join(' '),
-  );
+  return [
+    `  ${(r.visitor ?? '').slice(0, 6).padEnd(7)}`,
+    (r.visit ?? '').slice(0, 6).padEnd(7),
+    (r.build ?? '').slice(0, 7).padEnd(8),
+    (r.stage ?? '').padEnd(6),
+    (minutes(r) ?? 0).toFixed(1).padStart(4),
+    (num(r.min_at_exit)?.toFixed(1) ?? '–').padStart(4),
+    ` ${(yes(r.reached_6pm) ? 'yes' : '–').padEnd(4)}`,
+    andres.padEnd(26),
+    `${count(r.n_request)}/${count(r.n_request_aired)}`.padEnd(8),
+    String(radio).padStart(7),
+    String(count(r.s_tv)).padStart(5),
+    String(count(r.s_phone)).padStart(8),
+    ` ${r.calls ?? ''}`,
+  ].join(' ');
+}
+
+console.log('\nEach visit (min: in the room in all; ans: when they answered)');
+console.log(COLUMNS);
+for (const r of inside) console.log(line(r));
+
+if (existsSync(historyPath)) {
+  // every send, as it came: [received, visit, stage, fields as JSON]
+  const sends = parseCsv(readFileSync(historyPath, 'utf8')).flatMap((h) => {
+    try {
+      const fields = JSON.parse(h.fields) as Record<string, string | number | boolean>;
+      return [Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, String(v)])) as Row];
+    } catch {
+      return [];
+    }
+  });
+  console.log(`\nAs it stood when they answered (from ${historyPath})`);
+  console.log(COLUMNS + '  answers');
+  for (const r of answered) {
+    const visit = sends.filter((h) => h.visit === r.visit);
+    const atAnswer = visit.find((h) => h.stage === 'done');
+    // how many different answers to the six phrases this visit sent
+    const answers = new Set(visit.filter((h) => h.post_nostalgia).map((h) => Object.keys(h).filter((k) => k.startsWith('post_')).map((k) => h[k]).join()));
+    console.log(atAnswer ? `${line({ ...atAnswer, visitor: r.visitor })}  ${answers.size}` : `  ${r.visit.slice(0, 6)}: not in the history (it started after this visit)`);
+  }
 }
