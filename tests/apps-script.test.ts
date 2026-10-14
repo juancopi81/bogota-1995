@@ -6,6 +6,9 @@ import { describe, expect, it } from 'vitest';
 // fake sheet that, like the real one, hides the apostrophe that keeps text as text.
 class FakeSheet {
   cells: unknown[][] = [];
+  appendRow(values: unknown[]): void {
+    this.cells.push(values);
+  }
   getLastRow(): number {
     return this.cells.length;
   }
@@ -33,8 +36,13 @@ class FakeSheet {
 
 function deploy() {
   const sheet = new FakeSheet();
+  const tabs = new Map([['visitas', sheet]]);
+  const book = {
+    getSheetByName: (name: string) => tabs.get(name) ?? null,
+    insertSheet: (name: string) => tabs.set(name, new FakeSheet()).get(name)!,
+  };
   const context: Record<string, unknown> = {
-    SpreadsheetApp: { getActiveSpreadsheet: () => ({ getSheetByName: () => sheet, insertSheet: () => sheet }) },
+    SpreadsheetApp: { getActiveSpreadsheet: () => book },
     LockService: { getScriptLock: () => ({ waitLock: () => undefined, releaseLock: () => undefined }) },
     ContentService: {
       MimeType: { JSON: 'application/json' },
@@ -55,7 +63,7 @@ function deploy() {
   const post = (body: unknown) => doPost({ postData: { contents: typeof body === 'string' ? body : JSON.stringify(body) } }).text;
   const get = (parameter: Record<string, string> = {}) => doGet({ parameter });
   const column = (name: string) => (sheet.cells[0] as string[]).indexOf(name);
-  return { sheet, post, get, column };
+  return { sheet, post, get, column, history: () => tabs.get('envios')! };
 }
 
 const A = 'a1b2c3d4e5f60718';
@@ -76,6 +84,20 @@ describe('the sheet that receives visits', () => {
     // stored as text, so the sheet can't turn it into October 14
     expect(rowA[column('age_1995')]).toBe("'10-14");
     expect(sheet.cells[2][column('stage')]).toBe("'gate");
+  });
+
+  it('keeps every send as it came in the history tab, while the row keeps only the latest', () => {
+    const { sheet, post, history } = deploy();
+    post({ v: 1, visit: A, fields: { stage: 'room', s_total: 60, s_view_tv: 40 } });
+    post({ v: 1, visit: A, fields: { stage: 'done', s_total: 300, s_view_tv: 200, post_nostalgia: 5 } });
+    post({ v: 1, visit: A, fields: { stage: 'done', s_total: 900, s_view_tv: 700, post_nostalgia: 5 } });
+    expect(sheet.cells.length).toBe(2);
+    const rows = history().cells;
+    expect(rows[0]).toEqual(['received', 'visit', 'stage', 'fields']);
+    expect(rows.slice(1).map((r) => [r[1], r[2]])).toEqual([["'" + A, "'room"], ["'" + A, "'done"], ["'" + A, "'done"]]);
+    // what they had done when they answered, though the visit went on
+    const answered = JSON.parse((rows[2][3] as string).slice(1));
+    expect(answered).toMatchObject({ visit: A, stage: 'done', s_total: 300, s_view_tv: 200, post_nostalgia: 5 });
   });
 
   it('keeps text that looks like a formula as plain text', () => {

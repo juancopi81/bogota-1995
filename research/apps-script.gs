@@ -2,6 +2,10 @@
 // "visitas", one column per field (see docs/research-setup.md). Every send
 // carries the whole visit, so later sends update the same row.
 //
+// Every send is also kept as it came, one row each, in the tab "envios": the
+// visit as it stood at each moment, such as what a visitor had done when they
+// answered the exit questions (the row in "visitas" keeps counting after).
+//
 // It also hands the room the memories visitors agreed to share, once you've
 // read them: write "sí" in the column "aprobado" of that row. To show a
 // memory with names or details taken out, write the version to show in the
@@ -11,6 +15,7 @@
 // as a web app that anyone can reach.
 
 const SHEET = 'visitas';
+const HISTORY = 'envios';
 const MAX_FIELDS = 200;
 const MAX_TEXT = 2000;
 
@@ -59,6 +64,15 @@ function doPost(e) {
     });
     // text stays text: "10-14" isn't a date, and "=..." isn't a formula
     sheet.getRange(at, 1, 1, header.length).setValues([values.map((v) => (typeof v === 'string' && v !== '' ? "'" + v : v))]);
+
+    // the history never gets in the way of the visit's own row
+    try {
+      const history = book.getSheetByName(HISTORY) || book.insertSheet(HISTORY);
+      if (history.getLastRow() === 0) history.appendRow(['received', 'visit', 'stage', 'fields']);
+      history.appendRow(["'" + row.received, "'" + data.visit, "'" + (row.stage || ''), "'" + JSON.stringify(row).slice(0, 49000)]);
+    } catch (err) {
+      /* no history for this send */
+    }
   } finally {
     lock.releaseLock();
   }
