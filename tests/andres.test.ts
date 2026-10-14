@@ -59,7 +59,7 @@ const id = (name: string) => `llamada.andres.${name}`;
 describe('Andrés and the tape', () => {
   beforeEach(() => vi.resetModules());
 
-  it('calls early from a monedero in Unicentro, asks you to tape «Florecita rockera», and runs out of coins', async () => {
+  it("calls early from a monedero in Unicentro, asks you to tape some songs for Diana's party, and runs out of coins", async () => {
     const { andresFromMonedero, flags, SCHEDULE, steps } = await load();
     expect(SCHEDULE.andresEarly).toBeLessThan(120);
     const call = line(['¿Quiubo, Andrés?', 'Sí, de una']);
@@ -76,7 +76,7 @@ describe('Andrés and the tape', () => {
   it('calls again once he is home to ask whether you taped it', async () => {
     const { andresFromMonedero, andresCallsBack, flags, steps } = await load();
     await run(andresFromMonedero(world(false)), line([]).api);
-    const call = line(['¡Quiubo! ¿Llegó bien?', 'Sí, ya la tengo']);
+    const call = line(['¡Quiubo! ¿Llegó bien?', 'Sí, ya las tengo']);
     await run(andresCallsBack(world(true)), call.api);
     // he doesn't ask twice or tell the Unicentro story again
     expect(call.said).toEqual(['yaLlegue', 'laGrabo', 'yaGrabo', 'chisme', 'colgar'].map(id));
@@ -89,7 +89,7 @@ describe('Andrés and the tape', () => {
     await run(andresFromMonedero(world(false)), line([]).api);
     const call = line([]);
     await run(andresCallsBack(world(false)), call.api);
-    expect(call.offered[1]).toEqual(['Todavía no la han puesto.']);
+    expect(call.offered[1]).toEqual(['Todavía no he grabado nada.']);
     expect(call.said).toContain(id('noImporta'));
     expect(steps.at(-1)).toBe('not-taped');
   });

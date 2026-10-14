@@ -55,7 +55,7 @@ _Fifteen, your best friend from school. Fast, relaxed, very rolo._
 | `llamada.andres.meLlamo` | ¿Quiubo, parce? ¿Me llamó? Mi mamá me dejó la razón. |
 | `llamada.andres.queMas` | Nada, aquí, mamado. Nos cogió el aguacero en Unicentro y nos tocó esperar como una hora. |
 | `llamada.andres.grabadora` | Oiga, ¿usted tiene la grabadora buena? A la mía se le enredó la cinta y se tragó el casete. |
-| `llamada.andres.pedido` | ¿Me graba «Florecita rockera» de la radio? En Radioactiva la ponen a cada rato. |
+| `llamada.andres.pedido` | ¿Me graba unas canciones de Radioactiva? Son pa' la fiesta de Diana, el otro sábado. |
 | `llamada.andres.pilas` | Pero pilas, que el locutor siempre habla encima del principio. |
 | `llamada.andres.yaGrabo` | ¿En serio ya grabó? ¡Qué bacano! Me lo presta el lunes en el colegio. |
 | `llamada.andres.deUna` | ¡De una! Me lo trae el lunes, pues. |
@@ -65,7 +65,7 @@ _Fifteen, your best friend from school. Fast, relaxed, very rolo._
 | `llamada.andres.monedero` | ¿Aló? ¿Quiubo, parce? Habla Andrés. Lo estoy llamando de un monedero, rapidito. |
 | `llamada.andres.monedas` | Uy, se me están acabando las monedas. Lo llamo cuando llegue a la casa. ¡Chao! |
 | `llamada.andres.yaLlegue` | ¿Quiubo, parce? Ya llegué a la casa, todo ensopado. |
-| `llamada.andres.laGrabo` | ¿Y qué? ¿Sí me grabó «Florecita rockera»? |
+| `llamada.andres.laGrabo` | ¿Y qué? ¿Sí me grabó las canciones? |
 
 ## Mamá
 

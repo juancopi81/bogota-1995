@@ -71,7 +71,7 @@ const A = lines('llamada.andres', {
   meLlamo: ['andres', '¿Quiubo, parce? ¿Me llamó? Mi mamá me dejó la razón.'],
   queMas: ['andres', 'Nada, aquí, mamado. Nos cogió el aguacero en Unicentro y nos tocó esperar como una hora.'],
   grabadora: ['andres', 'Oiga, ¿usted tiene la grabadora buena? A la mía se le enredó la cinta y se tragó el casete.'],
-  pedido: ['andres', '¿Me graba «Florecita rockera» de la radio? En Radioactiva la ponen a cada rato.'],
+  pedido: ['andres', "¿Me graba unas canciones de Radioactiva? Son pa' la fiesta de Diana, el otro sábado."],
   pilas: ['andres', 'Pero pilas, que el locutor siempre habla encima del principio.'],
   yaGrabo: ['andres', '¿En serio ya grabó? ¡Qué bacano! Me lo presta el lunes en el colegio.'],
   deUna: ['andres', '¡De una! Me lo trae el lunes, pues.'],
@@ -82,7 +82,7 @@ const A = lines('llamada.andres', {
   monedero: ['andres', '¿Aló? ¿Quiubo, parce? Habla Andrés. Lo estoy llamando de un monedero, rapidito.'],
   monedas: ['andres', 'Uy, se me están acabando las monedas. Lo llamo cuando llegue a la casa. ¡Chao!'],
   yaLlegue: ['andres', '¿Quiubo, parce? Ya llegué a la casa, todo ensopado.'],
-  laGrabo: ['andres', '¿Y qué? ¿Sí me grabó «Florecita rockera»?'],
+  laGrabo: ['andres', '¿Y qué? ¿Sí me grabó las canciones?'],
 });
 
 async function passToAndres(call: CallApi, world: PhoneWorld): Promise<void> {
@@ -94,7 +94,7 @@ async function passToAndres(call: CallApi, world: PhoneWorld): Promise<void> {
   await andresTalks(call, world, 'answers');
 }
 
-/** The aguacero in Unicentro, then the favor: his grabadora chewed the tape, would you tape «Florecita rockera» off Radioactiva? */
+/** The aguacero in Unicentro, then the favor: his grabadora chewed the tape, would you tape some songs off Radioactiva for Diana's party? */
 async function andresAsks(call: CallApi, world: PhoneWorld): Promise<void> {
   if (!flags.andresToldRain) {
     flags.andresToldRain = true;
@@ -105,7 +105,7 @@ async function andresAsks(call: CallApi, world: PhoneWorld): Promise<void> {
   await call.say(A.pilas);
   flags.andresAsked = true;
   bus.emit('story:andres', { step: 'asked' });
-  const options: Choice<boolean | null>[] = [{ text: 'Sí, de una. Yo se la grabo.', value: false }];
+  const options: Choice<boolean | null>[] = [{ text: 'Sí, de una. Yo se las grabo.', value: false }];
   if (world.hasRecordings()) options.push({ text: 'Ya tengo algo grabado de hoy, ¿quiere?', value: true });
   options.push({ text: 'Uy, no sé si alcance...', value: null });
   const already = await call.choose(options);
@@ -114,12 +114,12 @@ async function andresAsks(call: CallApi, world: PhoneWorld): Promise<void> {
   else await call.say(A.noImporta);
 }
 
-/** Back home, he wants to know: did you tape it? */
+/** Back home, he wants to know: did you tape them? */
 async function andresChecks(call: CallApi, world: PhoneWorld): Promise<void> {
   await call.say(A.laGrabo);
   const options: Choice<boolean>[] = [];
-  if (world.hasRecordings()) options.push({ text: 'Sí, ya la tengo en el casete.', value: true });
-  options.push({ text: 'Todavía no la han puesto.', value: false });
+  if (world.hasRecordings()) options.push({ text: 'Sí, ya las tengo en el casete.', value: true });
+  options.push({ text: 'Todavía no he grabado nada.', value: false });
   const taped = await call.choose(options);
   bus.emit('story:andres', { step: taped ? 'taped' : 'not-taped' });
   await call.say(taped ? A.yaGrabo : A.noImporta);
