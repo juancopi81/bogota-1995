@@ -8,6 +8,10 @@
 // iframe API uses) without loading any script from YouTube: it tells us when
 // the video really plays, and takes the TV's volume knob.
 //
+// The player starts muted and stays silent until the episode itself plays:
+// YouTube may run one of its own ads first, and the channel's card shouldn't
+// come with a modern ad's sound.
+//
 // Embeds only work when the room is served over http(s). From a file on disk
 // YouTube refuses to play (no referrer), and a claude.ai artifact cannot frame
 // other sites at all, so there the channels keep their invented programs.
@@ -88,6 +92,7 @@ export class ClipScreen {
       rel: '0',
       fs: '0',
       playsinline: '1',
+      mute: '1',
       iv_load_policy: '3',
       disablekb: '1',
       enablejsapi: '1',
@@ -126,10 +131,10 @@ export class ClipScreen {
     this.current = '';
   }
 
-  /** Follow the TV's volume knob (0–1). */
+  /** Follow the TV's volume knob (0–1), once the episode itself is playing. */
   setVolume(v: number): void {
     if (!this.frame || !this.heard) return;
-    const vol = Math.round(Math.max(0, Math.min(1, v)) * 100);
+    const vol = this.state === 'playing' ? Math.round(Math.max(0, Math.min(1, v)) * 100) : 0;
     const silent = this.sentVolume <= 0;
     if (vol === 0 ? silent && this.sentVolume === 0 : Math.abs(vol - this.sentVolume) < 2) return;
     this.sentVolume = vol;

@@ -84,6 +84,12 @@ export class Backstage {
   ) {}
 
   mount(): void {
+    // during the test it isn't there for visitors (a stray key or a file dragged
+    // across the page would open it); ?trastienda brings it back for you
+    const yours = new URLSearchParams(location.search).has('trastienda');
+    if (yours) document.body.classList.add('trastienda');
+    const reachable = () => yours || !document.body.classList.contains('study');
+
     const toggle = document.createElement('button');
     toggle.id = 'backstage-toggle';
     toggle.title = 'Trastienda (tecla `)';
@@ -96,7 +102,7 @@ export class Backstage {
     document.body.appendChild(this.el);
     window.addEventListener('keydown', (e) => {
       if ((e.target as HTMLElement | null)?.tagName === 'INPUT') return;
-      if (e.key === '`' || e.key === 'º') this.toggle();
+      if ((e.key === '`' || e.key === 'º') && reachable()) this.toggle();
       if (e.key === 'Escape' && this.el.classList.contains('open')) this.toggle();
     });
 
@@ -104,8 +110,10 @@ export class Backstage {
     const hasFiles = (e: DragEvent) => !!e.dataTransfer && [...e.dataTransfer.types].includes('Files');
     window.addEventListener('dragover', (e) => {
       if (!hasFiles(e)) return;
+      // a file dropped on the room never replaces it, backstage or not
       e.preventDefault();
-      e.dataTransfer!.dropEffect = 'copy';
+      e.dataTransfer!.dropEffect = reachable() ? 'copy' : 'none';
+      if (!reachable()) return;
       if (!this.el.classList.contains('open')) this.toggle();
       this.el.classList.add('dropping');
     });
@@ -115,6 +123,7 @@ export class Backstage {
     window.addEventListener('drop', (e) => {
       if (!hasFiles(e)) return;
       e.preventDefault();
+      if (!reachable()) return;
       this.el.classList.remove('dropping');
       const picked = filesFromDrop(e.dataTransfer!.items);
       void picked.then((files) => this.ingest(files));
@@ -322,6 +331,7 @@ export class Backstage {
     const ownAnthem = library.isUploaded('anthem');
 
     this.el.innerHTML = `
+      <button type="button" class="close" data-close title="Cerrar (Esc)" aria-label="Cerrar">✕</button>
       <h2>Trastienda</h2>
       <p>Esto no es parte del cuarto. Aquí carga sus propios archivos: se quedan en este navegador y no se suben a ninguna parte.</p>
 
@@ -377,6 +387,7 @@ export class Backstage {
   private wire(): void {
     const q = <T extends Element>(sel: string) => this.el.querySelector<T>(sel)!;
 
+    q<HTMLButtonElement>('button[data-close]').addEventListener('click', () => this.toggle());
     const folder = q<HTMLInputElement>('input[data-folder]');
     folder.webkitdirectory = true;
     folder.addEventListener('change', () => void this.ingest(filesFromInput(folder)));

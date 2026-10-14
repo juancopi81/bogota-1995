@@ -86,7 +86,10 @@ Other ways to open it:
 
 ## The backstage
 
-Press <kbd>`</kbd> (or the small ⚙ in the corner). It isn't part of the room.
+Press <kbd>`</kbd> (or the small ⚙ in the corner); <kbd>Esc</kbd> or its ✕
+closes it. It isn't part of the room. While the test runs it's hidden from
+visitors (no key, no ⚙, and dragging a file over the room doesn't open it);
+add `?trastienda` to the address to get it back.
 From there you can:
 
 - **Load your own songs, the anthem and recorded voices, in one go.** Drop a
@@ -142,8 +145,8 @@ the door to the exit.
 
 URL parameters for poking around: `?skip` skips the title card, `?t=900`
 starts 15 minutes in, `?open=grabadora|phone|tv|window|clock` opens a
-close-up, `?research` runs the test without a sheet, and `?anyway` opens the
-room on a phone. In dev, `window.room1995` exposes the objects in the console.
+close-up, `?research` runs the test without a sheet, `?trastienda` keeps the
+backstage reachable during the test, and `?anyway` opens the room on a phone. In dev, `window.room1995` exposes the objects in the console.
 
 ### Where things live
 
