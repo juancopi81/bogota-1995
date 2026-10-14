@@ -30,6 +30,11 @@ class Voices {
   private ctx: BaseAudioContext | null = null;
   private loading = new Map<string, Promise<AudioBuffer | undefined>>();
 
+  /** Where the included takes are decoded, before `loadBundled` starts on all of them. */
+  init(ctx: BaseAudioContext): void {
+    this.ctx = ctx;
+  }
+
   /**
    * Starts getting the included cast, the takes needed soonest first (`due`
    * says when, in world seconds). Resolves once every take has been tried.
