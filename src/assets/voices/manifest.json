@@ -208,9 +208,12 @@
         "stability": 0.5,
         "similarity_boost": 0.75
       },
-      "spoken_text": "¿Me graba «Florecita rockera» de la radio? En Radioactiva la ponen a cada rato.",
-      "input_text": "[casual, youthful, brisk] ¿Me graba «Florecita rockera» de la radio? En Radioactiva la ponen a cada rato.",
-      "sha256": "b79253f69e5a2ac06ac30d4f57416e7c01718924f829d1a390361db92e4a427b"
+      "spoken_text": "¿Me graba unas canciones de Radioactiva? Son pa' la fiesta de Diana, el otro sábado.",
+      "input_text": "[casual, youthful, brisk] ¿Me graba unas canciones de Radioactiva? Son pa' la fiesta de Diana, el otro sábado.",
+      "sha256": "eace628a5f8c92a3b1dbb23345cc4ae7586d32aa49e77c41db0dcae86a6a8a52",
+      "duration_seconds": 4.16,
+      "credit_cost": 44,
+      "generated_on": "2026-10-14"
     },
     {
       "id": "llamada.andres.pilas",
@@ -2839,13 +2842,13 @@
         "stability": 0.5,
         "similarity_boost": 0.75
       },
-      "spoken_text": "¿Y qué? ¿Sí me grabó «Florecita rockera»?",
-      "input_text": "[casual, youthful, brisk] ¿Y qué? ¿Sí me grabó «Florecita rockera»?",
-      "sha256": "bf69c882b54d4ef5db60ed2934a3d0f9241f423fde5102623801d816e07143fb",
-      "duration_seconds": 2.8,
-      "credit_cost": 7,
-      "generated_on": "2026-10-04"
+      "spoken_text": "¿Y qué? ¿Sí me grabó las canciones?",
+      "input_text": "[casual, youthful, brisk] ¿Y qué? ¿Sí me grabó las canciones?",
+      "sha256": "35f8af411f66f06f4e2a88e5c7fd54140d6c223e60ca92d9617f98577a8c5aeb",
+      "duration_seconds": 2.16,
+      "credit_cost": 24,
+      "generated_on": "2026-10-14"
     }
   ],
-  "updated_on": "2026-10-04"
+  "updated_on": "2026-10-14"
 }

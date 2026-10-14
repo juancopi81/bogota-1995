@@ -1,5 +1,5 @@
 // End-to-end: Andrés's errand. He calls early from a monedero in Unicentro
-// and asks for «Florecita rockera» on tape; you tape something; once he's
+// and asks for some songs off Radioactiva on tape; you tape something; once he's
 // home he calls to ask, and you can tell him it's on the cassette.
 // Needs the dev server on :5173.  Usage: node scripts/e2e-errand.mjs
 import { chromium } from 'playwright';
@@ -76,7 +76,7 @@ const home = await phoneSubs();
 console.log('he says:', JSON.stringify(home));
 assert.ok(home.some((s) => s.includes('Ya llegué')));
 await answer('¿Llegó bien?');
-const check = await answer('Sí, ya la tengo');
+const check = await answer('Sí, ya las tengo');
 console.log('you:', JSON.stringify(check));
 const end = await listen();
 console.log('then:', JSON.stringify(end));

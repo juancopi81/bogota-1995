@@ -16,7 +16,7 @@ export const flags = {
   andresToldRain: false,
   /** You've talked to him since he got home. */
   andresTalkedHome: false,
-  /** Andrés asked you to tape "Florecita rockera" for him. */
+  /** Andrés asked you to tape some songs off Radioactiva for Diana's party. */
   andresAsked: false,
   angieCalls: 0,
   angieTalked: false,

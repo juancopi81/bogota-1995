@@ -78,7 +78,7 @@ bakery take now says "La Espiga", matching the shop across the street.
    again at 5:50:20. The wrong-number caller around 5:35 now asks for La Espiga.
 7. Open `http://localhost:5173/?skip&t=70&open=phone`: at 5:31:15 Andrés calls
    from a monedero in Unicentro (coins drop as you pick up) and asks you to
-   tape «Florecita rockera»; his coins run out. Tape something, then jump to
+   tape some songs off Radioactiva for Diana's party; his coins run out. Tape something, then jump to
    5:43 in the backstage: he calls from home to ask whether you taped it.
 8. For a retake, send the **line ID** from `docs/voice-script.md`, or its first
    words, and a direction such as "faster", "less formal", or "older".
