@@ -641,7 +641,7 @@ body {
   }
 }
 
-body.study #backstage-toggle {
+body.study:not(.trastienda) #backstage-toggle {
   display: none;
 }
 
@@ -806,6 +806,18 @@ body.study #backstage-toggle {
 #backstage h2 {
   font-size: 18px;
   margin: 0 0 4px;
+}
+
+#backstage .close {
+  float: right;
+  margin: -6px -8px 0 8px;
+  border: 0;
+  background: none;
+  color: #6b6760;
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 6px;
+  cursor: pointer;
 }
 
 #backstage h3 {

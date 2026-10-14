@@ -27,9 +27,11 @@ in late and you land mid-episode, like the radio. These are in `SCHEDULES` in
   was Caracol's, about 1994–1998, when Caracol made programs for both public
   channels.
 - **YouTube's own ads** can play inside these, before or during an episode,
-  and can't be turned off from here (accepted for now). Switching channels
-  reloads the player, so coming back can bring another ad. An ad delays the
-  episode, so its last seconds may be cut when the next item comes on.
+  and can't be turned off from here (accepted for now). An ad before an
+  episode stays behind the channel's card, silent: the player is muted until
+  the episode itself plays. Switching channels reloads the player, so coming
+  back can bring another ad. An ad delays the episode, so its last seconds may
+  be cut when the next item comes on.
 - **If a program is refused** (removed, private, embedding disabled), the
   channel's usual running order fills its slot, and the next program still
   comes on at its time. If a video ends before its slot does, the channel's
