@@ -11,6 +11,7 @@ import { AudioEngine } from './audio/engine';
 import { library } from './audio/library';
 import { voices } from './audio/voices';
 import { AHEAD, needs } from './audio/needs';
+import { STATIONS } from './content/stations';
 import { Grabadora } from './objects/grabadora';
 import { Phone } from './objects/phone';
 import { Tv } from './objects/tv';
@@ -124,19 +125,35 @@ const gated = study.gate(() => {
 });
 
 // Your own files load first (they're already in this browser, and they take
-// priority). Then the room's own voices and music download in the order the
-// afternoon needs them, and the room opens once the first half minute's lines
-// are here, or after a few seconds anyway: a line that arrives late joins
-// partway through.
+// priority). Then only what the room opens with downloads: the first half
+// minute's lines, and what the grabadora is playing as you walk in (it's on
+// from the start), with nothing else competing for the connection. The room
+// opens when they're here, or after a few seconds anyway (anything that
+// arrives late joins partway through), and the rest follows in the order the
+// afternoon needs it.
 const OPEN_WITH = 30;
 const ready = gated
   ? Promise.resolve()
-  : Promise.all([library.loadSaved(), voices.loadSaved(engine.ctx), grabadora.init()]).then(() => {
+  : Promise.all([library.loadSaved(), voices.loadSaved(engine.ctx), grabadora.init()]).then(async () => {
       const need = needs(grabadora.radio.ahead(AHEAD), tv.ahead(AHEAD));
+      const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+      voices.init(engine.ctx);
+      await Promise.all([voices.ready(need.linesBefore(OPEN_WITH), 8000), Promise.race([onAirAtFirst(), wait(4000)])]);
       void voices.loadBundled(engine.ctx, need.voice);
       void library.loadHouse(need.house);
-      return voices.ready(need.linesBefore(OPEN_WITH), 8000);
     });
+
+/** What the grabadora plays as the room opens: asking for it puts it first in line. */
+function onAirAtFirst(): Promise<unknown> {
+  // nothing has ticked yet, so ask the tuning itself which station comes in
+  const radio = grabadora.radio;
+  const station = STATIONS.map((def) => radio.station(def.id)).find((st) => radio.power && radio.strength(st) > 0.5);
+  if (!station) return Promise.resolve();
+  const seg = station.timeline.at(0)?.seg;
+  if (seg?.kind === 'song') return library.whenSong(seg.songId, seg.audio ?? null);
+  if (seg?.kind === 'talk' || seg?.kind === 'ad') return library.whenBed(station.def.id, station.def.bed);
+  return Promise.resolve();
+}
 
 /** If the first lines are still on their way, say so, instead of a room that doesn't move. */
 async function waitFor(loading: Promise<unknown>): Promise<void> {
