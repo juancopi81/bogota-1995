@@ -176,6 +176,147 @@ answered at 6.6 minutes and stayed until 23.9, so:
   Whether the room changed between two builds is in git:
   `git diff <build> <build> -- src public index.html`.
 
+**Preparation on 23 October 2026: Google Display calibration.** Meta's
+advertising restriction is under support review. Prepare a separate Google
+recruitment run; no campaign is launched by this note.
+
+- Keep the pilot check, frozen room, completed-visit definition and main
+  stopping rule above. This changes recruitment, not the room or questionnaire.
+- Use Google Display Network only, either Standard Display if available or
+  Demand Gen with the other channels deselected. Colombia, Spanish,
+  computers; no interest, remarketing or customer-list targeting. Turn off
+  optimized targeting so the requested audience isn't merely a suggestion.
+- Google uses age bands. Prepare 35–44, 45–54 and 55–64, excluding unknown,
+  to cover the original approximate 40–55 range. This broadens recruitment
+  to estimated ages 35–64. Keep the existing age-in-1995 and residence
+  questions, and report the existing analysis strata; do not treat ad
+  targeting as proof that a participant lived in Bogotá in 1995.
+- Two still-image concepts, rain/window and radio/window, each with square
+  and landscape sizes, replace the still/clip pair for this calibration.
+  Keep their copy identical and do not add nostalgia-interest cues.
+- Use `utm_source=google`, `utm_campaign=calibracion_google`, and
+  `utm_content=lluvia` or `radio`. Review with
+  `npm run visits -- --campaign calibracion_google`; exclude our own browser.
+  Keep this source distinct from Meta and pilot visits. Any later inclusion
+  in the main analysis must identify this recruitment amendment.
+- Proposed ceiling: COP 60,000 media spend over four account-local calendar
+  days, with start/end dates set after approval. Prefer a supported campaign
+  total budget. For legacy Display with a verified 2× daily billing limit,
+  COP 7,500 average/day for at most four days gives a COP 60,000 upper bound;
+  average spend may be closer to COP 30,000. No budget increases or automatic
+  extension. Confirm taxes/fees and the final payable limit before launch.
+- Evaluate cost per completed visit, retention and technical drop-off.
+  Report completed visits from people who lived in Bogotá separately.
+  Ad delivery is not randomized, so the two creatives are a practical
+  recruitment comparison, not a causal A/B test. Do not inspect mood changes
+  during recruitment. No Google pixel or additional participant tracking.
+
+Local preparation files: `media/private/google-display-2026-10-23/` (ignored
+by git). The manifest records copy, links, assets, proposed settings and
+launch checks.
+
+**Configured on 23 October 2026:** the Google account is set up with COP
+and Colombia's time zone, and the campaign is saved as an unpublished draft.
+The actual setup is Demand Gen with Google Display Network selected alone,
+Maximize clicks, Colombia presence, Spanish, computers and estimated ages
+35–64. Optimized targeting and automatic creative enhancements are off.
+Both image ads have their own links and the same copy. No Google tag was
+installed and no study code changed.
+
+The saved campaign-total budget is **COP 60,000 for three days**, provisionally
+24–26 October. Google rejected COP 60,000 for four days (the displayed minimum
+was COP 76,000); shortening the run resolved that budget error. This remains
+within the planned 3–4 day calibration. Reconfirm the dates, complete
+advertiser verification, review taxes/fees and approve launch before
+publishing. The user's approval covers preparation, not ad delivery.
+
+**Updated on 23 October 2026 after creative review:** the user selected the
+rain still and the existing 15-second room video as the two calibration
+creatives. The video replaces the radio still and is hosted unlisted on
+YouTube; its URL and upload evidence stay in the private preparation folder.
+Paid links use `utm_content=lluvia` and `utm_content=video`, both under
+`utm_campaign=calibracion_google`. The YouTube description uses a separate
+`presentacion` campaign so ordinary video-link visits aren't counted as paid
+calibration recruitment. The COP 60,000 total, provisional three-day window,
+audience and GDN-only inventory are unchanged. Video shortening/resizing,
+generated text, overlays and landing-page previews are off, alongside the
+previous creative-enhancement opt-outs. The ad campaign remains unpublished.
+
+**Pre-launch check on 23 October 2026:** the sheet contains 23 visits, including
+seven completed visits with all six entrance and exit items. All seven have
+blank campaign tags, so this verifies collection, not a separately identified
+3–5-person pilot cohort. The `envios` export has 91 valid history records for
+11 visits. Six completed visits predate its first record on 14 October.
+
+All `aprobado` cells are blank, and the live memories endpoint returns an empty
+list. Keep approvals blank throughout recruitment; retain the original answers.
+Both saved ad URLs were checked in Google Ads: source `google`, campaign
+`calibracion_google`, and content `lluvia` or `video`. Two existing visits already
+carry the calibration tag; they are pre-launch traffic, not paid recruitment.
+The private preparation folder holds the current record IDs and CSV snapshots.
+Refresh that baseline and record the actual launch time before publishing.
+
+Google verified the advertiser details, recorded the self-funded declaration,
+and cleared the EU political-ads declaration. Identity verification still needs
+the account owner's ID and separate privacy consents in Google's open form.
+The campaign remains unpublished at COP 60,000 total.
+
+**Review after identity verification, 23 October 2026, 15:17 Colombia time:**
+Google's account history records advertiser verification as "Verification
+successful — Complete" at 12:42. The policy summary shows no account or ad
+issues. The separate financial-services Beta application prompt for `github.io`
+remains; no financial-services certification was requested for this room.
+
+The live draft still matches the approved settings, dates, creatives and source
+links. Google's low-budget, single-channel and medium-ad-strength notices are
+recommendations, not a confirmed ad-policy approval or rejection. The refreshed
+visit export is identical to the earlier 23-row snapshot; public memories remain
+empty. Pilot-participant provenance still needs confirmation because the seven
+completed visits have no campaign tag.
+
+Billing shows an individual Colombia profile with no displayed Colombia tax
+information. [Google's Colombia tax guidance](https://support.google.com/google-ads/answer/2375370?hl=es-419)
+says 19% VAT applies when tax information is not provided. If charged on the
+full COP 60,000 media spend, VAT would be COP 11,400 and the total COP 71,400.
+This is a conditional billing estimate, not a posted charge. Confirm the final
+tax-inclusive spending limit before publishing; no tax settings, campaign
+budget or launch authorization changed during this review.
+
+**Pilot-origin clarification, 23 October 2026:** the user confirmed that the
+existing rows come from the pilot and should remain as recorded. Accept that
+provenance confirmation; blank historical campaign tags do not require deleting
+or relabelling those rows. Keep the saved pre-launch visit IDs and actual launch
+time separate from the new Google campaign tags when counting paid recruitment.
+This does not infer a distinct participant count from the number of visits.
+
+**Ad copy approved on 23 October 2026:** use the same description in the rain
+and video ads: "Sábado, 5:30 p. m. Explore un cuarto interactivo en su computador
+con audífonos." The user preferred "en su computador con audífonos" to the
+earlier wording. The headline remains "Un cuarto de 1995 en Chapinero" and the
+business name "Bogotá 1995". This replaces the earlier ad descriptions; it does
+not change the room, the video itself, tracking links or audience. Both updated
+descriptions were reopened and checked after saving. The campaign-total budget
+remains COP 60,000, the dates remain provisional, and the draft is unpublished.
+No copy A/B test was added; launch still needs the user's separate approval.
+
+**Published on 23 October 2026, 15:59 Colombia time:** after the user's explicit
+authorization for COP 60,000 media spend plus IVA if applicable, Google confirmed
+"Campaña publicada". The published campaign ID is `24395866474`; the earlier
+draft identifiers are retained only as preparation history. The campaign-total
+budget remains COP 60,000 and the dates are 24–26 October. Both the rain and
+video ads are enabled and in review. The first scheduled delivery window starts
+Saturday 24 October at 15:00 Colombia time, subject to ad approval; the campaign
+was pending start with zero impressions and zero media spend when checked.
+
+The fresh launch baseline contains the same 23 pre-launch visits, including
+seven completed visits and zero nonblank approvals. Keep those rows unchanged.
+The private `launch-record-2026-10-23.json` contains their visit IDs, snapshot
+hash, publication confirmation and earliest scheduled serving cutoff
+(`2026-10-24T20:00:00Z`). Exclude pre-launch IDs and arrivals before that cutoff
+when preparing the paid recruitment CSV; filtering only on `calibracion_google`
+would also include the two pre-launch tagged visits. No automated monitoring,
+automatic budget increases or extensions were configured.
+
 ## Analysis
 
 - **Main result:** the nostalgia score (mean of N1–N3) at the exit minus at
