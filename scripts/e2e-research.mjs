@@ -22,14 +22,22 @@ await page.goto('http://localhost:5173/?research');
 await page.waitForSelector('#title');
 await shot('title');
 await page.waitForTimeout(800);
-// the title card's button has the focus: the keyboard alone opens the door
-await page.keyboard.press('Enter');
+// the title card's button is the yes: a click beside it isn't
+await page.mouse.click(40, 40);
+await page.waitForTimeout(300);
+const notByClickingBeside = (await page.$('#research')) === null;
+// "Más detalles" says what taking part means, and "Volver" goes back to the card
+await page.click('#title .more');
 await page.waitForSelector('#research');
-const asked = (await fields()).stage;
-await shot('consent');
-await page.click('#research [data-act="yes"]');
+const details = await page.$eval('#research', (el) => el.textContent);
+await shot('details');
+await page.click('#research [data-act="back"]');
+const backToTitle = (await page.$('#research')) === null && (await fields()).stage === 'load';
+// the button has the focus again: the keyboard alone opens the door
+await page.keyboard.press('Enter');
 
 await page.waitForSelector('#research [data-q="lived"]');
+const consented = (await fields()).stage;
 const disabledAtFirst = await page.$eval('#research [data-act="enter"]', (b) => b.classList.contains('waiting'));
 await pick('lived', 'bogota');
 await rate('mood', { tranquilo: 5, nostalgico: 2 });
@@ -52,9 +60,10 @@ await rate('mood', { aburrido: 2, sentimientos: 3, contento: 5, ahora: 2 });
 await shot('door');
 await page.click('#research [data-act="enter"]');
 await page.waitForFunction(() => window.room1995.clock.started, null, { timeout: 20000 });
-const atDoor = { asked, disabledAtFirst, early, leftAtDoor: { stage: leftAtDoor.stage, n_door: leftAtDoor.n_door, lived_1995: leftAtDoor.lived_1995 ?? null }, sizes };
+const entrance = { notByClickingBeside, details: /anónimo/.test(details) && /mayor de 18/.test(details), backToTitle, consented };
+const atDoor = { ...entrance, disabledAtFirst, early, leftAtDoor: { stage: leftAtDoor.stage, n_door: leftAtDoor.n_door, lived_1995: leftAtDoor.lived_1995 ?? null }, sizes };
 console.log('door:', JSON.stringify({ ...atDoor, ...(await fields()) }));
-if (asked !== 'asked' || !disabledAtFirst || early.missing !== 5 || early.hint !== 'Faltan 5 respuestas.' || leftAtDoor.n_door !== 3 || leftAtDoor.lived_1995) throw new Error('the entrance is off');
+if (!notByClickingBeside || !entrance.details || !backToTitle || consented !== 'consent' || !disabledAtFirst || early.missing !== 5 || early.hint !== 'Faltan 5 respuestas.' || leftAtDoor.n_door !== 3 || leftAtDoor.lived_1995) throw new Error('the entrance is off');
 if (sizes.text < 15 || sizes.button < 32 || !sizes.enterVisible) throw new Error(`the door is too small to read at ${width}×${height}`);
 
 // a little time in the room: the radio, then a call to 117

@@ -23,10 +23,13 @@ One group, measured at the door and at the exit (a pre/post design). The
 door question about nostalgia is hidden among three ordinary mood items, so
 the purpose is less obvious.
 
-1. **Title card**, then **consent**: what we collect, that it's anonymous,
-   that they can leave any time, 18+. "Entrar sin participar" lets anyone in;
-   for them only the visit is counted (when, which version of the room, which
-   link brought them).
+1. **Title card**, which is also the **consent**: its only button is "Entrar y
+   participar", under it "Experimento anónimo, para mayores de 18." and "Más
+   detalles", which says what we collect, that it's anonymous, that they can
+   leave any time, and that whoever doesn't want to take part just closes the
+   page; for them only the visit is counted (when, which version of the room,
+   which link brought them). Until 26 October consent was a screen of its own,
+   and "Entrar sin participar" let anyone in.
 2. **At the door** (about 40 s):
    - Where they lived in 1995 and how old they were.
    - Six mood items, 1–7: three of them are the state-nostalgia items from
@@ -335,17 +338,22 @@ order or items:
 
 - The note for phones only goes to touch screens with nothing finer to point
   with. Any computer with a mouse or a trackpad gets the room.
-- The title card shows the room behind it and has an "Entrar" button with the
-  focus, so a click anywhere or the Enter key opens it. Its hint is "Póngase
-  audífonos." (it said "Toque para entrar").
+- The title card is the consent, and the only way in: its button "Entrar y
+  participar" has the focus, so a click on it or the Enter key is the
+  visitor's yes. Under it, "Experimento anónimo, para mayores de 18." and "Más
+  detalles", which opens the earlier consent text (now saying that whoever
+  doesn't want to take part closes the page). There's no "Entrar sin
+  participar" any more: in the calibration 7 of 146 paid visits took it, and
+  they cost the same as the rest. The room shows behind the card, and its hint
+  is "Se recomienda usar audífonos." (it said "Póngase audífonos. Toque para
+  entrar.").
 - The questions are drawn at the window's own size: in a 1366×641 window the
   door fits on one screen with 17-pixel text and 36-pixel buttons. "Entrar al
   cuarto" and "Siguiente" respond before everything has an answer: they mark
   what's missing and the hint counts it ("Faltan 3 respuestas.").
-- New counts, no answers: `stage` = `asked` once a visitor is past the title
-  card (nothing about them, before consent); and for those who agreed,
-  `n_door` and `s_door`, how many of the door's eight questions had an answer
-  and for how many seconds they'd been up, sent also when the tab closes.
+- New counts, no answers: `n_door` and `s_door`, how many of the door's eight
+  questions had an answer and for how many seconds they'd been up, sent also
+  when the tab closes.
 - A phone's first send already says `gate`. Two sends in a row could arrive out
   of order, and a late `load` hid the gate in the sheet's row; in the
   calibration export, 27 gates showed only in the history tab.
@@ -389,9 +397,9 @@ later ones. Starting the ads again needs the user's approval.
 
 - No names, emails or IP addresses. A random id per visit, and one per
   browser to count returns.
-- Before consent, and for anyone who enters without taking part, only when
-  they came, which version of the room, which link brought them, and how far
-  they got (past the title card, or declined). The
+- Before consent, only when they came, which version of the room and which
+  link brought them (until 26 October, the same for anyone who entered
+  without taking part). The
   browser's id, the screen size, language and time zone come only with a
   yes.
 - Phone numbers dialed in the room are kept only if the room gave them
@@ -399,4 +407,5 @@ later ones. Starting the ads again needs the user's approval.
   visitors may dial their own old numbers.
 - Answers and the log go to a Google Sheet (see
   [`research-setup.md`](research-setup.md)).
-- The consent screen says what's collected and that it's anonymous.
+- The consent ("Más detalles" on the title card) says what's collected and
+  that it's anonymous.

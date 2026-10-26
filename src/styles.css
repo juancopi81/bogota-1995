@@ -308,7 +308,6 @@ body {
   color: #e6ddc8;
   font-family: 'Special Elite', 'Courier New', monospace;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85);
-  cursor: pointer;
   transition: opacity 2.2s ease;
 }
 
@@ -349,6 +348,23 @@ body {
 #title .enter:focus-visible {
   outline: 3px solid rgba(230, 221, 200, 0.75);
   outline-offset: 6px;
+}
+
+/* in the test: what the button agrees to, and the way to read more */
+#title .consent {
+  margin-top: 26px;
+  font: 25px system-ui, sans-serif;
+  opacity: 0.85;
+}
+
+#title .more {
+  padding: 4px 2px;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 #title .hint {

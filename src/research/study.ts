@@ -8,7 +8,7 @@ import { at, clock } from '../world/clock';
 import { onTick } from '../world/loop';
 import { ActivityLog, type Snapshot } from './log';
 import { VisitRecord, arrival, device, doorFields, exitFields, exitMoodFields, visitor } from './record';
-import { consent, door, exit, needsComputer, phoneNote, thanks } from './screens';
+import { details, door, exit, needsComputer, phoneNote, thanks } from './screens';
 import { EXAMPLES, fetchMemories, type SharedMemory } from './memories';
 
 const RESEARCH_URL = import.meta.env.VITE_RESEARCH_URL ?? '';
@@ -64,18 +64,15 @@ export class Study {
     return gated;
   }
 
-  /** Consent and the door questions. Resolves when the visitor walks in, taking part or not. */
+  /** What taking part means, from the title card's "Más detalles". True if the visitor enters from there. */
+  details(): Promise<boolean> {
+    return details();
+  }
+
+  /** The title card's button was the visitor's yes: the door questions. Resolves when they walk in. */
   async atTheDoor(): Promise<void> {
     if (!this.on) return;
-    // past the title card: the question of taking part is up
-    this.record.set({ stage: 'asked' });
-    this.record.send();
-    this.participating = await consent();
-    if (!this.participating) {
-      this.record.set({ stage: 'declined' });
-      this.record.send();
-      return;
-    }
+    this.participating = true;
     // only now, with their yes: the browser's id (for return visits) and the screen
     this.record.set({ stage: 'consent', t_consent: iso(), ...visitor(), ...device() });
     this.record.send();

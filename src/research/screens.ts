@@ -1,4 +1,4 @@
-// The test's screens: consent, the questions at the door and at the exit,
+// The test's screens: what taking part means, the questions at the door and at the exit,
 // the thanks, and the note for phones. Drawn over the room in the title
 // card's colors, at the window's own size rather than the stage's, so they
 // stay readable on a small laptop. Keys typed here never reach the room (the
@@ -122,15 +122,22 @@ class Required {
 const hint = '<span class="hint" aria-live="polite"></span>';
 const mood = MOOD.map((item) => `mood.${item.id}`);
 
-/** Whether the visitor takes part. Either way, the room opens next. */
-export function consent(): Promise<boolean> {
+/**
+ * In the test, the title card's button is the visitor's yes: these are its
+ * words, and the line under it. Whoever doesn't want to take part closes the page.
+ */
+export const CONSENT = { enter: 'Entrar y participar', line: 'Experimento anónimo, para mayores de 18.' };
+
+/** "Más detalles": what taking part means. True if the visitor enters from here, false if they go back to the title card. */
+export function details(): Promise<boolean> {
   const el = overlay(
-    `<h2>Antes de entrar</h2>
-    <p>Este cuarto es parte de un experimento sobre la nostalgia. Si participa, le haremos unas preguntas cortas en la puerta y al salir, y guardaremos lo que hace adentro: qué toca y por cuánto tiempo. Si entra sin participar, solo contamos la visita y el enlace por el que llegó.</p>
+    `<h2>Un experimento sobre la nostalgia</h2>
+    <p>Si entra, le haremos unas preguntas cortas en la puerta y al salir, y guardaremos lo que hace adentro: qué toca y por cuánto tiempo.</p>
     <p>Es anónimo: no le pedimos su nombre ni su correo, ni guardamos datos que lo identifiquen. Puede salir cuando quiera. Para participar debe ser mayor de 18 años.</p>
+    <p>Si no quiere participar, basta con cerrar esta página: solo contamos la visita y el enlace por el que llegó.</p>
     <p>Al salir puede dejar un recuerdo. Solo si usted lo autoriza, y después de leerlo, podremos mostrarlo a otros visitantes, sin datos suyos.</p>
     <p class="fine">Un proyecto independiente y sin ánimo de lucro, sin relación con las emisoras, los canales ni las marcas que aparecen en el cuarto.${CONTACT ? ` Preguntas: ${escape(CONTACT)}.` : ''}</p>
-    <div class="actions"><button type="button" class="primary" data-act="yes">Acepto, sigamos</button><button type="button" class="quiet" data-act="no">Entrar sin participar</button></div>`,
+    <div class="actions"><button type="button" class="primary" data-act="yes">${CONSENT.enter}</button><button type="button" class="quiet" data-act="back">Volver</button></div>`,
   );
   return new Promise((resolve) => {
     el.addEventListener('click', (e) => {
