@@ -1,7 +1,8 @@
 // The test's screens: consent, the questions at the door and at the exit,
-// the thanks, and the note for phones. Drawn over the stage in the title
-// card's colors. Keys typed here never reach the room (the phone would dial
-// them).
+// the thanks, and the note for phones. Drawn over the room in the title
+// card's colors, at the window's own size rather than the stage's, so they
+// stay readable on a small laptop. Keys typed here never reach the room (the
+// phone would dial them).
 
 import { AGE, LIVED, MOOD, MOOD_ENDS, RETURN, TRAIT, TRIGGERS, type Choice, type Item } from './questions';
 import type { DoorAnswers, ExitAnswers } from './record';
@@ -11,14 +12,14 @@ const CONTACT = import.meta.env.VITE_RESEARCH_CONTACT ?? '';
 
 const escape = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
-function overlay(host: HTMLElement, html: string): HTMLElement {
+function overlay(html: string): HTMLElement {
   const el = document.createElement('div');
   el.id = 'research';
   el.innerHTML = `<div class="panel">${html}</div>`;
   for (const type of ['keydown', 'keyup'] as const) el.addEventListener(type, (e) => e.stopPropagation());
   // keep the focus here, so typing never reaches the room behind
   el.tabIndex = -1;
-  host.appendChild(el);
+  document.body.appendChild(el);
   el.focus({ preventScroll: true });
   return el;
 }
@@ -61,6 +62,10 @@ class Picks {
     });
   }
 
+  has(q: string): boolean {
+    return !!(this.one[q] || this.number[q] || this.many[q]?.size);
+  }
+
   scores(q: string, items: Item[]): Record<string, number> {
     const out: Record<string, number> = {};
     for (const item of items) if (this.number[`${q}.${item.id}`]) out[item.id] = this.number[`${q}.${item.id}`];
@@ -68,10 +73,58 @@ class Picks {
   }
 }
 
+/**
+ * The questions a screen can't go on without. Its button stays clickable:
+ * clicked too soon, it marks what's missing and brings the first of it into
+ * view, and its hint counts what's left.
+ */
+class Required {
+  private readonly hint: HTMLElement;
+
+  constructor(
+    private readonly el: HTMLElement,
+    private readonly button: HTMLButtonElement,
+    private readonly qs: string[],
+    private readonly picks: Picks,
+  ) {
+    this.hint = button.parentElement!.querySelector<HTMLElement>('.hint')!;
+    this.update();
+  }
+
+  get answered(): number {
+    return this.qs.filter((q) => this.picks.has(q)).length;
+  }
+
+  get done(): boolean {
+    return this.answered === this.qs.length;
+  }
+
+  update(): void {
+    const left = this.qs.length - this.answered;
+    this.button.classList.toggle('waiting', left > 0);
+    this.hint.textContent = left === 0 ? '' : left === 1 ? 'Falta 1 respuesta.' : `Faltan ${left} respuestas.`;
+    for (const q of this.qs) if (this.picks.has(q)) this.row(q).classList.remove('missing');
+  }
+
+  point(): void {
+    const missing = this.qs.filter((q) => !this.picks.has(q)).map((q) => this.row(q));
+    for (const row of missing) row.classList.add('missing');
+    missing[0]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+
+  /** A phrase's whole row, or a question's buttons. */
+  private row(q: string): HTMLElement {
+    const group = this.el.querySelector<HTMLElement>(`[data-q="${q}"]`)!;
+    return group.closest<HTMLElement>('.item') ?? group;
+  }
+}
+
+const hint = '<span class="hint" aria-live="polite"></span>';
+const mood = MOOD.map((item) => `mood.${item.id}`);
+
 /** Whether the visitor takes part. Either way, the room opens next. */
-export function consent(host: HTMLElement): Promise<boolean> {
+export function consent(): Promise<boolean> {
   const el = overlay(
-    host,
     `<h2>Antes de entrar</h2>
     <p>Este cuarto es parte de un experimento sobre la nostalgia. Si participa, le haremos unas preguntas cortas en la puerta y al salir, y guardaremos lo que hace adentro: qué toca y por cuánto tiempo. Si entra sin participar, solo contamos la visita y el enlace por el que llegó.</p>
     <p>Es anónimo: no le pedimos su nombre ni su correo, ni guardamos datos que lo identifiquen. Puede salir cuando quiera. Para participar debe ser mayor de 18 años.</p>
@@ -89,21 +142,24 @@ export function consent(host: HTMLElement): Promise<boolean> {
   });
 }
 
-export function door(host: HTMLElement): Promise<DoorAnswers> {
+/** The door's questions. `onAnswer` gets how many have an answer each time one changes. */
+export function door(onAnswer: (answered: number) => void = () => undefined): Promise<DoorAnswers> {
   const el = overlay(
-    host,
     `<h2>En la puerta</h2>
     <div class="q">En 1995, ¿dónde vivía?</div>${choices('lived', LIVED)}
     <div class="q">¿Cuántos años tenía en 1995?</div>${choices('age', AGE)}
     <div class="q">Ahora mismo, ¿qué tan de acuerdo está con cada frase?</div>${likert('mood', MOOD)}
-    <div class="actions"><button type="button" class="primary" data-act="enter" disabled>Entrar al cuarto</button><span class="hint">Responda todo para entrar.</span></div>`,
+    <div class="actions"><button type="button" class="primary" data-act="enter">Entrar al cuarto</button>${hint}</div>`,
   );
   const enter = el.querySelector<HTMLButtonElement>('[data-act="enter"]')!;
-  const complete = () => !!picks.one.lived && !!picks.one.age && MOOD.every((item) => picks.number[`mood.${item.id}`]);
-  const picks = new Picks(el, () => (enter.disabled = !complete()));
+  const picks = new Picks(el, () => {
+    required.update();
+    onAnswer(required.answered);
+  });
+  const required = new Required(el, enter, ['lived', 'age', ...mood], picks);
   return new Promise((resolve) => {
     enter.addEventListener('click', () => {
-      if (!complete()) return;
+      if (!required.done) return required.point();
       el.remove();
       resolve({ lived: picks.one.lived, age: picks.one.age, mood: picks.scores('mood', MOOD) });
     });
@@ -116,14 +172,13 @@ export function door(host: HTMLElement): Promise<DoorAnswers> {
  * "Enviar" at its end. `onMood` gets the six as soon as they're in. Null if the
  * visitor goes back into the room instead.
  */
-export function exit(host: HTMLElement, reason: 'button' | '6pm', onMood: (mood: Record<string, number>) => void = () => undefined): Promise<ExitAnswers | null> {
+export function exit(reason: 'button' | '6pm', onMood: (mood: Record<string, number>) => void = () => undefined): Promise<ExitAnswers | null> {
   const back = '<button type="button" class="quiet" data-act="back">Volver al cuarto</button>';
   const el = overlay(
-    host,
     `<section data-step="1">
       <h2>${reason === '6pm' ? 'Ya pasaron las seis. Se acabó la tarde.' : 'Antes de irse'} <span class="step">1 de 2</span></h2>
       <div class="q">Ahora mismo, ¿qué tan de acuerdo está con cada frase?</div>${likert('mood', MOOD)}
-      <div class="actions"><button type="button" class="primary" data-act="next" disabled>Siguiente</button>${back}<span class="hint">Responda las seis frases para seguir.</span></div>
+      <div class="actions"><button type="button" class="primary" data-act="next">Siguiente</button>${back}${hint}</div>
     </section>
     <section data-step="2" hidden>
       <h2>Antes de irse <span class="step">2 de 2</span></h2>
@@ -141,8 +196,8 @@ export function exit(host: HTMLElement, reason: 'button' | '6pm', onMood: (mood:
     </section>`,
   );
   const next = el.querySelector<HTMLButtonElement>('[data-act="next"]')!;
-  const complete = () => MOOD.every((item) => picks.number[`mood.${item.id}`]);
-  const picks = new Picks(el, () => (next.disabled = !complete()));
+  const picks = new Picks(el, () => required.update());
+  const required = new Required(el, next, mood, picks);
   const text = (f: string) => el.querySelector<HTMLTextAreaElement>(`[data-f="${f}"]`)!.value;
   return new Promise((resolve) => {
     el.addEventListener('click', (e) => {
@@ -150,12 +205,14 @@ export function exit(host: HTMLElement, reason: 'button' | '6pm', onMood: (mood:
       if (act === 'back') {
         el.remove();
         resolve(null);
-      } else if (act === 'next' && complete()) {
+      } else if (act === 'next' && !required.done) {
+        required.point();
+      } else if (act === 'next') {
         onMood(picks.scores('mood', MOOD));
         el.querySelector<HTMLElement>('[data-step="1"]')!.hidden = true;
         el.querySelector<HTMLElement>('[data-step="2"]')!.hidden = false;
         el.querySelector('.panel')!.scrollTop = 0;
-      } else if (act === 'send' && complete()) {
+      } else if (act === 'send' && required.done) {
         el.remove();
         resolve({
           mood: picks.scores('mood', MOOD),
@@ -177,9 +234,8 @@ const NOTES = 3;
 const note = (m: SharedMemory) => `<figure class="note"><blockquote>${escape(m.text)}</blockquote><figcaption>${escape(caption(m))}</figcaption></figure>`;
 
 /** The thanks, and the memories other visitors left (once they arrive, if there are any). */
-export function thanks(host: HTMLElement, memories: Promise<SharedMemory[]>, shared = false): Promise<void> {
+export function thanks(memories: Promise<SharedMemory[]>, shared = false): Promise<void> {
   const el = overlay(
-    host,
     `<h2>Gracias</h2>
     <p>Sus respuestas quedaron guardadas. Si quiere, vuelva al cuarto: la tarde sigue.</p>
     ${shared ? '<p class="fine">Cuando lo leamos, su recuerdo podrá aparecer aquí para otros visitantes.</p>' : ''}
@@ -217,10 +273,13 @@ export function thanks(host: HTMLElement, memories: Promise<SharedMemory[]>, sha
   });
 }
 
-/** Phones and tablets: the room needs a computer (and headphones). */
+/**
+ * Phones and tablets: a touch screen and nothing finer to point with. The
+ * room needs a computer (and headphones); any computer with a mouse or a
+ * trackpad gets it, however small its screen or large its zoom.
+ */
 export function needsComputer(): boolean {
-  const touchOnly = matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches;
-  return touchOnly || Math.min(screen.width, screen.height) < 600;
+  return matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches;
 }
 
 /** The note a phone gets instead of the room, with ways to send the link to a computer. */

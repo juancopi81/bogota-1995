@@ -26,7 +26,9 @@ export class Study {
   readonly record = new VisitRecord(RESEARCH_URL);
   readonly log = new ActivityLog();
   private participating = false;
-  private where: 'outside' | 'room' | 'asking' | 'done' = 'outside';
+  private where: 'outside' | 'door' | 'room' | 'asking' | 'done' = 'outside';
+  private doorSince = 0;
+  private doorAnswered = 0;
   private preNostalgia: number | null = null;
   private exitsShown = 0;
   private askedAtSix = false;
@@ -43,8 +45,8 @@ export class Study {
     this.on = !!RESEARCH_URL || params.has('research');
     if (!this.on) return;
     document.body.classList.add('study');
+    // it goes out from gate(), once it's known whether a phone got the note instead
     this.record.set(arrival(params, (import.meta.env.VITE_BUILD || 'dev').slice(0, 7)));
-    this.record.send();
     // whatever hasn't gone out goes when the tab is hidden or closed
     addEventListener('visibilitychange', () => document.visibilityState === 'hidden' && this.flush());
     addEventListener('pagehide', () => this.flush());
@@ -52,19 +54,23 @@ export class Study {
 
   /** On a phone, the note asking for a computer instead of the room. True if the room shouldn't start. */
   gate(onAnyway: () => void): boolean {
-    if (this.params.has('anyway') || !needsComputer()) return false;
+    const gated = !this.params.has('anyway') && needsComputer();
+    // one send, not two: two in a row can arrive out of order, and the later "load" would hide the gate
     if (this.on) {
-      this.record.set({ stage: 'gate' });
+      if (gated) this.record.set({ stage: 'gate' });
       this.record.send();
     }
-    phoneNote(onAnyway);
-    return true;
+    if (gated) phoneNote(onAnyway);
+    return gated;
   }
 
   /** Consent and the door questions. Resolves when the visitor walks in, taking part or not. */
   async atTheDoor(): Promise<void> {
     if (!this.on) return;
-    this.participating = await consent(this.host);
+    // past the title card: the question of taking part is up
+    this.record.set({ stage: 'asked' });
+    this.record.send();
+    this.participating = await consent();
     if (!this.participating) {
       this.record.set({ stage: 'declined' });
       this.record.send();
@@ -73,10 +79,18 @@ export class Study {
     // only now, with their yes: the browser's id (for return visits) and the screen
     this.record.set({ stage: 'consent', t_consent: iso(), ...visitor(), ...device() });
     this.record.send();
-    const fields = doorFields(await door(this.host));
+    this.where = 'door';
+    this.doorSince = performance.now();
+    const fields = doorFields(await door((n) => (this.doorAnswered = n)));
     this.preNostalgia = fields.pre_nostalgia as number | null;
-    this.record.set({ ...fields, stage: 'door', t_door: iso() });
+    this.record.set({ ...fields, ...this.atDoor(), stage: 'door', t_door: iso() });
+    this.where = 'outside';
     this.record.send();
+  }
+
+  /** How many of the door's questions have an answer, and for how long they've been up: counts, not the answers. */
+  private atDoor(): Record<string, number> {
+    return { n_door: this.doorAnswered, s_door: Math.round((performance.now() - this.doorSince) / 1000) };
   }
 
   /** The visitor is in the room: keep the log, and show the way out. */
@@ -114,7 +128,9 @@ export class Study {
   flush(): void {
     if (!this.on) return;
     this.sinceSend = 0;
-    if (this.participating && this.where !== 'outside') {
+    // someone who leaves at the door still says how far they got
+    if (this.where === 'door') this.record.set(this.atDoor());
+    else if (this.participating && this.where !== 'outside') {
       this.record.set({ ...this.log.fields(), min_room: Math.round((this.log.time / 60) * 10) / 10, exit_shown: this.exitsShown });
     }
     this.record.send();
@@ -129,7 +145,7 @@ export class Study {
     this.flush();
     // what other visitors left, ready by the time they've answered
     this.memories ??= RESEARCH_URL ? fetchMemories(RESEARCH_URL) : Promise.resolve(import.meta.env.DEV ? EXAMPLES : []);
-    const answers = await exit(this.host, reason, (mood) => {
+    const answers = await exit(reason, (mood) => {
       // the measure is in: keep it even if they don't finish the second step
       this.record.set({ ...exitMoodFields(mood, this.preNostalgia), stage: 'exit' });
       this.flush();
@@ -139,7 +155,7 @@ export class Study {
       this.record.set({ ...exitFields(answers, this.preNostalgia), stage: 'done', exit_reason: reason, t_exit: iso(), min_at_exit: Math.round((this.log.time / 60) * 10) / 10 });
       this.flush();
       this.shared = !!answers.memory.trim() && answers.shareMemory;
-      await thanks(this.host, this.memories, this.shared);
+      await thanks(this.memories, this.shared);
       this.where = 'done';
     } else {
       this.where = back;
@@ -151,7 +167,7 @@ export class Study {
     this.where = 'asking';
     this.duck(true);
     this.flush();
-    await thanks(this.host, this.memories ?? Promise.resolve([]), this.shared);
+    await thanks(this.memories ?? Promise.resolve([]), this.shared);
     this.where = 'done';
     this.duck(false);
   }

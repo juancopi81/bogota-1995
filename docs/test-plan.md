@@ -317,6 +317,43 @@ when preparing the paid recruitment CSV; filtering only on `calibracion_google`
 would also include the two pre-launch tagged visits. No automated monitoring,
 automatic budget increases or extensions were configured.
 
+**Paused on 25 October 2026; the entrance fixed on 26 October:** the one day
+of delivery (Saturday 24 October, 15:00–21:00) cost COP 28,207 for 134 clicks,
+all from computers, and brought 146 tagged visits, of which one reached the
+exit. Two thirds never got past the title card; 27 got the note for phones
+although Google served only computers; 15 of the 16 who agreed left at the
+door questions. The user paused the campaign on Sunday morning, and its dates
+(24–26 October) have since ended. The note for phones also caught any screen
+under 600 CSS pixels on a side, which laptops report at 125–150% display
+scaling. The questions were drawn inside the room's 1600×900 stage and shrank
+with it, to about 12-pixel text and 25-pixel buttons in the commonest window
+(1366×641). The title card had no button, opened only on a pointer press, and
+did nothing for the keyboard.
+
+The fixes change the entrance, not the room, and not the questions' wording,
+order or items:
+
+- The note for phones only goes to touch screens with nothing finer to point
+  with. Any computer with a mouse or a trackpad gets the room.
+- The title card shows the room behind it and has an "Entrar" button with the
+  focus, so a click anywhere or the Enter key opens it. Its hint is "Póngase
+  audífonos." (it said "Toque para entrar").
+- The questions are drawn at the window's own size: in a 1366×641 window the
+  door fits on one screen with 17-pixel text and 36-pixel buttons. "Entrar al
+  cuarto" and "Siguiente" respond before everything has an answer: they mark
+  what's missing and the hint counts it ("Faltan 3 respuestas.").
+- New counts, no answers: `stage` = `asked` once a visitor is past the title
+  card (nothing about them, before consent); and for those who agreed,
+  `n_door` and `s_door`, how many of the door's eight questions had an answer
+  and for how many seconds they'd been up, sent also when the tab closes.
+- A phone's first send already says `gate`. Two sends in a row could arrive out
+  of order, and a late `load` hid the gate in the sheet's row; in the
+  calibration export, 27 gates showed only in the history tab.
+
+Visits from here on carry a new `build`. The calibration's earlier visits are
+the baseline for these entrance failures, not completion data to pool with
+later ones. Starting the ads again needs the user's approval.
+
 ## Analysis
 
 - **Main result:** the nostalgia score (mean of N1–N3) at the exit minus at
@@ -353,7 +390,8 @@ automatic budget increases or extensions were configured.
 - No names, emails or IP addresses. A random id per visit, and one per
   browser to count returns.
 - Before consent, and for anyone who enters without taking part, only when
-  they came, which version of the room and which link brought them. The
+  they came, which version of the room, which link brought them, and how far
+  they got (past the title card, or declined). The
   browser's id, the screen size, language and time zone come only with a
   yes.
 - Phone numbers dialed in the room are kept only if the room gave them

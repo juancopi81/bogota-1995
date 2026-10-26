@@ -84,6 +84,35 @@ describe('before the visitor says yes', () => {
   });
 });
 
+describe('who gets the note for phones', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  const device = (pointers: { coarse: boolean; fine: boolean }, screen: { width: number; height: number }) => {
+    vi.stubGlobal('matchMedia', (query: string) => ({ matches: query === '(pointer: coarse)' ? pointers.coarse : query === '(any-pointer: fine)' ? pointers.fine : false }));
+    vi.stubGlobal('screen', screen);
+  };
+
+  it('lets in any computer with a mouse or a trackpad, however small its screen or large its zoom', async () => {
+    const { needsComputer } = await import('../src/research/screens');
+    // a 1366×768 laptop at 150% reports 911×512
+    for (const screen of [{ width: 1366, height: 768 }, { width: 1024, height: 576 }, { width: 911, height: 512 }]) {
+      device({ coarse: false, fine: true }, screen);
+      expect(needsComputer()).toBe(false);
+    }
+    // a touchscreen laptop, or a tablet with a trackpad
+    device({ coarse: true, fine: true }, { width: 1366, height: 768 });
+    expect(needsComputer()).toBe(false);
+  });
+
+  it('sends phones and tablets, touch and nothing finer, to the note', async () => {
+    const { needsComputer } = await import('../src/research/screens');
+    for (const screen of [{ width: 390, height: 844 }, { width: 1024, height: 1366 }]) {
+      device({ coarse: true, fine: false }, screen);
+      expect(needsComputer()).toBe(true);
+    }
+  });
+});
+
 describe('the activity log', () => {
   const at = (s: Partial<Snapshot>): Snapshot => ({ view: 'room', radio: null, tv: null, clip: false, phone: false, tape: null, ...s });
 

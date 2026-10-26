@@ -99,21 +99,26 @@ onTick((dt, t) => {
   alarmClock.tick(t);
 });
 
+/** The card over the room, still and dimmed, with a door to it: a click anywhere, or the keyboard (the button has the focus). */
 function titleCard(onEnter: () => void): void {
   const title = document.createElement('div');
   title.id = 'title';
   title.innerHTML = `
     <div class="place">Bogotá</div>
     <div class="date">Sábado 28 de octubre de 1995 · 5:30 p.m.</div>
-    <div class="hint">Póngase audífonos. Toque para entrar.</div>`;
+    <button type="button" class="enter">Entrar</button>
+    <div class="hint">Póngase audífonos.</div>`;
   stage.el.appendChild(title);
+  const button = title.querySelector('button')!;
   const enter = () => {
-    title.removeEventListener('pointerdown', enter);
+    title.removeEventListener('click', enter);
+    button.disabled = true;
     title.classList.add('gone');
     setTimeout(() => title.remove(), 2400);
     onEnter();
   };
-  title.addEventListener('pointerdown', enter);
+  title.addEventListener('click', enter);
+  button.focus({ preventScroll: true });
 }
 
 // the test (docs/test-plan.md): questions at the door and on the way out, and an anonymous log
