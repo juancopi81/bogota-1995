@@ -129,6 +129,25 @@ const youtube = (ev) => ev(() => window.room1995.tv.youtube);
   console.log('counts:', JSON.stringify(counts));
   if (shown.visible !== '' || !shown.video || away.video || away.last !== 'pauseVideo:[]' || !back.video || !/^seekTo/.test(back.last[0]) || back.last[1] !== 'playVideo:[]') throw new Error('the player should show, pause out of view, and pick up');
   if (counts.n_yt < 1 || counts.n_yt_on < 1 || counts.n_yt_other !== 0 || JSON.stringify(counts).includes('the program')) throw new Error('the counts are off');
+  // over to Cadena Uno and back: Canal A's player waits, paused, and isn't loaded again
+  const loads = counts.n_yt;
+  await ev(() => {
+    const tv = window.room1995.tv;
+    tv.channel = 7;
+    tv.ears = [-34, 38];
+  });
+  await page.waitForTimeout(1500);
+  const onSeven = await ev(() => [...document.querySelectorAll('.tv-clip')].map((f) => `${f.src.replace(/\?.*/, '').split('/').pop()}:${f.style.visibility || 'shown'}`));
+  const nineMeanwhile = await player.evaluate(() => window.commands.at(-1));
+  await ev(() => {
+    const tv = window.room1995.tv;
+    tv.channel = 9;
+    tv.ears = [-18, 58];
+  });
+  await page.waitForTimeout(800);
+  const backOnNine = { frames: await ev(() => document.querySelectorAll('.tv-clip').length), last: await player.evaluate(() => window.commands.slice(-2)), loads: (await youtube(ev)).n_yt - loads };
+  console.log('on 7:', onSeven.join(' '), '| 9 meanwhile:', nineMeanwhile, '| back on 9:', JSON.stringify(backOnNine));
+  if (onSeven.length !== 2 || nineMeanwhile !== 'pauseVideo:[]' || backOnNine.frames !== 2 || backOnNine.loads !== 1 || !/^seekTo/.test(backOnNine.last[0]) || backOnNine.last[1] !== 'playVideo:[]') throw new Error('each channel should keep its player');
   // the tape runs out before the slot does: the channel moves on
   const before = await onAir();
   await player.evaluate(() => parent.postMessage(JSON.stringify({ event: 'onStateChange', info: 0, id: 1, channel: 'widget' }), '*'));

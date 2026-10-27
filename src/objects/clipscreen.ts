@@ -4,8 +4,10 @@
 // rules for embeds: it only loads and plays while the TV is up close and on
 // screen, nothing is drawn over it (the tube's glass and snow step aside),
 // and when the TV goes out of view it pauses, to pick up where the channel is
-// when it's back. The channel's card shows only before the player is there,
-// or once a clip has ended or failed.
+// when it's back. Each channel keeps its own player, so switching back to a
+// channel doesn't load its program (and maybe an ad) again. The channel's
+// card shows only before the player is there, or once a clip has ended or
+// failed.
 //
 // We talk to the player with YouTube's postMessage protocol (the same one its
 // iframe API uses) without loading any script from YouTube: it tells us when
@@ -19,7 +21,7 @@
 import { CLIPS, type Clip } from '../content/clips';
 import { SCREEN } from '../art/tv';
 import { bus } from '../world/bus';
-import { YouTubeLog } from './youtubelog';
+import type { Load, YouTubeLog } from './youtubelog';
 
 const ORIGIN = 'https://www.youtube-nocookie.com';
 
@@ -63,14 +65,15 @@ export class ClipScreen {
   private nudged = false;
   private counted = false;
   private onScreen = false;
-  /** What the player reported this visit, as counts. */
-  readonly log = new YouTubeLog();
+  private load: Load | null = null;
   /** Called when a clip runs out before its slot does, so the channel can move on. */
   onEnded: (() => void) | null = null;
 
+  /** `log` keeps what the player reports, as counts for the test. */
   constructor(
     private readonly parent: HTMLElement,
     private readonly before: HTMLElement,
+    private readonly log: YouTubeLog,
   ) {
     window.addEventListener('message', (e) => this.onMessage(e));
   }
@@ -127,7 +130,7 @@ export class ClipScreen {
     this.current = key;
     this.clipId = clip.id;
     this.onScreen = true;
-    this.log.load(clip.id, performance.now());
+    this.load = this.log.load(clip.id, performance.now());
     this.state = 'loading';
     this.heard = false;
     this.loadedAt = 0;
@@ -222,7 +225,7 @@ export class ClipScreen {
     }
     if (!data || typeof data !== 'object') return;
     this.heard = true;
-    this.log.message(String(data.event), data.info && typeof data.info === 'object' ? (data.info as Record<string, unknown>) : { value: data.info }, performance.now());
+    if (this.load) this.log.message(this.load, String(data.event), data.info && typeof data.info === 'object' ? (data.info as Record<string, unknown>) : { value: data.info }, performance.now());
     if (data.event === 'onError') return this.fail();
     let playerState: number | undefined;
     if (data.event === 'onStateChange' && typeof data.info === 'number') playerState = data.info;

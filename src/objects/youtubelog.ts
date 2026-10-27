@@ -52,26 +52,28 @@ const STILL_MS = 1000;
 const LOADS = 12;
 const STEPS = 12;
 
-interface Load {
+/** One player loading one program, and what it last reported. */
+export interface Load {
   id: string;
   at: number;
   /** When the program itself came on. */
   on: number | null;
-  other: boolean;
+  /** It said "playing" another video at some point. */
+  everOther: boolean;
   seq: string[];
+  state: number | null;
+  vid: string;
+  time: number | null;
+  movedAt: number;
+  lastAt: number | null;
+  other: boolean;
+  still: boolean;
 }
 
 const name = (s: string) => (/^[A-Za-z][A-Za-z0-9_]{0,39}$/.test(s) ? s : '?');
 
 export class YouTubeLog {
   private loads: Load[] = [];
-  private state: number | null = null;
-  private vid = '';
-  private time: number | null = null;
-  private movedAt = 0;
-  private lastAt: number | null = null;
-  private other = false;
-  private still = false;
   private sOther = 0;
   private sStill = 0;
   private fails = 0;
@@ -79,15 +81,11 @@ export class YouTubeLog {
   private readonly modes = new Set<string>();
   private readonly unknown = new Set<string>();
 
-  /** A player starts loading `id`. */
-  load(id: string, now: number): void {
-    this.loads.push({ id, at: now, on: null, other: false, seq: [] });
-    this.state = null;
-    this.vid = '';
-    this.time = null;
-    this.lastAt = null;
-    this.other = false;
-    this.still = false;
+  /** A player starts loading `id`: its messages go to the load this returns. */
+  load(id: string, now: number): Load {
+    const load: Load = { id, at: now, on: null, everOther: false, seq: [], state: null, vid: '', time: null, movedAt: now, lastAt: null, other: false, still: false };
+    this.loads.push(load);
+    return load;
   }
 
   failed(): void {
@@ -98,43 +96,41 @@ export class YouTubeLog {
     this.ends++;
   }
 
-  /** One message from the player. */
-  message(event: string, info: Record<string, unknown>, now: number): void {
-    const load = this.loads.at(-1);
-    if (!load) return;
+  /** One message from the player of `load`. */
+  message(load: Load, event: string, info: Record<string, unknown>, now: number): void {
     if (!EVENTS.has(event)) this.unknown.add(name(event));
     for (const key of Object.keys(info)) if (!FIELDS.has(key)) this.unknown.add(name(key));
     const mode = info.playerMode;
     if (mode && typeof mode === 'object') for (const key of Object.keys(mode)) this.modes.add(name(key));
 
     // the time since the last message, as things stood then
-    if (this.lastAt !== null && this.state === 1) {
-      const dt = (now - this.lastAt) / 1000;
-      if (this.other) this.sOther += dt;
-      else if (this.still) this.sStill += dt;
+    if (load.lastAt !== null && load.state === 1) {
+      const dt = (now - load.lastAt) / 1000;
+      if (load.other) this.sOther += dt;
+      else if (load.still) this.sStill += dt;
     }
-    this.lastAt = now;
+    load.lastAt = now;
 
     const state = typeof info.playerState === 'number' ? info.playerState : event === 'onStateChange' && typeof info.value === 'number' ? info.value : null;
-    if (state !== null && state !== this.state) {
-      this.state = state;
+    if (state !== null && state !== load.state) {
+      load.state = state;
       // a fresh start: the program's clock gets a moment to move
-      if (state === 1) this.movedAt = now;
+      if (state === 1) load.movedAt = now;
     }
     const data = info.videoData as { video_id?: unknown } | undefined;
-    if (data && typeof data.video_id === 'string' && data.video_id) this.vid = data.video_id;
-    this.other = this.vid !== '' && this.vid !== load.id;
-    if (this.other) load.other = true;
+    if (data && typeof data.video_id === 'string' && data.video_id) load.vid = data.video_id;
+    load.other = load.vid !== '' && load.vid !== load.id;
+    if (load.other) load.everOther = true;
     let moved = false;
     if (typeof info.currentTime === 'number') {
-      moved = this.time !== null && info.currentTime > this.time + 0.05;
-      if (moved) this.movedAt = now;
-      this.time = info.currentTime;
+      moved = load.time !== null && info.currentTime > load.time + 0.05;
+      if (moved) load.movedAt = now;
+      load.time = info.currentTime;
     }
-    this.still = this.state === 1 && !this.other && now - this.movedAt > STILL_MS;
-    if (load.on === null && this.state === 1 && !this.other && moved) load.on = now;
+    load.still = load.state === 1 && !load.other && now - load.movedAt > STILL_MS;
+    if (load.on === null && load.state === 1 && !load.other && moved) load.on = now;
 
-    const step = this.state === null ? '' : `${this.state}${this.other ? 'o' : ''}${this.still ? 's' : ''}`;
+    const step = load.state === null ? '' : `${load.state}${load.other ? 'o' : ''}${load.still ? 's' : ''}`;
     if (step && load.seq.at(-1) !== step && load.seq.length < STEPS) load.seq.push(step);
   }
 
@@ -145,7 +141,7 @@ export class YouTubeLog {
       n_yt: this.loads.length,
       n_yt_on: on.length,
       s_yt_wait: Math.round(on.reduce((s, l) => s + (l.on! - l.at), 0) / 100) / 10,
-      n_yt_other: this.loads.filter((l) => l.other).length,
+      n_yt_other: this.loads.filter((l) => l.everOther).length,
       s_yt_other: Math.round(this.sOther),
       s_yt_still: Math.round(this.sStill),
       n_yt_fail: this.fails,

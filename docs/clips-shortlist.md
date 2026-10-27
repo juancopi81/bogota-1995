@@ -29,8 +29,9 @@ in late and you land mid-episode, like the radio. These are in `SCHEDULES` in
 - **YouTube's own ads** can play inside these, before or during an episode,
   and can't be turned off from here (accepted). They show as YouTube serves
   them, with their sound and their "Saltar" button: YouTube's rules for
-  embeds don't allow hiding, covering or muting its ads. Switching channels
-  reloads the player, so coming back can bring another ad. An ad delays the
+  embeds don't allow hiding, covering or muting its ads. Each channel keeps
+  its player, paused, while you watch another, so switching back doesn't load
+  the program (and maybe an ad) again; the next program does. An ad delays the
   episode, so its last seconds may be cut when the next item comes on. The
   test keeps how YouTube reports them, as counts (`n_yt_*`, see
   [`research-setup.md`](research-setup.md)). Until 27 October 2026 an ad

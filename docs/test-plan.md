@@ -375,8 +375,10 @@ ads included, over replacing the real programs with the invented ones.
   sound following the volume knob from the start. Nothing of the TV's picture
   goes over it.
 - It loads only while the TV is up close and pauses when the visitor leaves
-  it, picking up where the channel is when they're back. From across the room
-  a real program is silent, and the small TV shows the channel's card.
+  it, picking up where the channel is when they're back. Each channel keeps
+  its own player, paused while another is on, so switching back doesn't load
+  the program again (one more chance for an ad). From across the room a real
+  program is silent, and the small TV shows the channel's card.
 - New counts, no titles or video ids (an ad can be picked for the visitor):
   `n_yt_*`, `s_yt_*` and `yt_seq`, `yt_mode`, `yt_new`, to learn how YouTube
   reports an ad and how long visitors wait for a program. In tests that day

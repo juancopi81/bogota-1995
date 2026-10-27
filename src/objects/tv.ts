@@ -6,6 +6,7 @@ import { Timeline } from '../broadcast/timeline';
 import type { Cue, Scheduled } from '../broadcast/types';
 import { CHANNELS, clipProgram, timetable, type ChannelDef, type TvSegment } from '../content/tv';
 import { ClipScreen, clipsPlayable, workingClips } from './clipscreen';
+import { YouTubeLog } from './youtubelog';
 import { AD_BREAKS } from '../content/clips';
 import { dynamicLine } from '../content/lines';
 import { tvSvg, SCREEN, CHANNEL_KNOB, UHF_KNOB, VOLUME_KNOB, ANTENNA, channelAngle } from '../art/tv';
@@ -246,7 +247,9 @@ export class Tv {
   private frame = 0;
   private volumeHighSince: number | null = null;
   private nagged = false;
-  private clips!: ClipScreen;
+  /** YouTube's player for each channel that airs real programs, kept (paused) while you're on another. */
+  private readonly players = new Map<number, ClipScreen>();
+  private readonly ytLog = new YouTubeLog();
   private showingVideo = false;
   private clipTint: [number, number, number, number] = [160, 160, 170, 0.5];
 
@@ -304,9 +307,13 @@ export class Tv {
     this.screen.height = TV_H;
     Object.assign(this.screen.style, { left: `${SCREEN.x}px`, top: `${SCREEN.y}px`, width: `${SCREEN.w}px`, height: `${SCREEN.h}px` });
     this.el.appendChild(this.screen);
-    this.clips = new ClipScreen(this.el, this.screen);
-    // a clip that runs out early: the channel moves on to what's next
-    this.clips.onEnded = () => this.channels.get(this.channel)?.cutClip();
+    for (const [number, ch] of this.channels) {
+      if (!ch.def.realClips && !ch.def.realAds && !ch.def.schedule) continue;
+      const player = new ClipScreen(this.el, this.screen, this.ytLog);
+      // a clip that runs out early: the channel moves on to what's next
+      player.onEnded = () => ch.cutClip();
+      this.players.set(number, player);
+    }
     // the picture goes out through the tube's curved, glowing glass (or stays flat without WebGL)
     this.tube = Tube.create();
     if (this.tube) {
@@ -490,7 +497,7 @@ export class Tv {
 
   /** What YouTube's player reported this visit, as counts for the test. */
   get youtube(): Record<string, Value> {
-    return this.clips.log.fields();
+    return this.ytLog.fields();
   }
 
   /** What every channel airs until world time `until`, for getting its voices here in time. */
@@ -559,11 +566,18 @@ export class Tv {
     else this.roll *= Math.max(0, 1 - dt * 8);
 
     let current: Scheduled<TvSegment> | undefined;
+    // a real program plays in YouTube's player only on the channel you're watching, up close;
+    // the other channel's player waits, paused, as long as its program is still on
+    const upClose = this.power && this.warm >= 1 && closeups.isOpen('tv');
     for (const [number, ch] of this.channels) {
       const on = this.power && number === this.channel;
       ch.setActive(on);
       const item = ch.tick(t);
       if (on) current = item;
+      const player = this.players.get(number);
+      if (!player) continue;
+      if (item?.seg.kind === 'clip') player.show(item.seg.clip, t - item.start, on && upClose);
+      else player.hide();
     }
     const hasChannel = this.channels.has(this.channel);
     const audible = this.power ? this.warm : 0;
@@ -572,13 +586,10 @@ export class Tv {
     glide(this.volumeGain.gain, this.volume ** 2 * 1.5, now, 0.04);
     glide(this.whine.gain, this.power ? 0.0025 : 0, now, 0.1);
 
-    // a real clip plays in YouTube's player, only while the TV is up close (out of view it pauses)
-    const clip = this.power && this.warm > 0.3 && hasChannel && current?.seg.kind === 'clip' ? current.seg.clip : null;
-    if (clip && current) this.clips.show(clip, t - current.start, closeups.isOpen('tv') && this.warm >= 1);
-    else this.clips.hide();
-    this.showingVideo = clip !== null && this.clips.showing;
+    const player = this.power && current?.seg.kind === 'clip' ? this.players.get(this.channel) : undefined;
+    this.showingVideo = !!player?.showing;
     if (this.showingVideo) this.clipTint = this.tintAt(t);
-    this.clips.setVolume(this.volume ** 2 * 1.5 * Math.pow(q, 0.8) * audible * this.engine.focusLevel('tv') * 0.6);
+    player?.setVolume(this.volume ** 2 * 1.5 * Math.pow(q, 0.8) * audible * this.engine.focusLevel('tv') * 0.6);
 
     this.draw(t, current, q);
     this.subtitle(t, current, q);
