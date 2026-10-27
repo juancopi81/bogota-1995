@@ -203,7 +203,7 @@ async function enter(): Promise<void> {
   if (skipTo > 0) clock.skip(skipTo);
   const open = params.get('open');
   if (open === 'grabadora' || open === 'phone' || open === 'tv' || open === 'window' || open === 'clock') closeups.open(open);
-  study.inRoom(snapshot);
+  study.inRoom(snapshot, () => tv.youtube);
 }
 
 // for poking at the room from the browser console while developing

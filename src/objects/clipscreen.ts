@@ -1,16 +1,16 @@
 // Real 1995 clips on the TV, through an embedded YouTube player.
 //
-// The player sits behind the tube's canvas: while a clip loads, ends early or
-// fails, the canvas covers it with the channel's card; once it plays, the
-// canvas turns transparent except for snow and the scanlines.
+// The player shows as YouTube gives it, ads included, following YouTube's
+// rules for embeds: it only loads and plays while the TV is up close and on
+// screen, nothing is drawn over it (the tube's glass and snow step aside),
+// and when the TV goes out of view it pauses, to pick up where the channel is
+// when it's back. The channel's card shows only before the player is there,
+// or once a clip has ended or failed.
 //
 // We talk to the player with YouTube's postMessage protocol (the same one its
 // iframe API uses) without loading any script from YouTube: it tells us when
-// the video really plays, and takes the TV's volume knob.
-//
-// The player starts muted and stays silent until the episode itself plays:
-// YouTube may run one of its own ads first, and the channel's card shouldn't
-// come with a modern ad's sound.
+// the video plays, takes the TV's volume knob, pauses and seeks. What it
+// reports is kept, as counts, for the test (youtubelog.ts).
 //
 // Embeds only work when the room is served over http(s). From a file on disk
 // YouTube refuses to play (no referrer), and a claude.ai artifact cannot frame
@@ -19,6 +19,7 @@
 import { CLIPS, type Clip } from '../content/clips';
 import { SCREEN } from '../art/tv';
 import { bus } from '../world/bus';
+import { YouTubeLog } from './youtubelog';
 
 const ORIGIN = 'https://www.youtube-nocookie.com';
 
@@ -61,6 +62,9 @@ export class ClipScreen {
   private sentVolume = -1;
   private nudged = false;
   private counted = false;
+  private onScreen = false;
+  /** What the player reported this visit, as counts. */
+  readonly log = new YouTubeLog();
   /** Called when a clip runs out before its slot does, so the channel can move on. */
   onEnded: (() => void) | null = null;
 
@@ -71,18 +75,25 @@ export class ClipScreen {
     window.addEventListener('message', (e) => this.onMessage(e));
   }
 
-  /** Is the video itself on screen (so the canvas should let it through)? */
+  /** Is YouTube's player on screen (so nothing of the TV's own picture goes over it)? */
   get showing(): boolean {
-    return this.frame !== null && this.state === 'playing';
+    return this.frame !== null && this.onScreen && this.state !== 'stopped' && this.state !== 'failed';
   }
 
-  show(clip: Clip, offset: number): void {
+  /**
+   * The clip the channel is airing, `offset` seconds in. `onScreen`: the TV is
+   * up close and warmed up. Off screen, a player doesn't start, and one that's
+   * there pauses until it's back.
+   */
+  show(clip: Clip, offset: number, onScreen: boolean): void {
     const key = `${clip.id}@${clip.start}`;
     if (this.frame && this.current === key) {
+      this.place(onScreen, clip.start + Math.max(0, offset));
       this.watch();
       return;
     }
     this.hide();
+    if (!onScreen) return;
     const start = Math.floor(clip.start + Math.max(0, offset));
     const params = new URLSearchParams({
       start: String(start),
@@ -106,7 +117,7 @@ export class ClipScreen {
     f.title = 'TV';
     f.tabIndex = -1;
     f.className = 'tv-clip';
-    Object.assign(f.style, { left: `${SCREEN.x}px`, top: `${SCREEN.y}px`, width: `${SCREEN.w}px`, height: `${SCREEN.h}px`, visibility: 'hidden' });
+    Object.assign(f.style, { left: `${SCREEN.x}px`, top: `${SCREEN.y}px`, width: `${SCREEN.w}px`, height: `${SCREEN.h}px` });
     f.addEventListener('load', () => {
       this.loadedAt = performance.now();
       this.listen();
@@ -115,6 +126,8 @@ export class ClipScreen {
     this.frame = f;
     this.current = key;
     this.clipId = clip.id;
+    this.onScreen = true;
+    this.log.load(clip.id, performance.now());
     this.state = 'loading';
     this.heard = false;
     this.loadedAt = 0;
@@ -129,12 +142,23 @@ export class ClipScreen {
     this.frame.remove();
     this.frame = null;
     this.current = '';
+    this.onScreen = false;
   }
 
-  /** Follow the TV's volume knob (0–1), once the episode itself is playing. */
+  /** The TV went out of view (pause), or came back (to where the channel is now, `at` seconds into the video). */
+  private place(onScreen: boolean, at: number): void {
+    if (!this.frame || onScreen === this.onScreen) return;
+    this.onScreen = onScreen;
+    this.frame.style.visibility = onScreen ? '' : 'hidden';
+    if (!onScreen) return this.command('pauseVideo');
+    this.command('seekTo', [Math.floor(at), true]);
+    this.command('playVideo');
+  }
+
+  /** Follow the TV's volume knob (0–1), from the moment the player answers. */
   setVolume(v: number): void {
     if (!this.frame || !this.heard) return;
-    const vol = this.state === 'playing' ? Math.round(Math.max(0, Math.min(1, v)) * 100) : 0;
+    const vol = Math.round(Math.max(0, Math.min(1, v)) * 100);
     const silent = this.sentVolume <= 0;
     if (vol === 0 ? silent && this.sentVolume === 0 : Math.abs(vol - this.sentVolume) < 2) return;
     this.sentVolume = vol;
@@ -159,10 +183,10 @@ export class ClipScreen {
     }
   }
 
-  private reveal(): void {
+  private playing(): void {
     this.state = 'playing';
-    // back to inheriting: a closed close-up still hides it
-    if (this.frame) this.frame.style.visibility = '';
+    // it started while the TV was going out of view: it waits for the TV
+    if (!this.onScreen) this.command('pauseVideo');
   }
 
   private listen(): void {
@@ -198,13 +222,14 @@ export class ClipScreen {
     }
     if (!data || typeof data !== 'object') return;
     this.heard = true;
+    this.log.message(String(data.event), data.info && typeof data.info === 'object' ? (data.info as Record<string, unknown>) : { value: data.info }, performance.now());
     if (data.event === 'onError') return this.fail();
     let playerState: number | undefined;
     if (data.event === 'onStateChange' && typeof data.info === 'number') playerState = data.info;
     if ((data.event === 'infoDelivery' || data.event === 'initialDelivery') && data.info && typeof data.info === 'object') {
       playerState = (data.info as PlayerInfo).playerState;
     }
-    if (playerState === 1) this.reveal();
+    if (playerState === 1) this.playing();
     else if (playerState === 0) this.stop();
   }
 
@@ -213,12 +238,15 @@ export class ClipScreen {
     if (this.state === 'stopped') return;
     this.state = 'stopped';
     if (this.frame) this.frame.style.visibility = 'hidden';
+    this.log.ended();
     this.onEnded?.();
   }
 
   private fail(): void {
+    if (this.state === 'failed') return;
     this.state = 'failed';
     if (this.frame) this.frame.style.visibility = 'hidden';
+    this.log.failed();
     refused.add(this.clipId);
     bus.emit('tv:clips', { playable: clipsPlayable() && workingClips().length > 0 });
   }

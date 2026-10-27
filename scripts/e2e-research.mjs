@@ -123,7 +123,9 @@ await page.waitForTimeout(500);
 const f = await fields();
 const pickOut = (keys) => Object.fromEntries(keys.map((k) => [k, f[k]]));
 console.log('exit:', JSON.stringify(pickOut(['stage', 'visit_n', 'pre_nostalgia', 'post_nostalgia', 'change', 'memory', 'memory_share', 'triggers', 'return_intent', 'trait_often', 'trait_prone', 'exit_reason'])));
-console.log('log:', JSON.stringify(pickOut(['s_total', 's_view_grabadora', 's_view_phone', 's_view_room', 's_phone', 'calls', 'opens', 'n_andres_rang', 'min_room', 'min_at_exit', 'exit_shown'])));
+console.log('log:', JSON.stringify(pickOut(['s_total', 's_view_grabadora', 's_view_phone', 's_view_room', 's_phone', 'calls', 'opens', 'n_andres_rang', 'min_room', 'min_at_exit', 'exit_shown', 'n_yt'])));
+// what YouTube's player on the TV reported goes with the log (here the TV stayed off)
+if (f.n_yt !== 0) throw new Error("the TV's YouTube counts should be in the record");
 console.log('overlay gone:', (await page.$('#research')) === null, '| backstage gear hidden:', await page.$eval('#backstage-toggle', (b) => getComputedStyle(b).display === 'none'));
 if (errors.length) console.log('ERRORS:\n' + [...new Set(errors)].join('\n'));
 await browser.close();
