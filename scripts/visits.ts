@@ -71,6 +71,7 @@ const kept = [skip.length && `leaving out ${skip.join(', ')}`, campaigns.length 
 console.log(`${all.length} visits in ${path}${kept ? ` (${kept}): ${rows.length} kept` : ''}\n`);
 
 console.log('How far they got');
+// "declined" (entered without taking part) only exists before 26 October 2026
 for (const stage of ['load', 'gate', 'declined', 'consent', 'door', 'room', 'exit', 'done']) {
   const k = rows.filter((r) => r.stage === stage).length;
   if (k) console.log(`  ${stage.padEnd(9)} ${String(k).padStart(4)}`);

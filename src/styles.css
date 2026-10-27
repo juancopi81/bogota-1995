@@ -299,14 +299,15 @@ body {
   position: absolute;
   inset: 0;
   z-index: 100;
-  background: #07080a;
+  /* the room shows through, still, until the door opens */
+  background: radial-gradient(ellipse 50% 55% at 50% 50%, rgba(7, 8, 10, 0.88), rgba(7, 8, 10, 0.6));
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: #e6ddc8;
   font-family: 'Special Elite', 'Courier New', monospace;
-  cursor: pointer;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85);
   transition: opacity 2.2s ease;
 }
 
@@ -326,13 +327,52 @@ body {
   opacity: 0.85;
 }
 
+#title .enter {
+  margin-top: 70px;
+  padding: 16px 60px;
+  font: 32px 'Special Elite', 'Courier New', monospace;
+  letter-spacing: 0.08em;
+  color: #111;
+  background: #e6ddc8;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#title .enter:hover {
+  background: #f6efdd;
+}
+
+#title .enter:focus-visible {
+  outline: 3px solid rgba(230, 221, 200, 0.75);
+  outline-offset: 6px;
+}
+
+/* in the test: what the button agrees to, and the way to read more */
+#title .consent {
+  margin-top: 26px;
+  font: 25px system-ui, sans-serif;
+  opacity: 0.85;
+}
+
+#title .more {
+  padding: 4px 2px;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 #title .hint {
-  margin-top: 90px;
+  margin-top: 30px;
   font-family: system-ui, sans-serif;
-  font-size: 17px;
-  opacity: 0.55;
+  font-size: 24px;
+  opacity: 0.7;
   letter-spacing: 0.04em;
-  animation: breathe 3.5s ease-in-out infinite;
 }
 
 /* the first lines are still downloading */
@@ -361,8 +401,9 @@ body {
 
 /* ---------- the test: consent, the door, the way out ---------- */
 
+/* over the room but at the window's own size, not the stage's: readable on a small laptop */
 #research {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 300;
   display: flex;
@@ -371,20 +412,22 @@ body {
   background: rgba(7, 8, 10, 0.9);
   color: #e6ddc8;
   font-family: system-ui, sans-serif;
+  font-size: clamp(15px, 2.8vh, 19px);
   outline: none;
 }
 
 /* the room keeps going behind the questions, but quietly */
-#stage:has(#research) #subtitles,
-#stage:has(#research) #dialogue {
+body:has(#research) #subtitles,
+body:has(#research) #dialogue {
   visibility: hidden;
 }
 
 #research .panel {
-  width: 1040px;
-  max-height: 860px;
+  width: min(1040px, calc(100vw - 32px));
+  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
   overflow-y: auto;
-  padding: 36px 52px 0;
+  padding: 1.5em 2.2em 0;
   box-sizing: border-box;
   background: #0b0c0e;
   border-radius: 10px;
@@ -392,34 +435,32 @@ body {
 }
 
 #research h2 {
-  margin: 0 0 20px;
+  margin: 0 0 0.6em;
   font-family: 'Special Elite', 'Courier New', monospace;
-  font-size: 36px;
+  font-size: 1.65em;
   font-weight: normal;
 }
 
 #research h2 .step {
-  margin-left: 12px;
-  font: 15px system-ui, sans-serif;
+  margin-left: 0.8em;
+  font: 0.5em system-ui, sans-serif;
   vertical-align: middle;
   opacity: 0.45;
 }
 
 #research p {
-  margin: 0 0 16px;
-  font-size: 20px;
+  margin: 0 0 0.8em;
   line-height: 1.55;
   opacity: 0.88;
 }
 
 #research p.fine {
-  font-size: 15px;
+  font-size: 0.82em;
   opacity: 0.55;
 }
 
 #research .q {
-  margin: 28px 0 12px;
-  font-size: 20px;
+  margin: 1.2em 0 0.55em;
 }
 
 #research button {
@@ -431,12 +472,12 @@ body {
 #research .choices {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 0.5em;
 }
 
 #research .choices button {
-  padding: 9px 16px;
-  font-size: 17px;
+  padding: 0.45em 0.85em;
+  font-size: 0.92em;
   background: transparent;
   border: 1px solid rgba(230, 221, 200, 0.35);
   border-radius: 6px;
@@ -446,47 +487,47 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 7px 0;
+  gap: 1.2em;
+  padding: 0.3em 0;
   border-bottom: 1px solid rgba(230, 221, 200, 0.1);
-  font-size: 18px;
+  font-size: 0.95em;
 }
 
 /* the exit's second step fits on one screen: the short questions sit in rows */
 #research [data-step='2'] h2 {
-  margin-bottom: 12px;
+  margin-bottom: 0.4em;
 }
 
 #research [data-step='2'] .q {
-  margin-top: 20px;
+  margin-top: 0.9em;
 }
 
 #research [data-step='2'] .actions {
-  padding-bottom: 16px;
+  padding-bottom: 0.9em;
 }
 
 #research .likert.rows {
-  margin-top: 18px;
+  margin-top: 0.9em;
 }
 
 #research .scale {
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  gap: 6px;
+  gap: 0.3em;
 }
 
 #research .scale small {
-  width: 84px;
-  font-size: 13px;
+  width: 6.4em;
+  font-size: 0.72em;
   text-align: center;
   opacity: 0.6;
 }
 
 #research .scale button {
-  width: 38px;
-  height: 38px;
-  font-size: 15px;
+  width: 2.5em;
+  height: 2.5em;
+  font-size: 0.84em;
   background: transparent;
   border: 1px solid rgba(230, 221, 200, 0.35);
   border-radius: 50%;
@@ -504,11 +545,20 @@ body {
   border-color: #e6ddc8;
 }
 
+/* the way on was clicked before everything had an answer */
+#research .missing button:not(.on) {
+  border-color: #e0a659;
+}
+
+#research .item.missing > span {
+  color: #f0c27a;
+}
+
 #research textarea {
   width: 100%;
   box-sizing: border-box;
-  padding: 12px 14px;
-  font: 18px/1.5 system-ui, sans-serif;
+  padding: 0.6em 0.75em;
+  font: 0.95em/1.5 system-ui, sans-serif;
   color: #e6ddc8;
   background: rgba(230, 221, 200, 0.06);
   border: 1px solid rgba(230, 221, 200, 0.3);
@@ -519,16 +569,16 @@ body {
 #research label.share {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-  font-size: 16px;
+  gap: 0.6em;
+  margin-top: 0.6em;
+  font-size: 0.88em;
   opacity: 0.8;
   cursor: pointer;
 }
 
 #research label.share input {
-  width: 18px;
-  height: 18px;
+  width: 1.1em;
+  height: 1.1em;
   margin: 0;
   accent-color: #e6ddc8;
 }
@@ -537,14 +587,14 @@ body {
 #research .notes {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
-  margin: 10px 0 8px;
+  gap: 1.3em;
+  margin: 0.6em 0 0.4em;
 }
 
 #research .note {
-  flex: 1 1 250px;
+  flex: 1 1 13em;
   margin: 0;
-  padding: 14px 20px 14px;
+  padding: 0.75em 1.1em;
   color: #2b2f3a;
   background: repeating-linear-gradient(to bottom, #e8dfc8 0 31px, rgba(70, 100, 150, 0.22) 31px 32px);
   background-position: 0 6px;
@@ -567,7 +617,7 @@ body {
 }
 
 #research .note figcaption {
-  font: 13px/1.4 'Special Elite', monospace;
+  font: 0.72em/1.4 'Special Elite', monospace;
   opacity: 0.65;
 }
 
@@ -576,30 +626,30 @@ body {
   position: sticky;
   bottom: 0;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 18px;
-  margin-top: 16px;
-  padding: 18px 0 32px;
+  gap: 0.6em 1em;
+  margin-top: 0.8em;
+  padding: 0.9em 0 1.4em;
   background: #0b0c0e;
 }
 
 #research .primary {
-  padding: 12px 26px;
-  font-size: 19px;
+  padding: 0.6em 1.4em;
+  font-size: 1.02em;
   color: #111;
   background: #e6ddc8;
   border: 0;
   border-radius: 6px;
 }
 
-#research .primary:disabled {
-  opacity: 0.35;
-  cursor: default;
+#research .primary.waiting {
+  opacity: 0.45;
 }
 
 #research .quiet {
-  padding: 12px 8px;
-  font-size: 17px;
+  padding: 0.6em 0.4em;
+  font-size: 0.92em;
   background: transparent;
   border: 0;
   text-decoration: underline;
@@ -607,8 +657,68 @@ body {
 }
 
 #research .hint {
-  font-size: 15px;
-  opacity: 0.5;
+  font-size: 0.85em;
+  opacity: 0.6;
+}
+
+/* a small laptop's window: the door, and the exit's second step, still fit on one screen */
+@media (max-height: 760px) {
+  #research .panel {
+    max-height: calc(100vh - 12px);
+    max-height: calc(100dvh - 12px);
+    padding-top: 1.1em;
+  }
+
+  #research .actions {
+    margin-top: 0.5em;
+    padding: 0.6em 0 0.9em;
+  }
+
+  #research .choices button {
+    padding: 0.35em 0.8em;
+  }
+
+  #research .likert.rows {
+    margin-top: 0.5em;
+  }
+
+  #research .q {
+    margin: 0.9em 0 0.45em;
+  }
+
+  #research .likert .item {
+    padding: 0.2em 0;
+  }
+
+  #research [data-step='2'] .q {
+    margin: 0.6em 0 0.4em;
+  }
+
+  #research [data-step='2'] textarea[data-f='memory'] {
+    height: 4.4em;
+  }
+
+  #research [data-step='2'] textarea[data-f='feedback'] {
+    height: 2.9em;
+  }
+}
+
+/* a phone that came in anyway: each phrase above its scale */
+@media (max-width: 640px) {
+  #research .panel {
+    padding: 1.2em 1.1em 0;
+  }
+
+  #research .likert .item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.4em;
+  }
+
+  #research .scale small {
+    width: auto;
+    flex: 1;
+  }
 }
 
 #leave {

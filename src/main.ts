@@ -27,6 +27,7 @@ import { flags } from './world/flags';
 import { bus } from './world/bus';
 import { ROOM } from './art/room';
 import { Study } from './research/study';
+import { CONSENT } from './research/screens';
 import type { Snapshot } from './research/log';
 
 const params = new URLSearchParams(location.search);
@@ -99,21 +100,34 @@ onTick((dt, t) => {
   alarmClock.tick(t);
 });
 
+/**
+ * The card over the room, still and dimmed. Its button opens the door (it has
+ * the focus, so Enter does too); in the test, that button is the visitor's yes,
+ * and "Más detalles" says what taking part means.
+ */
 function titleCard(onEnter: () => void): void {
   const title = document.createElement('div');
   title.id = 'title';
   title.innerHTML = `
     <div class="place">Bogotá</div>
     <div class="date">Sábado 28 de octubre de 1995 · 5:30 p.m.</div>
-    <div class="hint">Póngase audífonos. Toque para entrar.</div>`;
+    <button type="button" class="enter">${study.on ? CONSENT.enter : 'Entrar'}</button>
+    ${study.on ? `<div class="consent">${CONSENT.line} <button type="button" class="more">Más detalles</button></div>` : ''}
+    <div class="hint">Se recomienda usar audífonos.</div>`;
   stage.el.appendChild(title);
+  const button = title.querySelector<HTMLButtonElement>('.enter')!;
   const enter = () => {
-    title.removeEventListener('pointerdown', enter);
+    for (const b of title.querySelectorAll('button')) b.disabled = true;
     title.classList.add('gone');
     setTimeout(() => title.remove(), 2400);
     onEnter();
   };
-  title.addEventListener('pointerdown', enter);
+  button.addEventListener('click', enter, { once: true });
+  title.querySelector('.more')?.addEventListener('click', async () => {
+    if (await study.details()) button.click();
+    else button.focus({ preventScroll: true });
+  });
+  button.focus({ preventScroll: true });
 }
 
 // the test (docs/test-plan.md): questions at the door and on the way out, and an anonymous log
