@@ -7,7 +7,7 @@ import { bus } from '../world/bus';
 import { at, clock } from '../world/clock';
 import { onTick } from '../world/loop';
 import { ActivityLog, type Snapshot } from './log';
-import { VisitRecord, arrival, device, doorFields, exitFields, exitMoodFields, visitor } from './record';
+import { VisitRecord, arrival, device, doorFields, exitFields, exitMoodFields, visitor, type Value } from './record';
 import { details, door, exit, needsComputer, phoneNote, thanks } from './screens';
 import { EXAMPLES, fetchMemories, type SharedMemory } from './memories';
 
@@ -36,6 +36,7 @@ export class Study {
   private sinceSend = 0;
   private memories: Promise<SharedMemory[]> | null = null;
   private shared = false;
+  private more: () => Record<string, Value> = () => ({});
 
   constructor(
     private readonly params: URLSearchParams,
@@ -90,9 +91,10 @@ export class Study {
     return { n_door: this.doorAnswered, s_door: Math.round((performance.now() - this.doorSince) / 1000) };
   }
 
-  /** The visitor is in the room: keep the log, and show the way out. */
-  inRoom(probe: () => Snapshot): void {
+  /** The visitor is in the room: keep the log (and `more`, counts the room keeps itself), and show the way out. */
+  inRoom(probe: () => Snapshot, more: () => Record<string, Value> = () => ({})): void {
     if (!this.on || !this.participating) return;
+    this.more = more;
     this.where = 'room';
     this.record.set({ stage: 'room' });
     this.watch();
@@ -128,7 +130,7 @@ export class Study {
     // someone who leaves at the door still says how far they got
     if (this.where === 'door') this.record.set(this.atDoor());
     else if (this.participating && this.where !== 'outside') {
-      this.record.set({ ...this.log.fields(), min_room: Math.round((this.log.time / 60) * 10) / 10, exit_shown: this.exitsShown });
+      this.record.set({ ...this.log.fields(), ...this.more(), min_room: Math.round((this.log.time / 60) * 10) / 10, exit_shown: this.exitsShown });
     }
     this.record.send();
   }

@@ -52,8 +52,9 @@ Other ways to open it:
 - **The phone.** A rotary dial (drag a finger hole round to the stop, or type
   digits) and the libreta with the numbers you know by heart.
 - **The TV.** A wood-grain set. Push POWER, turn the VHF knob (2 to 13),
-  move the rabbit ears when the picture is snow, whack the cabinet. Canal A (9) airs real 1995 clips
-  when it can (see [`docs/clips-shortlist.md`](docs/clips-shortlist.md)).
+  move the rabbit ears when the picture is snow, whack the cabinet. Cadena Uno (7) and Canal A (9)
+  air real 1995 programs when they can, in YouTube's own player, ads included, while the TV is up
+  close (see [`docs/clips-shortlist.md`](docs/clips-shortlist.md)).
 - **The window.** A Teusaquillo street in the rain: brick houses with clay-tile
   roofs, the Panadería La Espiga on the corner, the aguacate cart beside it.
   Busetas pull over for whoever flags them down while the taxis behind them

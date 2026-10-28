@@ -362,6 +362,33 @@ Visits from here on carry a new `build`. The calibration's earlier visits are
 the baseline for these entrance failures, not completion data to pool with
 later ones. Starting the ads again needs the user's approval.
 
+**The TV shows YouTube as it comes, 27 October 2026:** testing the room, the
+user saw a YouTube ad on the TV, with its sound. The channel's card hid the
+player only until YouTube first said "playing", then never again, so a second
+ad (or one during the episode) showed at the knob's volume. Hiding, covering or
+muting YouTube's ads, drawing over its player and playing it out of view also
+go against YouTube's rules for embeds (its Developer Policies and Required
+Minimum Functionality, read that day). The user chose to show YouTube as it is,
+ads included, over replacing the real programs with the invented ones.
+
+- The player shows as YouTube gives it, ads and "Saltar" included, with its
+  sound following the volume knob from the start. Nothing of the TV's picture
+  goes over it.
+- It loads only while the TV is up close and pauses when the visitor leaves
+  it, picking up where the channel is when they're back. Each channel keeps
+  its own player, paused while another is on, so switching back doesn't load
+  the program again (one more chance for an ad). From across the room a real
+  program is silent, and the small TV shows the channel's card.
+- New counts, no titles or video ids (an ad can be picked for the visitor):
+  `n_yt_*`, `s_yt_*` and `yt_seq`, `yt_mode`, `yt_new`, to learn how YouTube
+  reports an ad and how long visitors wait for a program. In tests that day
+  from a local page (39 starts in three browsers, including the user's Chrome)
+  YouTube served no ads, and programs started in about half a second; ads
+  seem to depend on the site and the viewer.
+- `s_tv_clip` now counts time with YouTube's player on screen, ads included.
+
+The room changed, so visits from this build on are told apart by `build`.
+
 ## Analysis
 
 - **Main result:** the nostalgia score (mean of N1–N3) at the exit minus at

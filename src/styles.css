@@ -1241,9 +1241,15 @@ body.study:not(.trastienda) #backstage-toggle {
   display: none;
 }
 
-#cu-tv.flat .tv-glass::before,
-#cu-tv.video .tv-glass::before {
+#cu-tv.flat .tv-glass::before {
   display: block;
+}
+
+/* YouTube's player is up: its picture as it comes, nothing of the tube's in front of it */
+#cu-tv.video .tv-screen,
+#cu-tv.video .tv-tube,
+#cu-tv.video .tv-glass {
+  visibility: hidden;
 }
 
 #cu-tv.shake .art,
@@ -1311,9 +1317,7 @@ body.study:not(.trastienda) #backstage-toggle {
 .tv-clip {
   position: absolute;
   border: 0;
-  border-radius: 36px;
-  pointer-events: none;
-  filter: saturate(0.85) contrast(1.1) blur(0.4px);
+  background: #000;
 }
 
 .speaker-cone {

@@ -1,13 +1,16 @@
 // End-to-end: the real 1995 television. From 5:30, Cadena Uno and Canal A air
 // full episodes, ads and clips on a timetable, paused by the anthem at six.
 //
-// YouTube can't be reached from the build environment, so a stand-in player
-// answers for www.youtube-nocookie.com: it speaks the same postMessage
-// protocol as the real one (listening → initialDelivery / infoDelivery,
-// onError, commands). Three runs:
-//   1. the player plays: the video shows and follows the volume knob;
-//   2. one clip is refused: Canal A cuts to the next one and skips it after;
-//   3. the player never answers (YouTube unreachable): Canal A goes back to
+// So the runs don't depend on what YouTube serves, a stand-in player answers
+// for www.youtube-nocookie.com: it speaks the same postMessage protocol as
+// the real one (listening → initialDelivery / infoDelivery with the video's
+// id and clock, onError, commands). Four runs:
+//   1. the player plays: it shows as soon as it's there, follows the volume
+//      knob, pauses when the TV goes out of view and picks up when it's back;
+//   2. an ad first: the player shows it (another video), and the test's
+//      counts say so;
+//   3. one clip is refused: Canal A cuts to the next one and skips it after;
+//   4. the player never answers (YouTube unreachable): Canal A goes back to
 //      its invented programs.
 // Needs the dev server on :5173.
 import { chromium } from 'playwright';
@@ -17,15 +20,36 @@ const FAKE_PLAYER = (mode) => `<!doctype html><html><body style="margin:0;backgr
   window.commands = [];
   const id = location.pathname.split('/').pop();
   const say = (m) => parent.postMessage(JSON.stringify({ ...m, id: 1, channel: 'widget' }), '*');
+  let started = false;
+  let state = -1;
+  let time = Number(new URLSearchParams(location.search).get('start') || 0);
+  // an ad first, if asked: 1.5 s of another video, "playing"
+  let ad = ${JSON.stringify(mode)} === 'ad' ? 6 : 0;
+  const tick = () => {
+    if (ad > 0) {
+      ad--;
+      say({ event: 'infoDelivery', info: { playerState: 1, currentTime: (6 - ad) / 4, videoData: { video_id: 'someAdVideo', title: 'an ad' } } });
+      return;
+    }
+    if (state === 1) time += 0.25;
+    say({ event: 'infoDelivery', info: { playerState: state, currentTime: time, videoData: { video_id: id, title: 'the program' } } });
+  };
   addEventListener('message', (e) => {
     const m = JSON.parse(e.data);
-    if (m.event === 'listening') {
+    if (m.event === 'listening' && !started) {
+      started = true;
       if (${JSON.stringify(mode)} === 'refuse') return say({ event: 'onError', info: 150 });
-      say({ event: 'initialDelivery', info: { playerState: -1, duration: 600 } });
+      say({ event: 'initialDelivery', info: { playerState: -1, duration: 600, videoData: { video_id: id } } });
       say({ event: 'onReady', info: null });
-      setTimeout(() => say({ event: 'infoDelivery', info: { playerState: 1, currentTime: 0 } }), 300);
+      setTimeout(() => (state = 1), 300);
+      setInterval(tick, 250);
     }
-    if (m.event === 'command') window.commands.push(m.func + ':' + JSON.stringify(m.args));
+    if (m.event === 'command') {
+      window.commands.push(m.func + ':' + JSON.stringify(m.args));
+      if (m.func === 'pauseVideo') state = 2;
+      if (m.func === 'playVideo') state = 1;
+      if (m.func === 'seekTo') time = m.args[0];
+    }
   });
 </script></body></html>`;
 
@@ -81,14 +105,49 @@ async function run(label, modeFor) {
   return { page, ev, onAir, toNextClip, frameState, errors };
 }
 
+const youtube = (ev) => ev(() => window.room1995.tv.youtube);
+
 // 1. everything plays
 {
   const { page, ev, onAir, frameState, errors } = await run('the player plays', () => 'play');
   const player = page.frames().find((f) => f.url().includes('youtube-nocookie'));
+  const shown = await frameState();
   console.log('commands so far:', JSON.stringify(await player.evaluate(() => window.commands)));
   await ev(() => (window.room1995.tv.volume = 0.2));
   await page.waitForTimeout(400);
   console.log('after turning it down:', JSON.stringify(await player.evaluate(() => window.commands.slice(-2))));
+  // out of view it pauses; back up close, it picks up where the channel is
+  await ev(() => window.room1995.closeups.close());
+  await page.waitForTimeout(400);
+  const away = { ...(await frameState()), last: await player.evaluate(() => window.commands.at(-1)) };
+  await page.waitForTimeout(2000);
+  await ev(() => window.room1995.closeups.open('tv'));
+  await page.waitForTimeout(500);
+  const back = { ...(await frameState()), last: await player.evaluate(() => window.commands.slice(-2)) };
+  console.log('away:', JSON.stringify(away), '| back:', JSON.stringify(back));
+  const counts = await youtube(ev);
+  console.log('counts:', JSON.stringify(counts));
+  if (shown.visible !== '' || !shown.video || away.video || away.last !== 'pauseVideo:[]' || !back.video || !/^seekTo/.test(back.last[0]) || back.last[1] !== 'playVideo:[]') throw new Error('the player should show, pause out of view, and pick up');
+  if (counts.n_yt < 1 || counts.n_yt_on < 1 || counts.n_yt_other !== 0 || JSON.stringify(counts).includes('the program')) throw new Error('the counts are off');
+  // over to Cadena Uno and back: Canal A's player waits, paused, and isn't loaded again
+  const loads = counts.n_yt;
+  await ev(() => {
+    const tv = window.room1995.tv;
+    tv.channel = 7;
+    tv.ears = [-34, 38];
+  });
+  await page.waitForTimeout(1500);
+  const onSeven = await ev(() => [...document.querySelectorAll('.tv-clip')].map((f) => `${f.src.replace(/\?.*/, '').split('/').pop()}:${f.style.visibility || 'shown'}`));
+  const nineMeanwhile = await player.evaluate(() => window.commands.at(-1));
+  await ev(() => {
+    const tv = window.room1995.tv;
+    tv.channel = 9;
+    tv.ears = [-18, 58];
+  });
+  await page.waitForTimeout(800);
+  const backOnNine = { frames: await ev(() => document.querySelectorAll('.tv-clip').length), last: await player.evaluate(() => window.commands.slice(-2)), loads: (await youtube(ev)).n_yt - loads };
+  console.log('on 7:', onSeven.join(' '), '| 9 meanwhile:', nineMeanwhile, '| back on 9:', JSON.stringify(backOnNine));
+  if (onSeven.length !== 2 || nineMeanwhile !== 'pauseVideo:[]' || backOnNine.frames !== 2 || backOnNine.loads !== 1 || !/^seekTo/.test(backOnNine.last[0]) || backOnNine.last[1] !== 'playVideo:[]') throw new Error('each channel should keep its player');
   // the tape runs out before the slot does: the channel moves on
   const before = await onAir();
   await player.evaluate(() => parent.postMessage(JSON.stringify({ event: 'onStateChange', info: 0, id: 1, channel: 'widget' }), '*'));
@@ -114,7 +173,18 @@ async function run(label, modeFor) {
   await page.close();
 }
 
-// 2. Rock al Parque is refused
+// 2. an ad first
+{
+  const { page, ev, errors } = await run('an ad first', () => 'ad');
+  await page.waitForTimeout(2500);
+  const counts = await youtube(ev);
+  console.log('counts:', JSON.stringify(counts), '| showing:', await ev(() => window.room1995.tv.showingVideo));
+  if (counts.n_yt_other < 1 || counts.n_yt_on < 1 || counts.s_yt_wait < 1.4 || !/1o>1/.test(counts.yt_seq) || /someAdVideo|an ad/.test(JSON.stringify(counts))) throw new Error('the ad should show and be counted, without its name');
+  if (errors.length) console.log('ERRORS', errors);
+  await page.close();
+}
+
+// 3. Rock al Parque is refused
 {
   const { page, ev, onAir, errors } = await run('one clip is refused', (id) => (id === '84DTd4OBC9Y' ? 'refuse' : 'play'));
   // let Canal A run through ten segments, a jump at a time
@@ -135,7 +205,7 @@ async function run(label, modeFor) {
   await page.close();
 }
 
-// 3. YouTube is unreachable
+// 4. YouTube is unreachable
 {
   const { page, onAir, errors } = await run('the player never answers', () => 'silent');
   await page.waitForTimeout(9000);

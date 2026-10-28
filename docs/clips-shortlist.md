@@ -27,11 +27,16 @@ in late and you land mid-episode, like the radio. These are in `SCHEDULES` in
   was Caracol's, about 1994–1998, when Caracol made programs for both public
   channels.
 - **YouTube's own ads** can play inside these, before or during an episode,
-  and can't be turned off from here (accepted for now). An ad before an
-  episode stays behind the channel's card, silent: the player is muted until
-  the episode itself plays. Switching channels reloads the player, so coming
-  back can bring another ad. An ad delays the episode, so its last seconds may
-  be cut when the next item comes on.
+  and can't be turned off from here (accepted). They show as YouTube serves
+  them, with their sound and their "Saltar" button: YouTube's rules for
+  embeds don't allow hiding, covering or muting its ads. Each channel keeps
+  its player, paused, while you watch another, so switching back doesn't load
+  the program (and maybe an ad) again; the next program does. An ad delays the
+  episode, so its last seconds may be cut when the next item comes on. The
+  test keeps how YouTube reports them, as counts (`n_yt_*`, see
+  [`research-setup.md`](research-setup.md)). Until 27 October 2026 an ad
+  before an episode played hidden and muted behind the channel's card, which
+  lifted at YouTube's first "playing" and so could let a second ad through.
 - **If a program is refused** (removed, private, embedding disabled), the
   channel's usual running order fills its slot, and the next program still
   comes on at its time. If a video ends before its slot does, the channel's
@@ -50,11 +55,15 @@ in late and you land mid-episode, like the radio. These are in `SCHEDULES` in
   a clip is refused (removed, private, embedding disabled), the channel cuts
   to the next one and skips it from then on. If YouTube can't be reached at
   all, the channels go back to their invented programs within a few seconds.
+- YouTube's player only loads while the TV is up close, and pauses when you
+  leave it: YouTube's rules don't allow a player that plays out of view. Back
+  up close, it picks up where the channel is. From across the room a real
+  program is silent, and the small TV shows the channel's card.
+- Nothing of the TV's own picture goes over the player (no glass, scanlines
+  or snow), as YouTube's rules ask; the cabinet stays around it.
 - The clip's sound comes from YouTube, not through the TV's speaker. It
   follows the volume knob and the reception, but it isn't boxy like the rest
   of the TV, and it can't be taped.
-- The small TV in the room can't copy a real clip's picture. From across the
-  room you see its light changing, and you see the clip itself up close.
 
 # Shortlist (for reference)
 
