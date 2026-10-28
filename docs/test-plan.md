@@ -389,6 +389,24 @@ ads included, over replacing the real programs with the invented ones.
 
 The room changed, so visits from this build on are told apart by `build`.
 
+**Resumed on 28 October 2026, 10:15 Colombia time:** build `3c6707d` went live
+that morning, and the user checked it in their own browser. A check of the live
+site with sends to the sheet blocked found how YouTube reports an ad there
+(from a local page it served none): two ads before a program, about 75 seconds,
+came as "unstarted" and then nothing until the program played, never as
+"playing", with no other video id, and with a field named `ad` that a plain
+program never sends. A visit that met ads should show a long `s_yt_wait`, a
+`yt_seq` like `3>-1>1` and `ad` in `yt_new`.
+
+With the user's approval, the campaign's end date moved from 28 to 29 October
+and the campaign, its ad group and both ads were enabled. Nothing else changed:
+the same ads, links, audience, and 18:00–22:00 hours. The campaign total stays
+at COP 60,000, of which COP 28,085 had been spent, so Google spreads the
+remaining COP 31,915 over two evenings (about COP 15,957 each). Ads can first
+show at 18:00 on 28 October (`2026-10-28T23:00:00Z`). The review is on Friday
+30 October: count paid visits by build `3c6707d` and arrival from then on,
+apart from the 24 October ones.
+
 ## Analysis
 
 - **Main result:** the nostalgia score (mean of N1–N3) at the exit minus at
