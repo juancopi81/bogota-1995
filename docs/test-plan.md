@@ -486,6 +486,20 @@ note still describes the visits before the door.
   the top of `npm run visits`; the minutes and the exit's answers are read
   when the run ends.
 
+**The request number moves earlier, 30 October 2026:** the 9 October rule
+applies, since nobody in calibration stayed 8½ minutes. Radioactiva's running
+order now gives the cabina's number right after the DJ's greeting, instead of
+after the next song and an ad break. The announcement starts at 5:32:49, 2:49
+into the visit, about a minute and a half after Andrés's first call; the
+digits follow a few seconds later. A request can first air at 5:38:42
+instead of 5:44:13. The radio starts on Radioactiva, so nobody has to tune to
+hear it. Nothing else moves but «Afuera» and the ad break after it, 15 s
+later. The songs, ads and other talk keep their order, everything from
+«Matador» on is where it was, the second announcement is still at 5:50:32,
+and no lines were recorded. `src/research/moments.ts` has the new times, and
+`npm run visits` reads every visit against them; for visits before this
+build, the first number came at 5:38:27. This is the room for the main run.
+
 ## Analysis
 
 As written on 9 October, for the visits with door questions. From the door

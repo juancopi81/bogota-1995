@@ -8,9 +8,9 @@ import { at } from '../world/clock';
 import { SCHEDULE } from '../world/flags';
 
 /** Radioactiva gives its request number on air. */
-export const REQUEST_NUMBER_AT = [507.5, 1231.6];
+export const REQUEST_NUMBER_AT = [168.6, 1231.6];
 /** A request taken right after the first number airs after the song on air and an ad break. */
-export const FIRST_REQUEST_AIRS = 852.9;
+export const FIRST_REQUEST_AIRS = 522.4;
 
 export interface Moment {
   at: number;
@@ -19,10 +19,10 @@ export interface Moment {
 
 export const MOMENTS: Moment[] = [
   { at: SCHEDULE.andresEarly, what: 'Andrés calls from the monedero' },
-  { at: SCHEDULE.wrongNumberRings, what: 'the wrong number rings' },
   { at: REQUEST_NUMBER_AT[0], what: 'Radioactiva first gives its request number' },
-  { at: SCHEDULE.andresHome + 80, what: 'Andrés calls back from home, if he asked or got the message' },
+  { at: SCHEDULE.wrongNumberRings, what: 'the wrong number rings' },
   { at: FIRST_REQUEST_AIRS, what: 'the earliest a requested song can air' },
+  { at: SCHEDULE.andresHome + 80, what: 'Andrés calls back from home, if he asked or got the message' },
   { at: SCHEDULE.extension[0], what: 'Mamá on the kitchen extension' },
   { at: REQUEST_NUMBER_AT[1], what: 'the request number again' },
   { at: SCHEDULE.onces, what: 'onces' },

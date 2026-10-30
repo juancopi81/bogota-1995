@@ -125,7 +125,8 @@ export const RADIOACTIVA: StationDef = {
   bandIntros: { Aterciopelados: [RA.banda] },
   jingle: 'rock',
   bed: 'rock',
-  format: ['id', 'song', 'request', 'song', 'ads', 'time', 'song', 'talk', 'song', 'ads', 'request', 'song', 'talk', 'song', 'ads', 'talk'],
+  // the cabina's number follows the greeting, about three minutes into the visit (docs/test-plan.md, 30 October 2026)
+  format: ['id', 'song', 'request', 'song', 'ads', 'time', 'song', 'talk', 'request', 'song', 'ads', 'song', 'talk', 'song', 'ads', 'talk'],
   ids: [[RA.id1], [RA.id2]],
   talks: [
     [RA.saludo1, RA.saludo2],
