@@ -498,7 +498,15 @@ later. The songs, ads and other talk keep their order, everything from
 «Matador» on is where it was, the second announcement is still at 5:50:32,
 and no lines were recorded. `src/research/moments.ts` has the new times, and
 `npm run visits` reads every visit against them; for visits before this
-build, the first number came at 5:38:27. This is the room for the main run.
+build, the first number came at 5:38:27.
+
+In the same build, "Terminar la visita" is easier to read: its text was
+about 11 px on a dim chip on a 1366×641 laptop, and is now about 16 px with
+more contrast. It stays in the corner, and the nudge still comes at 5
+minutes: time inside is the main measure, so the button shouldn't invite
+anyone out. Closing the tab instead loses only the exit's questions; the log
+goes out every minute, and again when the tab is hidden or closed. This is
+the room for the main run.
 
 ## Analysis
 
