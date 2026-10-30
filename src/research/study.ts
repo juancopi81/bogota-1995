@@ -1,14 +1,16 @@
 // The test (docs/test-plan.md). It runs when the site is built with a sheet
 // to send to (VITE_RESEARCH_URL), or locally with ?research, where answers go
-// to the console. It asks at the door, keeps an anonymous log of the visit,
-// and asks again on the way out, or when the afternoon ends after the anthem.
+// to the console. Opening the door, with the line under it in view, is the
+// visitor's yes: from then on it keeps an anonymous log of the visit, and asks
+// on the way out, or when the afternoon ends after the anthem.
 
 import { bus } from '../world/bus';
 import { at, clock } from '../world/clock';
 import { onTick } from '../world/loop';
 import { ActivityLog, type Snapshot } from './log';
-import { VisitRecord, arrival, device, doorFields, exitFields, exitMoodFields, visitor, type Value } from './record';
-import { details, door, exit, needsComputer, phoneNote, thanks } from './screens';
+import { VisitRecord, arrival, device, exitFields, exitMoodFields, visitor, type Value } from './record';
+import { details, exit, needsComputer, phoneNote, thanks } from './screens';
+import type { DoorChoice } from '../scene/entrance';
 import { EXAMPLES, fetchMemories, type SharedMemory } from './memories';
 
 const RESEARCH_URL = import.meta.env.VITE_RESEARCH_URL ?? '';
@@ -26,10 +28,7 @@ export class Study {
   readonly record = new VisitRecord(RESEARCH_URL);
   readonly log = new ActivityLog();
   private participating = false;
-  private where: 'outside' | 'door' | 'room' | 'asking' | 'done' = 'outside';
-  private doorSince = 0;
-  private doorAnswered = 0;
-  private preNostalgia: number | null = null;
+  private where: 'outside' | 'room' | 'asking' | 'done' = 'outside';
   private exitsShown = 0;
   private askedAtSix = false;
   private nudged = false;
@@ -65,30 +64,26 @@ export class Study {
     return gated;
   }
 
-  /** What taking part means, from the title card's "Más detalles". True if the visitor enters from there. */
-  details(): Promise<boolean> {
+  /** What's kept, from "Más detalles" under the door: how the visitor goes in from there, or back to the door. */
+  details(): Promise<DoorChoice> {
     return details();
   }
 
-  /** The title card's button was the visitor's yes: the door questions. Resolves when they walk in. */
-  async atTheDoor(): Promise<void> {
+  /**
+   * The door opened. With the line under it in view, that's the visitor's yes,
+   * unless they chose to go in without being kept: then only that is counted.
+   */
+  walkIn(logged: boolean): void {
     if (!this.on) return;
+    if (!logged) {
+      this.record.set({ stage: 'declined' });
+      this.record.send();
+      return;
+    }
     this.participating = true;
-    // only now, with their yes: the browser's id (for return visits) and the screen
-    this.record.set({ stage: 'consent', t_consent: iso(), ...visitor(), ...device() });
+    // only now, with their yes: the browser's id (for return visits), the screen, and how long the door took
+    this.record.set({ stage: 'consent', t_consent: iso(), s_entrance: Math.round(performance.now() / 100) / 10, ...visitor(), ...device() });
     this.record.send();
-    this.where = 'door';
-    this.doorSince = performance.now();
-    const fields = doorFields(await door((n) => (this.doorAnswered = n)));
-    this.preNostalgia = fields.pre_nostalgia as number | null;
-    this.record.set({ ...fields, ...this.atDoor(), stage: 'door', t_door: iso() });
-    this.where = 'outside';
-    this.record.send();
-  }
-
-  /** How many of the door's questions have an answer, and for how long they've been up: counts, not the answers. */
-  private atDoor(): Record<string, number> {
-    return { n_door: this.doorAnswered, s_door: Math.round((performance.now() - this.doorSince) / 1000) };
   }
 
   /** The visitor is in the room: keep the log (and `more`, counts the room keeps itself), and show the way out. */
@@ -101,7 +96,7 @@ export class Study {
 
     const leave = document.createElement('button');
     leave.id = 'leave';
-    leave.textContent = 'Salir del cuarto';
+    leave.textContent = 'Terminar la visita';
     leave.addEventListener('click', () => void (this.where === 'done' ? this.thankAgain() : this.askExit('button')));
     this.host.appendChild(leave);
 
@@ -127,9 +122,7 @@ export class Study {
   flush(): void {
     if (!this.on) return;
     this.sinceSend = 0;
-    // someone who leaves at the door still says how far they got
-    if (this.where === 'door') this.record.set(this.atDoor());
-    else if (this.participating && this.where !== 'outside') {
+    if (this.participating && this.where !== 'outside') {
       this.record.set({ ...this.log.fields(), ...this.more(), min_room: Math.round((this.log.time / 60) * 10) / 10, exit_shown: this.exitsShown });
     }
     this.record.send();
@@ -146,12 +139,12 @@ export class Study {
     this.memories ??= RESEARCH_URL ? fetchMemories(RESEARCH_URL) : Promise.resolve(import.meta.env.DEV ? EXAMPLES : []);
     const answers = await exit(reason, (mood) => {
       // the measure is in: keep it even if they don't finish the second step
-      this.record.set({ ...exitMoodFields(mood, this.preNostalgia), stage: 'exit' });
+      this.record.set({ ...exitMoodFields(mood, null), stage: 'exit' });
       this.flush();
     });
     if (answers) {
       // the log goes on if they stay, so keep how long they'd been inside when they answered
-      this.record.set({ ...exitFields(answers, this.preNostalgia), stage: 'done', exit_reason: reason, t_exit: iso(), min_at_exit: Math.round((this.log.time / 60) * 10) / 10 });
+      this.record.set({ ...exitFields(answers, null), stage: 'done', exit_reason: reason, t_exit: iso(), min_at_exit: Math.round((this.log.time / 60) * 10) / 10 });
       this.flush();
       this.shared = !!answers.memory.trim() && answers.shareMemory;
       await thanks(this.memories, this.shared);

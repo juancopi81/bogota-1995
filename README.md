@@ -115,8 +115,8 @@ From there you can:
 ## The test
 
 A small study of whether the room makes people nostalgic, and which parts do
-it: a few questions at the door and on the way out, and an anonymous log of
-the visit. The plan is in [`docs/test-plan.md`](docs/test-plan.md). It runs on
+it: an anonymous log of the visit, from the moment you open the door of the
+room, and a few questions on the way out. The plan is in [`docs/test-plan.md`](docs/test-plan.md). It runs on
 the public site once it's connected to a Google Sheet
 ([`docs/research-setup.md`](docs/research-setup.md)); locally, add
 `?research` to the address to try it (the answers go to the console). Phones
@@ -144,7 +144,7 @@ Chromium against the dev server: the request-line thread, the callback, the
 TV clips (with a stand-in YouTube player), loading files, and the test from
 the door to the exit.
 
-URL parameters for poking around: `?skip` skips the title card, `?t=900`
+URL parameters for poking around: `?skip` skips the hallway and the door, `?t=900`
 starts 15 minutes in, `?open=grabadora|phone|tv|window|clock` opens a
 close-up, `?research` runs the test without a sheet, `?trastienda` keeps the
 backstage reachable during the test, and `?anyway` opens the room on a phone. In dev, `window.room1995` exposes the objects in the console.

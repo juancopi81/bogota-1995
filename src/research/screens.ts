@@ -1,11 +1,12 @@
-// The test's screens: what taking part means, the questions at the door and at the exit,
-// the thanks, and the note for phones. Drawn over the room in the title
-// card's colors, at the window's own size rather than the stage's, so they
+// The test's screens: what's kept (from under the door), the questions at the
+// exit, the thanks, and the note for phones. Drawn over the room at the
+// window's own size rather than the stage's, so they
 // stay readable on a small laptop. Keys typed here never reach the room (the
 // phone would dial them).
 
-import { AGE, LIVED, MOOD, MOOD_ENDS, RETURN, TRAIT, TRIGGERS, type Choice, type Item } from './questions';
-import type { DoorAnswers, ExitAnswers } from './record';
+import { MOOD, MOOD_ENDS, RETURN, TRAIT, TRIGGERS, type Choice, type Item } from './questions';
+import type { ExitAnswers } from './record';
+import type { DoorChoice } from '../scene/entrance';
 import { caption, type SharedMemory } from './memories';
 
 const CONTACT = import.meta.env.VITE_RESEARCH_CONTACT ?? '';
@@ -126,49 +127,25 @@ const mood = MOOD.map((item) => `mood.${item.id}`);
  * In the test, the title card's button is the visitor's yes: these are its
  * words, and the line under it. Whoever doesn't want to take part closes the page.
  */
-export const CONSENT = { enter: 'Entrar y participar', line: 'Experimento anónimo, para mayores de 18.' };
+export const CONSENT = { line: 'Registramos de forma anónima lo que hace en el cuarto.' };
 
-/** "Más detalles": what taking part means. True if the visitor enters from here, false if they go back to the title card. */
-export function details(): Promise<boolean> {
+/** "Más detalles", under the door: what's kept, and the way in without it. */
+export function details(): Promise<DoorChoice> {
   const el = overlay(
     `<h2>Un experimento sobre la nostalgia</h2>
-    <p>Si entra, le haremos unas preguntas cortas en la puerta y al salir, y guardaremos lo que hace adentro: qué toca y por cuánto tiempo.</p>
-    <p>Es anónimo: no le pedimos su nombre ni su correo, ni guardamos datos que lo identifiquen. Puede salir cuando quiera. Para participar debe ser mayor de 18 años.</p>
-    <p>Si no quiere participar, basta con cerrar esta página: solo contamos la visita y el enlace por el que llegó.</p>
-    <p>Al salir puede dejar un recuerdo. Solo si usted lo autoriza, y después de leerlo, podremos mostrarlo a otros visitantes, sin datos suyos.</p>
+    <p>Si abre la puerta, guardaremos lo que hace adentro: qué toca, qué oye y por cuánto tiempo. Al salir puede contarnos cómo se sintió y dejar un recuerdo, si quiere.</p>
+    <p>Es anónimo: no le pedimos su nombre ni su correo, ni guardamos datos que lo identifiquen. Este navegador guarda un número al azar para saber si vuelve. Es para mayores de 18 años.</p>
+    <p>Si prefiere que no se guarde nada, entre sin que se registre: el cuarto es el mismo, y solo contamos la visita y el enlace por el que llegó.</p>
+    <p>Si deja un recuerdo, solo con su permiso y después de leerlo, podremos mostrarlo a otros visitantes, sin datos suyos.</p>
     <p class="fine">Un proyecto independiente y sin ánimo de lucro, sin relación con las emisoras, los canales ni las marcas que aparecen en el cuarto.${CONTACT ? ` Preguntas: ${escape(CONTACT)}.` : ''}</p>
-    <div class="actions"><button type="button" class="primary" data-act="yes">${CONSENT.enter}</button><button type="button" class="quiet" data-act="back">Volver</button></div>`,
+    <div class="actions"><button type="button" class="primary" data-act="enter">Abrir la puerta</button><button type="button" class="quiet" data-act="unlogged">Entrar sin que se registre</button><button type="button" class="quiet" data-act="back">Volver</button></div>`,
   );
   return new Promise((resolve) => {
     el.addEventListener('click', (e) => {
-      const act = (e.target as HTMLElement).closest<HTMLElement>('[data-act]')?.dataset.act;
+      const act = (e.target as HTMLElement).closest<HTMLElement>('[data-act]')?.dataset.act as DoorChoice | undefined;
       if (!act) return;
       el.remove();
-      resolve(act === 'yes');
-    });
-  });
-}
-
-/** The door's questions. `onAnswer` gets how many have an answer each time one changes. */
-export function door(onAnswer: (answered: number) => void = () => undefined): Promise<DoorAnswers> {
-  const el = overlay(
-    `<h2>En la puerta</h2>
-    <div class="q">En 1995, ¿dónde vivía?</div>${choices('lived', LIVED)}
-    <div class="q">¿Cuántos años tenía en 1995?</div>${choices('age', AGE)}
-    <div class="q">Ahora mismo, ¿qué tan de acuerdo está con cada frase?</div>${likert('mood', MOOD)}
-    <div class="actions"><button type="button" class="primary" data-act="enter">Entrar al cuarto</button>${hint}</div>`,
-  );
-  const enter = el.querySelector<HTMLButtonElement>('[data-act="enter"]')!;
-  const picks = new Picks(el, () => {
-    required.update();
-    onAnswer(required.answered);
-  });
-  const required = new Required(el, enter, ['lived', 'age', ...mood], picks);
-  return new Promise((resolve) => {
-    enter.addEventListener('click', () => {
-      if (!required.done) return required.point();
-      el.remove();
-      resolve({ lived: picks.one.lived, age: picks.one.age, mood: picks.scores('mood', MOOD) });
+      resolve(act);
     });
   });
 }
