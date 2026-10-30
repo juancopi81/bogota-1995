@@ -508,6 +508,35 @@ anyone out. Closing the tab instead loses only the exit's questions; the log
 goes out every minute, and again when the tab is hidden or closed. This is
 the room for the main run.
 
+**The main run set up, 30 October 2026:** a new Google Ads campaign, "B95 |
+Principal | GDN | CO | Desktop", published by the user the same day.
+Copying the calibration campaign was refused ("el presupuesto es demasiado
+bajo": COP 60,000 over its six days), so it was built again with the same
+settings: Demand Gen,
+maximize clicks, the Display Network only, Colombia (presence), Spanish,
+computers only, ages 35–64 without unknown ages, no interests, optimized
+targeting off, and Google's automatic edits off (adaptive layouts, animated
+images, generated videos).
+
+- **One ad, the rain image**, as the plan says (the visual that brought more
+  completed visits; Google showed it for 377 of the 379 calibration visits),
+  with the same text. Its link is
+  `?utm_source=google&utm_medium=display&utm_campaign=principal&utm_content=lluvia`,
+  so these visits carry `ref_campaign` = `principal`.
+- **COP 20,000, Wednesday 4 November, 18:00–22:00**, plus IVA if Google
+  charges it. It's the first slice of the COP 60,000 cap. A campaign total
+  needs about COP 19,000 a day, so this is one evening. Wednesday because
+  Monday 2 November is a holiday and calibration ran on Wednesday and Thursday
+  evenings, so the funnel compares directly.
+- **After the evening**, only the stage counts are read. If fewer than 100
+  people count and nothing broke, another slice follows, up to the cap. The
+  minutes and the exit's answers wait for the end, as the 30 October note says.
+- **The room is build `13e2e89`.** Merging this note restamps the build
+  without changing the room, so the run counts the build live on 4 November.
+- **Published by the user** on 30 October. Google was still reviewing the
+  ad, and the campaign waits for 4 November; it can first show at 18:00
+  (`2026-11-04T23:00:00Z`).
+
 ## Analysis
 
 As written on 9 October, for the visits with door questions. From the door
