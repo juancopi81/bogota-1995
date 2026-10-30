@@ -4,7 +4,7 @@ The repository is already public; the ads would bring strangers to the site.
 This lists everything real in the room, with a recommendation. Not legal
 advice.
 
-The consent details ("Más detalles" on the title card) already say: an
+The consent details ("Más detalles" under the door) already say: an
 independent, non-profit project, not connected with the stations, channels
 or brands in the room.
 

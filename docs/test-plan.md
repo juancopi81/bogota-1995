@@ -19,24 +19,32 @@ the TV to more clips).
 
 ## Design
 
-One group, measured at the door and at the exit (a pre/post design). The
-door question about nostalgia is hidden among three ordinary mood items, so
-the purpose is less obvious.
+One group. Until 30 October 2026 it was measured at the door and at the exit
+(a pre/post design), the door question about nostalgia hidden among three
+ordinary mood items so the purpose was less obvious. Since then the room
+starts at its own door, without questions: what people do inside is the
+measure, with the exit's questions for whoever answers them (see the note of
+30 October).
 
-1. **Title card**, which is also the **consent**: its only button is "Entrar y
-   participar", under it "Experimento anónimo, para mayores de 18." and "Más
-   detalles", which says what we collect, that it's anonymous, that they can
-   leave any time, and that whoever doesn't want to take part just closes the
-   page; for them only the visit is counted (when, which version of the room,
-   which link brought them). Until 26 October consent was a screen of its own,
+1. **The hallway and your door**, which is also the **consent**: the door of
+   the room, with a hand-made sign "Toque antes de entrar", the family's
+   cocker spaniel asleep beside it and a print of «Horizontes» on the wall.
+   A click on the door (or the dog, or Enter) knocks twice and opens it onto
+   the room, and lets the sound play. Under it: "Se recomienda usar
+   audífonos · Registramos de forma anónima lo que hace en el cuarto · Más
+   detalles". "Más detalles" says what's kept, that it's anonymous and for
+   adults, and offers "Entrar sin que se registre": the same room, with only
+   the visit counted (when, which version of the room, which link brought
+   them). From 26 to 30 October a title card's only button, "Entrar y
+   participar", was the yes; before that, consent was a screen of its own,
    and "Entrar sin participar" let anyone in.
-2. **At the door** (about 40 s):
+2. **At the door**, until 30 October 2026 (about 40 s):
    - Where they lived in 1995 and how old they were.
    - Six mood items, 1–7: three of them are the state-nostalgia items from
      Wildschut et al. (2006).
-3. **The room**, for as long as they want. A "Salir del cuarto" button is
-   always in the corner; at 6:04 p.m., after the anthem, the afternoon ends
-   on its own.
+3. **The room**, for as long as they want. A "Terminar la visita" button
+   ("Salir del cuarto" until 30 October 2026) is always in the corner; at
+   6:04 p.m., after the anthem, the afternoon ends on its own.
 4. **At the exit** (about 2 min), in two short steps so nothing hides below
    the fold (in the pilot, some people sent the form without scrolling to
    the rest):
@@ -94,7 +102,7 @@ during a stage.
 | 0. Ready | nobody yet | the privacy fixes live; the invented businesses checked ([`names-review.md`](names-review.md)); this plan committed | all three done |
 | 1. Pilot | 3–5 friends who lived in Bogotá in the 90s, on their own computers, with headphones and no tips | the procedure: does the flow work, does the data arrive | nothing broken |
 | 2. Calibration | a small paid run, 3–4 days | what one completed visit costs, and how long strangers stay | the main budget; the request-number rule below |
-| 3. Main run | paid, with the room frozen | 30–40 completed visits | the stopping rule below |
+| 3. Main run | paid, with the room frozen | 100 people who open the door (30–40 completed visits until 30 October 2026) | the stopping rule below |
 
 Each stage has its own link, so the sheet tells them apart (`ref_campaign`)
 and nothing needs deleting:
@@ -407,7 +415,82 @@ show at 18:00 on 28 October (`2026-10-28T23:00:00Z`). The review is on Friday
 30 October: count paid visits by build `3c6707d` and arrival from then on,
 apart from the 24 October ones.
 
+**Calibration results, and a door instead of questions, 30 October 2026:**
+the campaign ended on 29 October. The two evenings after the entrance fix ran
+on build `bc2ca49` (the merge of the 28 October note; the same room as
+`3c6707d`, which that note names). They cost COP 30,058 for 349 clicks and
+brought 379 visits: 127 got the note for phones (Google reported every click
+as a computer), 205 never pressed "Entrar y participar", 48 did, and 41 of
+those left at the door questions, 28 of them without answering one, most
+within seconds. Four people got into the room and three completed the visit,
+about COP 10,000 each, on too few to plan a budget with. None of the four
+stayed 8½ minutes, so the request-number rule applies before a main run.
+Google showed the rain ad for 377 of the 379 visits, so the video can't be
+judged.
+
+At the user's request, the answers of the four people who reached the exit
+during calibration were read before any main run. Calibration visits don't
+count toward the main result (the request-number rule), so the result isn't
+touched, but it's on record. Two of the four contradict themselves (not
+born in 1995 but living in Bogotá then; 7 and 1 on two near-identical
+nostalgia items) after about 20 seconds in the room.
+
+The user's reading, which the funnel supports: the friction is the
+questionnaire, and answers given to get past it can't be trusted. So the
+title card and the door questions are replaced by the hallway and the door
+of the room (design step 1). Opening the door with the line under it in view
+is the yes; "Más detalles" keeps the full text and a way in without being
+kept. The first click also lets the sound play, which browsers require
+anyway. New: `s_entrance`, seconds from the page loading to opening the
+door. Gone: the door's questions, so `pre_*`, `change`, `lived_1995` and
+`age_1995` stay empty from this build on, and `n_door`/`s_door` with them.
+Unchanged for now: the exit questions, the note for phones, and the room.
+The before-and-after comparison is gone with the door questions; the new
+main measures (time inside, what's opened, reaching the afternoon's moments,
+returning) and a stopping rule get their own note before any more ads run.
+
+In the same build, the room's button "Salir del cuarto" became "Terminar la
+visita": with a hallway outside, "salir" could read as a way out to it, and
+two of the four who reached the exit pressed it after about 20 seconds.
+
+**New main measures and stopping rule, 30 October 2026:** agreed with the
+user before any visit to the door build. They replace the main result, the
+completed visit and the stopping rule of 9 October; the analysis of that
+note still describes the visits before the door.
+
+- **Who counts:** main-run visits (`ref_campaign` = `principal`) that opened
+  the door with the log on (`stage` = `consent` or later), on their first
+  visit from that browser (`visit_n` = 1). Not calibration (the room changes
+  before the main run), not "Entrar sin que se registre" (no log), not our
+  own browser. Someone who opens the door and leaves before the room shows
+  counts, with 0 minutes.
+- **Main measure:** minutes in the room per person (`min_room`). Report the
+  median with its middle half, and the share still inside when Radioactiva
+  first gives its request number (moved earlier before the main run, in its
+  own note; the time is in `src/research/moments.ts`).
+- **Also reported:**
+  - the share of visitors who open the door, of those shown it (not `gate`),
+    and how long they take (`s_entrance`);
+  - how many of the five objects each person opens (`opens`), and the time
+    with each;
+  - the share who come back within 7 days (`visit_n` > 1 from the same
+    browser);
+  - for those who answer the exit, the nostalgia score (mean of N1–N3) and
+    the memories, described only: with nothing to compare it to, it isn't a
+    change.
+- **When to stop:** at 100 people who count, or when the main run has spent
+  COP 60,000, whichever comes first. The count and the spend alone decide.
+- **Decided now, what sends us back to the room:** a median under 2
+  minutes means fixing the room before building features.
+- **No peeking still holds:** the daily look reads only the stage counts at
+  the top of `npm run visits`; the minutes and the exit's answers are read
+  when the run ends.
+
 ## Analysis
+
+As written on 9 October, for the visits with door questions. From the door
+build on, the main measure and what's reported are in the note of 30
+October, "New main measures and stopping rule".
 
 - **Main result:** the nostalgia score (mean of N1–N3) at the exit minus at
   the door, per person. Report the mean change with a confidence interval
@@ -452,5 +535,5 @@ apart from the 24 October ones.
   visitors may dial their own old numbers.
 - Answers and the log go to a Google Sheet (see
   [`research-setup.md`](research-setup.md)).
-- The consent ("Más detalles" on the title card) says what's collected and
+- The consent ("Más detalles" under the door) says what's collected and
   that it's anonymous.

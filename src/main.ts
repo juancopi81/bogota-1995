@@ -21,6 +21,7 @@ import { light, setBulb } from './scene/light';
 import { kv } from './world/store';
 import { sfx, play } from './audio/sfx';
 import { mountHouse } from './objects/house';
+import { entrance } from './scene/entrance';
 import { dialogue } from './ui/dialogue';
 import { Backstage } from './ui/backstage';
 import { flags } from './world/flags';
@@ -100,37 +101,16 @@ onTick((dt, t) => {
   alarmClock.tick(t);
 });
 
-/**
- * The card over the room, still and dimmed. Its button opens the door (it has
- * the focus, so Enter does too); in the test, that button is the visitor's yes,
- * and "Más detalles" says what taking part means.
- */
-function titleCard(onEnter: () => void): void {
-  const title = document.createElement('div');
-  title.id = 'title';
-  title.innerHTML = `
-    <div class="place">Bogotá</div>
-    <div class="date">Sábado 28 de octubre de 1995 · 5:30 p.m.</div>
-    <button type="button" class="enter">${study.on ? CONSENT.enter : 'Entrar'}</button>
-    ${study.on ? `<div class="consent">${CONSENT.line} <button type="button" class="more">Más detalles</button></div>` : ''}
-    <div class="hint">Se recomienda usar audífonos.</div>`;
-  stage.el.appendChild(title);
-  const button = title.querySelector<HTMLButtonElement>('.enter')!;
-  const enter = () => {
-    for (const b of title.querySelectorAll('button')) b.disabled = true;
-    title.classList.add('gone');
-    setTimeout(() => title.remove(), 2400);
-    onEnter();
-  };
-  button.addEventListener('click', enter, { once: true });
-  title.querySelector('.more')?.addEventListener('click', async () => {
-    if (await study.details()) button.click();
-    else button.focus({ preventScroll: true });
-  });
-  button.focus({ preventScroll: true });
+/** Two knocks on your own door, the way its sign asks; the touch also lets the room's sound play. */
+function knock(): void {
+  void engine.unlock();
+  const room = engine.channel('room').input;
+  const t = engine.ctx.currentTime + 0.02;
+  play(engine.ctx, sfx.knock(engine.ctx), room, { when: t, gain: 1.1, rate: 0.7 });
+  play(engine.ctx, sfx.knock(engine.ctx), room, { when: t + 0.19, gain: 1, rate: 0.72 });
 }
 
-// the test (docs/test-plan.md): questions at the door and on the way out, and an anonymous log
+// the test (docs/test-plan.md): an anonymous log from the moment the door opens, and questions on the way out
 const study = new Study(params, stage.el, (on) => engine.master.gain.setTargetAtTime(on ? 0.25 : 0.9, engine.ctx.currentTime, 0.4));
 // phones get a note asking for a computer instead, and nothing heavy loads
 const gated = study.gate(() => {
@@ -215,5 +195,13 @@ if (gated) {
 } else if (params.has('skip')) {
   void enter();
 } else {
-  titleCard(() => void study.atTheDoor().then(enter));
+  entrance(stage.el, {
+    notice: study.on ? CONSENT.line : null,
+    details: () => study.details(),
+    knock,
+    enter: (logged) => {
+      study.walkIn(logged);
+      void enter();
+    },
+  });
 }

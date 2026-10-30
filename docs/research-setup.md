@@ -26,7 +26,7 @@ In the GitHub repository:
 2. **Settings → Secrets and variables → Actions → Variables**:
    - `RESEARCH_URL`: the web app URL from step 1.
    - `RESEARCH_CONTACT` (optional): an email or handle for questions, shown
-     in the consent details ("Más detalles" on the title card).
+     in the consent details ("Más detalles" under the door).
 3. **Actions → Publish the room → Run workflow** (or merge anything into
    `main`).
 
@@ -99,10 +99,11 @@ visitors" explains how).
 | Columns | What |
 |---|---|
 | `visit`, `visitor`, `visit_n` | random ids; `visit_n` counts visits from the same browser |
-| `stage` | how far they got: `load`, `gate` (a phone), `consent` (clicked "Entrar y participar"), `door`, `room`, `exit` (answered the six phrases on the way out, not the rest), `done`; `declined` (entered without taking part) only before 26 October 2026 |
-| `lived_1995`, `age_1995` | the door's two questions |
-| `n_door`, `s_door` | how many of the door's eight questions had an answer, and seconds since they appeared: kept for those who agreed, also when they leave at the door (counts, not answers) |
-| `pre_*`, `post_*`, `change` | the six mood items at the door and the exit; `*_nostalgia` is the mean of the three nostalgia items, `change` the difference |
+| `stage` | how far they got: `load`, `gate` (a phone), `consent` (opened the door; until 30 October 2026, clicked "Entrar y participar"), `door` (answered the door questions, 26–30 October 2026 only), `room`, `exit` (answered the six phrases on the way out, not the rest), `done`; `declined` (went in without being kept: "Entrar sin participar" before 26 October 2026, "Entrar sin que se registre" from 30 October) |
+| `s_entrance` | seconds from the page loading to opening the door (from 30 October 2026) |
+| `lived_1995`, `age_1995` | the door's two questions (until 30 October 2026) |
+| `n_door`, `s_door` | how many of the door's eight questions had an answer, and seconds since they appeared: kept for those who agreed, also when they leave at the door (counts, not answers; 26–30 October 2026) |
+| `pre_*`, `post_*`, `change` | the six mood items at the door (until 30 October 2026) and the exit; `*_nostalgia` is the mean of the three nostalgia items, `change` the difference |
 | `memory`, `memory_share`, `triggers`, `return_intent`, `trait_*`, `feedback` | the rest of the exit; `memory_share` is TRUE if they let other visitors read their memory |
 | `aprobado`, `recuerdo_publico` | yours, added by hand: which shared memories the room may show, and an edited version to show instead |
 | `s_*` | seconds: `s_total`, per view (`s_view_tv`…), per station (`s_radio_radioactiva`…), `s_tv`, `s_tv_clip` (YouTube's player on screen, its ads included; before 27 October 2026, the clip itself playing), `s_phone`, `s_tape_play`, `s_tape_rec` |

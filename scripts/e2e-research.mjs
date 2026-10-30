@@ -1,6 +1,6 @@
-// End-to-end: the test from the title card to the thanks. Consent, the door
-// questions, a few things in the room, the way out, the exit questions, and
-// what the record ends up holding.
+// End-to-end: the test from the door to the thanks. The door and its line
+// (the yes), "Más detalles" and the ways in from there, a few things in the
+// room, the way out, the exit questions, and what the record ends up holding.
 // Needs the dev server on :5173.  Usage: node scripts/e2e-research.mjs [screenshot-prefix]
 // E2E_VIEWPORT=1366x641 tries a small laptop's window instead of 1600×900.
 import { chromium } from 'playwright';
@@ -19,52 +19,39 @@ const rate = async (q, values) => {
 };
 
 await page.goto('http://localhost:5173/?research');
-await page.waitForSelector('#title');
-await shot('title');
+await page.waitForSelector('#entrance .door');
+await shot('door');
 await page.waitForTimeout(800);
-// the title card's button is the yes: a click beside it isn't
+// a click on the wall beside the door isn't a knock
 await page.mouse.click(40, 40);
 await page.waitForTimeout(300);
-const notByClickingBeside = (await page.$('#research')) === null;
-// "Más detalles" says what taking part means, and "Volver" goes back to the card
-await page.click('#title .more');
+const notByClickingBeside = !(await page.$('#entrance.knock')) && (await fields()).stage === 'load';
+// the line under the door is readable at this window's size
+const notice = await page.$eval('#entrance .notice', (el) => ({ text: el.textContent, px: el.getBoundingClientRect().height, visible: el.getBoundingClientRect().bottom <= innerHeight }));
+// "Más detalles" says what's kept, and "Volver" goes back to the door
+await page.click('#entrance .more');
 await page.waitForSelector('#research');
 const details = await page.$eval('#research', (el) => el.textContent);
 await shot('details');
 await page.click('#research [data-act="back"]');
-const backToTitle = (await page.$('#research')) === null && (await fields()).stage === 'load';
-// the button has the focus again: the keyboard alone opens the door
+const backToDoor = (await page.$('#research')) === null && (await fields()).stage === 'load';
+// the door has the focus again: the keyboard alone knocks, and no questions come before the room
 await page.keyboard.press('Enter');
-
-await page.waitForSelector('#research [data-q="lived"]');
-const consented = (await fields()).stage;
-const disabledAtFirst = await page.$eval('#research [data-act="enter"]', (b) => b.classList.contains('waiting'));
-await pick('lived', 'bogota');
-await rate('mood', { tranquilo: 5, nostalgico: 2 });
-// trying to go in with three of eight answers marks the five missing, and stays at the door
-await page.click('#research [data-act="enter"]');
-const early = await page.$eval('#research', (el) => ({ missing: el.querySelectorAll('.missing').length, hint: el.querySelector('.hint').textContent }));
-await shot('door-missing');
-// left now, a visit at the door would still say how far it got
-await page.evaluate(() => window.room1995.study.flush());
-const leftAtDoor = await fields();
-// readable at this window's size: the phrases' text and the scale's buttons
-const sizes = await page.$eval('#research', (el) => ({
-  text: parseFloat(getComputedStyle(el.querySelector('.likert .item span')).fontSize),
-  button: el.querySelector('.scale button').getBoundingClientRect().height,
-  fits: (({ scrollHeight, clientHeight }) => ({ scrollHeight, clientHeight }))(el.querySelector('.panel')),
-  enterVisible: (() => { const r = el.querySelector('[data-act="enter"]').getBoundingClientRect(); return r.bottom <= innerHeight && r.top >= 0; })(),
-}));
-await pick('age', '15-19');
-await rate('mood', { aburrido: 2, sentimientos: 3, contento: 5, ahora: 2 });
-await shot('door');
-await page.click('#research [data-act="enter"]');
 await page.waitForFunction(() => window.room1995.clock.started, null, { timeout: 20000 });
-const entrance = { notByClickingBeside, details: /anónimo/.test(details) && /mayor de 18/.test(details), backToTitle, consented };
-const atDoor = { ...entrance, disabledAtFirst, early, leftAtDoor: { stage: leftAtDoor.stage, n_door: leftAtDoor.n_door, lived_1995: leftAtDoor.lived_1995 ?? null }, sizes };
-console.log('door:', JSON.stringify({ ...atDoor, ...(await fields()) }));
-if (!notByClickingBeside || !entrance.details || !backToTitle || consented !== 'consent' || !disabledAtFirst || early.missing !== 5 || early.hint !== 'Faltan 5 respuestas.' || leftAtDoor.n_door !== 3 || leftAtDoor.lived_1995) throw new Error('the entrance is off');
-if (sizes.text < 15 || sizes.button < 32 || !sizes.enterVisible) throw new Error(`the door is too small to read at ${width}×${height}`);
+const walkedIn = await fields();
+const entrance = {
+  notByClickingBeside,
+  notice: /anónima/.test(notice.text) && notice.visible,
+  details: /anónimo/.test(details) && /mayores de 18/.test(details) && /sin que se registre/.test(details),
+  backToDoor,
+  stage: walkedIn.stage,
+  s_entrance: walkedIn.s_entrance,
+  visitor: !!walkedIn.visitor,
+  noQuestions: (await page.$('#research')) === null,
+};
+console.log('entrance:', JSON.stringify(entrance));
+if (!notByClickingBeside || !entrance.notice || !entrance.details || !backToDoor || walkedIn.stage !== 'consent' || !(walkedIn.s_entrance > 0) || !entrance.visitor || !entrance.noQuestions) throw new Error('the entrance is off');
+await page.waitForSelector('#entrance', { state: 'detached' });
 
 // a little time in the room: the radio, then a call to 117
 await page.evaluate(() => window.room1995.closeups.open('grabadora'));
@@ -122,10 +109,27 @@ await page.waitForTimeout(500);
 
 const f = await fields();
 const pickOut = (keys) => Object.fromEntries(keys.map((k) => [k, f[k]]));
-console.log('exit:', JSON.stringify(pickOut(['stage', 'visit_n', 'pre_nostalgia', 'post_nostalgia', 'change', 'memory', 'memory_share', 'triggers', 'return_intent', 'trait_often', 'trait_prone', 'exit_reason'])));
+console.log('exit:', JSON.stringify(pickOut(['stage', 'visit_n', 'post_nostalgia', 'change', 'memory', 'memory_share', 'triggers', 'return_intent', 'trait_often', 'trait_prone', 'exit_reason'])));
 console.log('log:', JSON.stringify(pickOut(['s_total', 's_view_grabadora', 's_view_phone', 's_view_room', 's_phone', 'calls', 'opens', 'n_andres_rang', 'min_room', 'min_at_exit', 'exit_shown', 'n_yt'])));
 // what YouTube's player on the TV reported goes with the log (here the TV stayed off)
 if (f.n_yt !== 0) throw new Error("the TV's YouTube counts should be in the record");
 console.log('overlay gone:', (await page.$('#research')) === null, '| backstage gear hidden:', await page.$eval('#backstage-toggle', (b) => getComputedStyle(b).display === 'none'));
+// the dog opens the door too
+const byDog = await browser.newPage({ viewport: { width, height } });
+byDog.on('pageerror', (e) => errors.push(e.message));
+await byDog.goto('http://localhost:5173/?research');
+await byDog.click('#entrance .dog-hit');
+await byDog.waitForFunction(() => window.room1995.clock.started, null, { timeout: 20000 });
+const dogStage = await byDog.evaluate(() => window.room1995.study.record.last?.fields.stage);
+// "Entrar sin que se registre": the same room, only that is counted, and no way-out questions
+const unlogged = await browser.newPage({ viewport: { width, height } });
+unlogged.on('pageerror', (e) => errors.push(e.message));
+await unlogged.goto('http://localhost:5173/?research');
+await unlogged.click('#entrance .more');
+await unlogged.click('#research [data-act="unlogged"]');
+await unlogged.waitForFunction(() => window.room1995.clock.started, null, { timeout: 20000 });
+const quiet = await unlogged.evaluate(() => ({ stage: window.room1995.study.record.last?.fields.stage, visitor: window.room1995.study.record.last?.fields.visitor ?? null, leave: !!document.querySelector('#leave') }));
+console.log('other ways in:', JSON.stringify({ dogStage, unlogged: quiet }));
+if (dogStage !== 'consent' || quiet.stage !== 'declined' || quiet.visitor || quiet.leave) throw new Error('the other ways in are off');
 if (errors.length) console.log('ERRORS:\n' + [...new Set(errors)].join('\n'));
 await browser.close();
