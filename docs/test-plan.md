@@ -537,6 +537,36 @@ images, generated videos).
   ad, and the campaign waits for 4 November; it can first show at 18:00
   (`2026-11-04T23:00:00Z`).
 
+**The first slice, and the second set up, 5 November 2026:** Wednesday's
+evening ended with COP 18,275 spent (8,029 impressions, 127 clicks). Only the
+stage counts were read, as planned. There were 110 visits from the `principal`
+link on build `343f02f`:
+31 got the phone note, 66 never opened the door, and 13 opened it and reached
+the room (13 people, none came back). None answered the exit questions. The
+same day, the way out was checked on the live site with the sheet blocked:
+"Terminar la visita", both steps and the thanks all work. So 13 of 100 count,
+nothing broke, and another slice follows.
+
+- **The second slice is COP 41,725**, what's left of the cap, over Thursday 5
+  and Friday 6 November, 18:00–22:00, about COP 20,900 an evening. A campaign
+  total needs about COP 19,000 a day, so two evenings is the most it can buy.
+- **Friday is new.** Calibration and the first slice ran on Wednesday and
+  Thursday evenings. The user chose to include a Friday to see how it does.
+  Any comparison by day is exploratory, not part of the main result.
+- **Same settings, built again.** The campaign is "B95 | Principal 2 | GDN |
+  CO | Desktop". Copying Wednesday's campaign failed twice (Google gave only a
+  generic error), so it was built again in the wizard with the same settings,
+  ad and link. Its visits still carry `ref_campaign` = `principal`.
+- **The run ends Friday 6 November at 22:00.** If COP 19,000 or more of the
+  cap is left then (say, if the ad's review cost Thursday's evening), that
+  buys one more evening, decided on the stage counts alone. Less than that
+  ends the run. Either way, the minutes and the exit's answers are read
+  after the end, on Monday 9 November at the earliest.
+- **The room is still build `13e2e89`**, live as `343f02f`. This note is
+  merged only after the run, so the build doesn't change during it.
+- **Published by the user** on 5 November. Google was still reviewing the
+  ad; it can first show at 18:00 (`2026-11-05T23:00:00Z`).
+
 ## Analysis
 
 As written on 9 October, for the visits with door questions. From the door
