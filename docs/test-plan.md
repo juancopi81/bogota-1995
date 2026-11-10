@@ -567,6 +567,60 @@ nothing broke, and another slice follows.
 - **Published by the user** on 5 November. Google was still reviewing the
   ad; it can first show at 18:00 (`2026-11-05T23:00:00Z`).
 
+**Main run results, 9 November 2026:** the run ended on Friday 6 November at
+22:00. Thursday and Friday cost COP 38,177 for 366 clicks. Google has since
+lowered Wednesday to COP 17,714 for 125 clicks, so the run spent COP 55,891.
+The COP 4,109 left is less than one evening needs, so no evening was added.
+The sheet was read in place, with nothing downloaded, by the rules of the 30
+October note and the way `npm run visits` counts. Our own browser was left
+out.
+
+- **Who counts: 68 people.** The spend ended the run before it reached 100.
+  Across the three evenings there were 518 visits from the `principal` link
+  on build `343f02f`. 145 got the note for phones, and the other 373 were
+  shown the door. Nobody chose "Entrar sin que se registre".
+- **Main measure: a median of 0.3 minutes in the room (18 seconds)**, with a
+  middle half of 0.1–0.7 minutes. The longest stay was 12.9 minutes, 4 people
+  stayed 5 minutes or more, and 62 stayed under 2. Measured by the clock,
+  from opening the door to the last log, the median is 23 seconds, so the
+  short times aren't tabs left in the background.
+- **Still inside when Radioactiva first gives its request number (2:49): 5
+  of 68 (7%).** Andrés's first call, at 1:16, found 8 still there. A
+  requested song could first air only for 2 of them, and nobody stayed for
+  the second number.
+- **The door:** 70 of the 373 shown it during the evenings opened it (19%),
+  after a median of 7 seconds (`s_entrance`). That's 67 first visits and 3
+  returns; the 68th person who counts came outside the evening hours.
+- **Objects:** 36 of the 68 opened none, 25 opened one, and 7 opened two or
+  more. By number of people: the window 17, the grabadora 11, the TV 10, the
+  phone 9 and the clock 3. Among those who opened each one, the median time
+  was about 1½ minutes at the phone, 42 s at the TV, 27 s at the grabadora,
+  9 s at the window and 5 s at the clock. 65 heard Radioactiva, for a median
+  of 15 s.
+- **How they left:** 66 of the 68 closed the tab. 22 pressed "Terminar la
+  visita" and stayed a median of about 25 seconds in all; 18 of them left
+  without answering.
+- **Coming back:** 3 of the 68 have a second visit, each a few minutes after
+  the first, so they look like reloads rather than returns.
+- **The exit's answers, described only:** 4 people answered and 2 finished,
+  all after less than 30 seconds in the room. Their nostalgia scores are 1,
+  1, 3.3 and 7, with patterns that look careless: one answered 1 to all six
+  phrases, and another ticked every trigger, "nada" included. One left a
+  memory of ten characters.
+- **By day, exploratory:** Wednesday 13 people (median 12 s), Thursday 30
+  (24 s), Friday 25 (18 s). Friday was neither better nor worse. With stays
+  this short, there was little room for a day to show a difference.
+- **By device:** on wide windows with a mouse (54 people), the median was
+  also 18 seconds, so the short stays aren't a phone or touch problem.
+- **Cost:** about COP 820 for each person who counts.
+
+**The rule decided on 30 October applies:** a median under 2 minutes means
+fixing the room before building features. People leave in the first 20
+seconds, before anything designed for the afternoon happens: the radio is on,
+and the first call comes a minute later. The change starts there, at what a
+visitor sees and hears right after the door opens. It gets its own note
+before any more ads run.
+
 ## Analysis
 
 As written on 9 October, for the visits with door questions. From the door
